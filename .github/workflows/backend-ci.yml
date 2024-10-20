@@ -16,9 +16,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Code
+      uses: actions/checkout@v4
     
-    - name: Set up Python 3.9
+    - name: Set up Environment
       uses: actions/setup-python@v3
       with:
         python-version: "3.9"
@@ -38,8 +39,8 @@ jobs:
         
     - name: Run unit tests
       run: |
-        python backend/test/run_backend_unit_tests.py
+        python -m unittest discover -s backend/test/unit_tests
 
     - name: Run integration tests
       run: |
-        python backend/test/run_integration_unit_tests.py
+        python -m unittest discover -s backend/test/integration_tests
