@@ -1,6 +1,6 @@
 import unittest
 
-TESTS_PATH = 'backend/test/integration_tests'
+TESTS_PATH = './integration_tests'
 
 
 if __name__ == '__main__':
