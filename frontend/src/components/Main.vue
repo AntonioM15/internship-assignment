@@ -17,8 +17,8 @@ export default {
   methods: {
     getMessage () {
       const path = 'http://127.0.0.1:5000/api/v1.0/message'
-      axios.get(path).then((respuesta) => {
-        this.message = respuesta.data
+      axios.get(path).then((response) => {
+        this.message = response.data
       })
         .catch((error) => {
           console.log(error)

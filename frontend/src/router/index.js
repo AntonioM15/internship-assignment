@@ -1,13 +1,13 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Main from '@/components/Home'
+import Main from '@/components/Main'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
     {
-      path: '/',
+      path: '/main',
       name: 'main',
       component: Main
     }
