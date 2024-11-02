@@ -31,16 +31,16 @@
 }
 
 .icons {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  display: flex;
   align-items: center;
   height: 50%;
+  flex-wrap: wrap;
 }
 
 .icon {
   height: 200px;
   width: 200px;
-  margin: 30px;
+  margin: 50px;
 }
 
 .description {
