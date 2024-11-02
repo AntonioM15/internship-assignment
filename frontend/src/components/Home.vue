@@ -1,9 +1,7 @@
 <!-- src/components/Home.vue -->
 <template>
   <div class="container">
-    <div class="header">
-      <h1>Portal Prácticas de Ciclos</h1>
-    </div>
+    <Header/>
 
     <div class="main">
       <div class="left-section">
@@ -47,8 +45,13 @@
 </template>
 
 <script>
+import Header from './generic/Header.vue'
+
 export default {
   name: 'Login',
+  components: {
+    Header
+  },
   data () {
     return {
       username: '',

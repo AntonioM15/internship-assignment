@@ -7,14 +7,6 @@
   background-color: var(--background-primary-color);
 }
 
-.header {
-  height: 10%;
-  padding-top: 10px;
-  padding-left: 20px;
-  background-color: var(--background-header-color);
-  color: var(--text-header-color);
-}
-
 .main {
   display: flex;
   flex-direction: row;
