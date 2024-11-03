@@ -1,15 +1,21 @@
-from flask import Flask, jsonify
+from flask import Flask, render_template
 
 from routes.landing import landing_blueprint
 
-from flask_cors import CORS
 
-app = Flask(__name__)
-cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+app = Flask(__name__,
+            static_folder="../frontend/dist/static",
+            template_folder="../frontend/dist")
 
 
 # Register all blueprints (files where endpoints are located)
 app.register_blueprint(landing_blueprint, url_prefix="/api/v1/landing")
+
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def render_vue(path):
+    return render_template('index.html')
 
 
 if __name__ == '__main__':
