@@ -91,13 +91,24 @@ input::placeholder {
   color: var(--text-secondary-color);
 }
 
+.button-with-message{
+  display: flex;
+  height: 50px;
+}
+
+.custom-message{
+  width: 300px;
+  font-size: 18px;
+}
+
 .custom-button {
+  width: 125px;
   display: flex;
   justify-content: flex-end;
 }
 
 button {
-  max-width: 100px;
+  width: 100px;
   padding: 15px;
   font-size: 18px;
   background-color: var(--background-secondary-color);
@@ -112,6 +123,7 @@ button:hover {
 }
 
 .help-text {
+    height: 10%;
     margin-top: 50px;
     font-size: 20px;
 }

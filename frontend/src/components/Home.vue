@@ -21,10 +21,13 @@
         <div class="top-right-section">
           <h2>Iniciar sesión</h2>
           <form @submit.prevent="login">
-            <input type="text" v-model="username" placeholder="usuario" required>
+            <input type="text" v-model="email" placeholder="email" required>
             <input type="password" v-model="password" placeholder="contraseña" required>
-            <div class="custom-button">
-              <button type="submit">Log in</button>
+            <div class="button-with-message">
+              <p class="custom-message" @change="loginMessage" style="color: red"> {{loginMessage}} </p>
+              <div class="custom-button">
+                <button type="submit">Log in</button>
+              </div>
             </div>
           </form>
         </div>
@@ -32,9 +35,14 @@
         <div class="bottom-right-section">
           <h2>Recuperar contraseña</h2>
           <form @submit.prevent="recoverPassword">
-            <input type="text" v-model="recoverUsername" placeholder="usuario" required>
-            <div class="custom-button">
-              <button type="submit">Solicitar</button>
+            <input type="text" v-model="recoverEmail" placeholder="email" required>
+            <div class="button-with-message">
+              <p class="custom-message" @change="passwordMessage" :style="{ color: passwordMessageColor}">
+                {{passwordMessage}}
+              </p>
+              <div class="custom-button">
+                <button type="submit">Solicitar</button>
+              </div>
             </div>
           </form>
           <p class="help-text">¿Tienes algún problema? <a href="#">Contáctanos</a></p>
@@ -46,6 +54,7 @@
 
 <script>
 import Header from './generic/Header.vue'
+import axios from 'axios'
 
 export default {
   name: 'Login',
@@ -54,17 +63,49 @@ export default {
   },
   data () {
     return {
-      username: '',
+      email: '',
       password: '',
-      recoverUsername: ''
+      recoverEmail: '',
+      loginMessage: '',
+      passwordMessage: '',
+      passwordMessageColor: 'red'
     }
   },
   methods: {
-    login () {
-      console.log('Iniciando sesión con', this.username, this.password)
+    async login () {
+      // TODO manage urls more professionally
+      const path = 'http://127.0.0.1:5000/api/v1/landing/login'
+      const params = {
+        'email': this.email,
+        'password': this.password
+      }
+      try {
+        const response = await axios.post(path, params)
+        this.loginMessage = ''
+        // TODO redirect to home page and remove log
+        console.log(`Login was a success, response ${response.data}`)
+      } catch (error) {
+        // update loginMessage with the error
+        const errorContent = error.response
+        this.loginMessage = errorContent.data.message
+      }
     },
-    recoverPassword () {
-      console.log('Recuperar contraseña para', this.recoverUsername)
+    async recoverPassword () {
+      const path = 'http://127.0.0.1:5000/api/v1/landing/password-recovery'
+      const params = {
+        'email': this.recoverEmail
+      }
+      try {
+        const response = await axios.post(path, params)
+        // update passwordMessage
+        this.passwordMessage = response.data.message
+        this.passwordMessageColor = 'green'
+      } catch (error) {
+        // update passwordMessage
+        const errorContent = error.response
+        this.passwordMessage = errorContent.data.message
+        this.passwordMessageColor = 'red'
+      }
     }
   }
 }
