@@ -1,32 +1,115 @@
+<!-- src/components/Home.vue -->
 <template>
-  <div>
-    <p>{{ message }}</p>
+  <div class="container">
+    <Header/>
+
+    <div class="main">
+      <div class="left-section">
+        <div class="icons">
+          <img class="icon" src="../assets/IconCompany.svg" alt="Empresas" />
+          <img class="icon" src="../assets/IconProfessor.svg" alt="Profesores" />
+          <img class="icon" src="../assets/IconStudent.svg" alt="Estudiantes" />
+        </div>
+
+        <div class="description">
+          <p class="title">Una web para gobernarlos a todos</p>
+          <p class="subtitle">Empresas, tutores y estudiantes en la misma plataforma</p>
+        </div>
+      </div>
+
+      <div class="right-section">
+        <div class="top-right-section">
+          <h2>Iniciar sesión</h2>
+          <form @submit.prevent="login">
+            <input type="text" v-model="email" placeholder="email" required>
+            <input type="password" v-model="password" placeholder="contraseña" required>
+            <div class="button-with-message">
+              <p class="custom-message" @change="loginMessage" style="color: red"> {{loginMessage}} </p>
+              <div class="custom-button">
+                <button type="submit">Log in</button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="bottom-right-section">
+          <h2>Recuperar contraseña</h2>
+          <form @submit.prevent="recoverPassword">
+            <input type="text" v-model="recoverEmail" placeholder="email" required>
+            <div class="button-with-message">
+              <p class="custom-message" @change="passwordMessage" :style="{ color: passwordMessageColor}">
+                {{passwordMessage}}
+              </p>
+              <div class="custom-button">
+                <button type="submit">Solicitar</button>
+              </div>
+            </div>
+          </form>
+          <p class="help-text">¿Tienes algún problema? <a href="#">Contáctanos</a></p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import Header from './generic/Header.vue'
 import axios from 'axios'
 
 export default {
-  name: 'Main',
+  name: 'Login',
+  components: {
+    Header
+  },
   data () {
     return {
-      message: 'Sin mensaje!'
+      email: '',
+      password: '',
+      recoverEmail: '',
+      loginMessage: '',
+      passwordMessage: '',
+      passwordMessageColor: 'red'
     }
   },
   methods: {
-    getMessage () {
-      const path = 'http://127.0.0.1:5000/api/v1.0/message'
-      axios.get(path).then((respuesta) => {
-        this.message = respuesta.data
-      })
-        .catch((error) => {
-          console.log(error)
-        })
+    async login () {
+      // TODO manage urls more professionally
+      const path = 'http://127.0.0.1:5000/api/v1/landing/login'
+      const params = {
+        'email': this.email,
+        'password': this.password
+      }
+      try {
+        const response = await axios.post(path, params)
+        this.loginMessage = ''
+        // TODO redirect to home page and remove log
+        console.log(`Login was a success, response ${response.data}`)
+      } catch (error) {
+        // update loginMessage with the error
+        const errorContent = error.response
+        this.loginMessage = errorContent.data.message
+      }
+    },
+    async recoverPassword () {
+      const path = 'http://127.0.0.1:5000/api/v1/landing/password-recovery'
+      const params = {
+        'email': this.recoverEmail
+      }
+      try {
+        const response = await axios.post(path, params)
+        // update passwordMessage
+        this.passwordMessage = response.data.message
+        this.passwordMessageColor = 'green'
+      } catch (error) {
+        // update passwordMessage
+        const errorContent = error.response
+        this.passwordMessage = errorContent.data.message
+        this.passwordMessageColor = 'red'
+      }
     }
-  },
-  created () {
-    this.getMessage()
   }
 }
+
 </script>
+
+<style scoped src="../css/Home.css"></style>

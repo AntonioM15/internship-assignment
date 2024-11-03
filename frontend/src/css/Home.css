@@ -1,0 +1,138 @@
+@import url('colors.css');
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Make sure to use all the height of the page */
+  background-color: var(--background-primary-color);
+}
+
+.main {
+  display: flex;
+  flex-direction: row;
+  height: 90%;
+  color: var(--text-primary-color);
+}
+
+.left-section {
+  display: flex;
+  flex-direction: column;
+  width: 60%;
+  align-items: center;
+  background-color: var(--background-secondary-color);
+}
+
+.icons {
+  display: flex;
+  align-items: center;
+  height: 50%;
+  flex-wrap: wrap;
+}
+
+.icon {
+  height: 200px;
+  width: 200px;
+  margin: 50px;
+}
+
+.description {
+  height: 50%;
+}
+
+.title {
+  font-size: 60px;
+  font-weight: bold;
+}
+
+.subtitle {
+  font-size: 40px;
+}
+
+.right-section {
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+  padding-left: 50px;
+}
+
+.top-right-section {
+  height: 45%;
+  padding-top: 40px;
+}
+
+.bottom-right-section {
+  height: 45%;
+}
+
+.right-section h2 {
+  font-size: 45px;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+form {
+  max-width: 425px;
+  display: flex;
+  flex-direction: column;
+}
+
+input[type="text"],
+input[type="password"] {
+  padding: 15px;
+  margin-bottom: 15px;
+  font-size: 18px;
+  color: var(--text-primary-color);
+  border: 2px solid var(--background-secondary-color);
+  border-radius: 5px;
+  outline: none;
+}
+
+input::placeholder {
+  color: var(--text-secondary-color);
+}
+
+.button-with-message{
+  display: flex;
+  height: 50px;
+}
+
+.custom-message{
+  width: 300px;
+  font-size: 18px;
+}
+
+.custom-button {
+  width: 125px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+button {
+  width: 100px;
+  padding: 15px;
+  font-size: 18px;
+  background-color: var(--background-secondary-color);
+  color: var(--text-header-color);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+    background-color: var(--background-header-color);
+}
+
+.help-text {
+    height: 10%;
+    margin-top: 50px;
+    font-size: 20px;
+}
+
+.help-text a {
+    color: var(--text-secondary-color);
+    text-decoration: none;
+}
+
+.help-text a:hover {
+    text-decoration: underline;
+}
