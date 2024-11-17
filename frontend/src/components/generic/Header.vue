@@ -17,5 +17,5 @@ export default {
 </template>
 
 <style scoped>
-@import url('../../css/header.css');
+@import url('../../css/Header.css');
 </style>

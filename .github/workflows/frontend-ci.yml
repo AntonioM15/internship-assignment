@@ -1,0 +1,26 @@
+name: Frontend tests
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+    
+    - name: Cypress run
+      uses: cypress-io/github-action@v6
+      with:
+        working-directory: ./frontend
+        browser: chrome
+        start: npm run start
+        wait-on: "http://localhost:8080"
