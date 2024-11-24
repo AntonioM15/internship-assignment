@@ -9,6 +9,8 @@ class User(TimestampMixin):
         self.role = 'user'
         self.official_id = official_id
         self.full_name = full_name
+
+        # Keys from other collections
         self.avatar = avatar
         self.location = location or {}
         self.notifications = notifications or []
@@ -43,6 +45,8 @@ class Coordinator(User):
     def __init__(self, email, hashed_password, official_id, full_name, institution, observations=None, **kwargs):
         super().__init__(email, hashed_password, official_id, full_name, **kwargs)
         self.role = 'coordinator'
+
+        # Keys from other collections
         self.institution = institution
         self.observations = observations or []
 
@@ -59,6 +63,8 @@ class Worker(User):
     def __init__(self, email, hashed_password, official_id, full_name, company, interns=None, internships=None, **kwargs):
         super().__init__(email, hashed_password, official_id, full_name, **kwargs)
         self.role = 'worker'
+
+        # Keys from other collections
         self.company = company
         self.interns = interns or []
         self.internships = internships or []
@@ -80,6 +86,8 @@ class Student(User):
         super().__init__(email, hashed_password, official_id, full_name, **kwargs)
         self.role = 'student'
         self.status = status if status in self.AVAILABLE_STATUSES else 'unassigned'
+
+        # Keys from other collections
         self.institution = institution
         self.degree = degree
         self.internship = internship
@@ -101,6 +109,8 @@ class Tutor(User):
     def __init__(self, email, hashed_password, official_id, full_name, institution, degrees=None, students=None, internships=None, **kwargs):
         super().__init__(email, hashed_password, official_id, full_name, **kwargs)
         self.role = 'tutor'
+
+        # Keys from other collections
         self.institution = institution
         self.degrees = degrees or []
         self.students = students or []
