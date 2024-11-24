@@ -7,8 +7,10 @@ class TimestampMixin(object):
         self.last_updated = datetime.utcnow()
 
 
-class Location:
+
+class Location(TimestampMixin):
     def __init__(self, coordinates, country, city, postal_code, address):
+        super().__init__()
         self.coordinates = coordinates
         self.country = country
         self.city = city
@@ -24,25 +26,25 @@ class Location:
     def to_dict(self):
         return self.__dict__
 
-    def add_data(self, user=None, institution=None, company=None, internship=None):
-        if user and user not in self.users:
-            self.users.append(user)
-        if institution and institution not in self.institutions:
-            self.institutions.append(institution)
-        if company and company not in self.companies:
-            self.companies.append(company)
-        if internship and internship not in self.internships:
-            self.internships.append(internship)
+    def add_data(self, user_id=None, institution_id=None, company_id=None, internship_id=None):
+        if user_id and user_id not in self.users:
+            self.users.append(user_id)
+        if institution_id and institution_id not in self.institutions:
+            self.institutions.append(institution_id)
+        if company_id and company_id not in self.companies:
+            self.companies.append(company_id)
+        if internship_id and internship_id not in self.internships:
+            self.internships.append(internship_id)
 
-    def remove_data(self, user=None, institution=None, company=None, internship=None):
-        if user and user in self.users:
-            self.users.remove(user)
-        if institution and institution in self.institutions:
-            self.institutions.remove(institution)
-        if company and company in self.companies:
-            self.companies.remove(company)
-        if internship and internship in self.internships:
-            self.internships.remove(internship)
+    def remove_data(self, user_id=None, institution_id=None, company_id=None, internship_id=None):
+        if user_id and user_id in self.users:
+            self.users.remove(user_id)
+        if institution_id and institution_id in self.institutions:
+            self.institutions.remove(institution_id)
+        if company_id and company_id in self.companies:
+            self.companies.remove(company_id)
+        if internship_id and internship_id in self.internships:
+            self.internships.remove(internship_id)
 
     def save(self, mongo):
         mongo.db.locations.insert_one(self.to_dict())

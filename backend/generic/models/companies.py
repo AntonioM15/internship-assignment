@@ -18,22 +18,22 @@ class Company(TimestampMixin):
             return
         self.location = location
 
-    def add_worker(self, worker):
-        if not worker or worker in self.workers:
+    def add_worker(self, worker_id):
+        if not worker_id or worker_id in self.workers:
             return
-        self.workers.append(worker)
+        self.workers.append(worker_id)
 
-    def remove_worker(self, worker):
-        if not worker or worker not in self.workers:
+    def remove_worker(self, worker_id):
+        if not worker_id or worker_id not in self.workers:
             return
-        self.workers.remove(worker)
+        self.workers.remove(worker_id)
 
-    def add_observation(self, observation):
-        if not observation or observation in self.observations:
+    def add_observation(self, observation_id):
+        if not observation_id or observation_id in self.observations:
             return
-        self.observations.append(observation)
+        self.observations.append(observation_id)
 
-    def remove_observation(self, observation):
-        if not observation or observation not in self.observations:
+    def remove_observation(self, observation_id):
+        if not observation_id or observation_id not in self.observations:
             return
-        self.observations.remove(observation)
+        self.observations.remove(observation_id)

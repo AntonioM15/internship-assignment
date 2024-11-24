@@ -29,6 +29,11 @@ class User(TimestampMixin):
             "notifications": self.notifications,
         }
 
+    def update_location(self, location):
+        if not location:
+            return
+        self.location = location
+
     def save(self, mongo):
         mongo.db.users.insert_one(self.to_dict())
 
