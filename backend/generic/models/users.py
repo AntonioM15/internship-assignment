@@ -1,10 +1,9 @@
-from datetime import datetime
+from backend.generic.models.utils import TimestampMixin
 
 
-class User:
+class User(TimestampMixin):
     def __init__(self, email, hashed_password, official_id, full_name, avatar=None, location=None, notifications=None):
-        self.created_date = datetime.utcnow()
-        self.last_updated = datetime.utcnow()
+        super().__init__()
         self.email = email
         self.hashed_password = hashed_password
         self.role = 'user'
