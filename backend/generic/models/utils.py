@@ -1,11 +1,16 @@
 from datetime import datetime
 
+AVAILABLE_STATUSES = ('unassigned', 'provisional', 'assigned', 'ongoing')
+DEFAULT_STATUS = 'unassigned'
+
 
 class TimestampMixin(object):
     def __init__(self):
         self.created_date = datetime.utcnow()
         self.last_updated = datetime.utcnow()
 
+    def update_last_updated(self):
+        self.last_updated = datetime.utcnow()
 
 
 class Location(TimestampMixin):

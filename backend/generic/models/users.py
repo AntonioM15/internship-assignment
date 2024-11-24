@@ -1,4 +1,4 @@
-from backend.generic.models.utils import TimestampMixin
+from backend.generic.models.utils import TimestampMixin, AVAILABLE_STATUSES, DEFAULT_STATUS
 
 
 class User(TimestampMixin):
@@ -85,12 +85,10 @@ class Worker(User):
 
 
 class Student(User):
-    AVAILABLE_STATUSES = ('unassigned', 'provisional','assigned', 'ongoing')
-
     def __init__(self, email, hashed_password, official_id, full_name, status, institution, degree, internship=None, observations=None, **kwargs):
         super().__init__(email, hashed_password, official_id, full_name, **kwargs)
         self.role = 'student'
-        self.status = status if status in self.AVAILABLE_STATUSES else 'unassigned'
+        self.status = status if status in AVAILABLE_STATUSES else DEFAULT_STATUS
 
         # Keys from other collections
         self.institution = institution
