@@ -24,7 +24,7 @@ class Location:
     def to_dict(self):
         return self.__dict__
 
-    def add_data_to_location(self, user=None, institution=None, company=None, internship=None):
+    def add_data(self, user=None, institution=None, company=None, internship=None):
         if user and user not in self.users:
             self.users.append(user)
         if institution and institution not in self.institutions:
@@ -34,14 +34,14 @@ class Location:
         if internship and internship not in self.internships:
             self.internships.append(internship)
 
-    def remove_data_from_location(self, user=None, institution=None, company=None, internship=None):
-        if user and user not in self.users:
+    def remove_data(self, user=None, institution=None, company=None, internship=None):
+        if user and user in self.users:
             self.users.remove(user)
-        if institution and institution not in self.institutions:
+        if institution and institution in self.institutions:
             self.institutions.remove(institution)
-        if company and company not in self.companies:
+        if company and company in self.companies:
             self.companies.remove(company)
-        if internship and internship not in self.internships:
+        if internship and internship in self.internships:
             self.internships.remove(internship)
 
     def save(self, mongo):
