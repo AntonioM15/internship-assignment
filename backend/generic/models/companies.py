@@ -18,6 +18,9 @@ class Company(TimestampMixin):
             return
         self.location = location
 
+    def remove_location(self):
+        self.location = None
+
     def add_worker(self, worker_id):
         if not worker_id or worker_id in self.workers:
             return

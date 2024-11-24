@@ -25,27 +25,45 @@ class Internship(TimestampMixin):
             return
         self.location = location
 
+    def remove_location(self):
+        self.location = None
+
     def update_student(self, student):
         if not student:
             return
         self.student = student
+
+    def remove_student(self):
+        self.student = None
 
     def update_worker(self, worker):
         if not worker:
             return
         self.worker = worker
 
+    def remove_worker(self):
+        self.worker = None
+
     def update_tutor(self, tutor):
         if not tutor:
             return
         self.tutor = tutor
+
+    def remove_tutor(self):
+        self.tutor = None
 
     def update_company(self, company):
         if not company:
             return
         self.company = company
 
+    def remove_company(self):
+        self.company = None
+
     def update_institution(self, institution):
         if not institution:
             return
         self.institution = institution
+
+    def remove_institution(self):
+        self.institution = None

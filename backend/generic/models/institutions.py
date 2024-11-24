@@ -64,6 +64,9 @@ class Institution(TimestampMixin):
             return
         self.location = location
 
+    def remove_location(self):
+        self.location = None
+
     def add_coordinator(self, coordinator_id):
         if not coordinator_id or coordinator_id in self.coordinators:
             return

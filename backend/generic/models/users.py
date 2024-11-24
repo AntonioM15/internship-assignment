@@ -34,6 +34,9 @@ class User(TimestampMixin):
             return
         self.location = location
 
+    def remove_location(self):
+        self.location = None
+
     def save(self, mongo):
         mongo.db.users.insert_one(self.to_dict())
 
