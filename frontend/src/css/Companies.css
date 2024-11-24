@@ -1,0 +1,8 @@
+@import url('colors.css');
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Make sure to use all the height of the page */
+  background-color: var(--background-primary-color);
+}

@@ -6,9 +6,9 @@
     <div class="main">
       <div class="left-section">
         <div class="icons">
-          <img class="icon" src="../assets/IconCompany.svg" alt="Empresas" />
-          <img class="icon" src="../assets/IconProfessor.svg" alt="Profesores" />
-          <img class="icon" src="../assets/IconStudent.svg" alt="Estudiantes" />
+          <img class="icon" src="../assets/IconCompanyDark.svg" alt="Empresas" />
+          <img class="icon" src="../assets/IconProfessorDark.svg" alt="Profesores" />
+          <img class="icon" src="../assets/IconStudentDark.svg" alt="Estudiantes" />
         </div>
 
         <div class="description">
