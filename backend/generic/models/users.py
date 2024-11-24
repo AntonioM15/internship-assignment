@@ -38,14 +38,17 @@ class User(TimestampMixin):
         self.location = None
 
     def save(self, mongo):
+        self.update_last_updated()
         mongo.db.users.insert_one(self.to_dict())
 
     @classmethod
     def put(cls, mongo, user):
+        user.update_last_updated()
         mongo.db.users.insert_one(user.to_dict())
 
     @classmethod
     def put_multi(cls, mongo, users):
+        cls.update_last_updated(users)
         mongo.db.users.insert_many([user.to_dict() for user in users])
 
 

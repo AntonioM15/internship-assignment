@@ -67,3 +67,17 @@ class Internship(TimestampMixin):
 
     def remove_institution(self):
         self.institution = None
+
+    def save(self, mongo):
+        self.update_last_updated()
+        mongo.db.internships.insert_one(self.to_dict())
+
+    @classmethod
+    def put(cls, mongo, internship):
+        internship.update_last_updated()
+        mongo.db.internships.insert_one(internship.to_dict())
+
+    @classmethod
+    def put_multi(cls, mongo, internships):
+        cls.update_last_updated(internships)
+        mongo.db.internships.insert_many([internship.to_dict() for internship in internships])

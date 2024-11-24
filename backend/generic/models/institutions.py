@@ -43,6 +43,20 @@ class Degree(TimestampMixin):
             return
         self.students.remove(student_id)
 
+    def save(self, mongo):
+        self.update_last_updated()
+        mongo.db.degrees.insert_one(self.to_dict())
+
+    @classmethod
+    def put(cls, mongo, degree):
+        degree.update_last_updated()
+        mongo.db.degrees.insert_one(degree.to_dict())
+
+    @classmethod
+    def put_multi(cls, mongo, degrees):
+        cls.update_last_updated(degrees)
+        mongo.db.degrees.insert_many([degree.to_dict() for degree in degrees])
+
 
 class Institution(TimestampMixin):
     def __init__(self, email, full_name, avatar=None, location=None):
@@ -116,3 +130,17 @@ class Institution(TimestampMixin):
         if not internship_id or internship_id not in self.internships:
             return
         self.internships.remove(internship_id)
+
+    def save(self, mongo):
+        self.update_last_updated()
+        mongo.db.institutions.insert_one(self.to_dict())
+
+    @classmethod
+    def put(cls, mongo, institution):
+        institution.update_last_updated()
+        mongo.db.institutions.insert_one(institution.to_dict())
+
+    @classmethod
+    def put_multi(cls, mongo, institutions):
+        cls.update_last_updated(institutions)
+        mongo.db.institutions.insert_many([institution.to_dict() for institution in institutions])

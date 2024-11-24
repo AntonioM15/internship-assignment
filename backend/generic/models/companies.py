@@ -40,3 +40,17 @@ class Company(TimestampMixin):
         if not observation_id or observation_id not in self.observations:
             return
         self.observations.remove(observation_id)
+
+    def save(self, mongo):
+        self.update_last_updated()
+        mongo.db.companies.insert_one(self.to_dict())
+
+    @classmethod
+    def put(cls, mongo, company):
+        company.update_last_updated()
+        mongo.db.companies.insert_one(company.to_dict())
+
+    @classmethod
+    def put_multi(cls, mongo, companies):
+        cls.update_last_updated(companies)
+        mongo.db.companies.insert_many([company.to_dict() for company in companies])

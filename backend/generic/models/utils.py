@@ -12,6 +12,15 @@ class TimestampMixin(object):
     def update_last_updated(self):
         self.last_updated = datetime.utcnow()
 
+    @classmethod
+    def update_last_updated_multi(cls, instances):
+        last_updated = datetime.utcnow()
+        for instance in instances:
+            instance.last_updated = last_updated
+
+    def to_dict(self):
+        return self.__dict__
+
 
 class Location(TimestampMixin):
     def __init__(self, coordinates, country, city, postal_code, address):
@@ -27,9 +36,6 @@ class Location(TimestampMixin):
         self.institutions = []
         self.companies = []
         self.internships = []
-
-    def to_dict(self):
-        return self.__dict__
 
     def add_data(self, user_id=None, institution_id=None, company_id=None, internship_id=None):
         if user_id and user_id not in self.users:
@@ -52,14 +58,17 @@ class Location(TimestampMixin):
             self.internships.remove(internship_id)
 
     def save(self, mongo):
+        self.update_last_updated()
         mongo.db.locations.insert_one(self.to_dict())
 
     @classmethod
     def put(cls, mongo, location):
+        location.update_last_updated()
         mongo.db.locations.insert_one(location.to_dict())
 
     @classmethod
     def put_multi(cls, mongo, locations):
+        cls.update_last_updated(locations)
         mongo.db.locations.insert_many([location.to_dict() for location in locations])
 
 
@@ -90,6 +99,20 @@ class Notification(TimestampMixin):
     def remove_receiver(self):
         self.receiver = None
 
+    def save(self, mongo):
+        self.update_last_updated()
+        mongo.db.notifications.insert_one(self.to_dict())
+
+    @classmethod
+    def put(cls, mongo, notification):
+        notification.update_last_updated()
+        mongo.db.notifications.insert_one(notification.to_dict())
+
+    @classmethod
+    def put_multi(cls, mongo, notifications):
+        cls.update_last_updated(notifications)
+        mongo.db.notifications.insert_many([notification.to_dict() for notification in notifications])
+
 
 class Observation(TimestampMixin):
     def __init__(self, text, creator=None, receiver=None):
@@ -115,3 +138,17 @@ class Observation(TimestampMixin):
 
     def remove_receiver(self):
         self.receiver = None
+
+    def save(self, mongo):
+        self.update_last_updated()
+        mongo.db.observations.insert_one(self.to_dict())
+
+    @classmethod
+    def put(cls, mongo, observation):
+        observation.update_last_updated()
+        mongo.db.observations.insert_one(observation.to_dict())
+
+    @classmethod
+    def put_multi(cls, mongo, observations):
+        cls.update_last_updated(observations)
+        mongo.db.observations.insert_many([observation.to_dict() for observation in observations])
