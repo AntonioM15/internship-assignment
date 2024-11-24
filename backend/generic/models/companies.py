@@ -13,10 +13,10 @@ class Company(TimestampMixin):
         self.workers = []
         self.observations = []
 
-    def update_location(self, location):
-        if not location:
+    def update_location(self, location_id):
+        if not location_id:
             return
-        self.location = location
+        self.location = location_id
 
     def remove_location(self):
         self.location = None

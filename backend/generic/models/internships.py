@@ -20,50 +20,50 @@ class Internship(TimestampMixin):
         self.company = company
         self.institution = institution
 
-    def update_location(self, location):
-        if not location:
+    def update_location(self, location_id):
+        if not location_id:
             return
-        self.location = location
+        self.location = location_id
 
     def remove_location(self):
         self.location = None
 
-    def update_student(self, student):
-        if not student:
+    def update_student(self, student_id):
+        if not student_id:
             return
-        self.student = student
+        self.student = student_id
 
     def remove_student(self):
         self.student = None
 
-    def update_worker(self, worker):
-        if not worker:
+    def update_worker(self, worker_id):
+        if not worker_id:
             return
-        self.worker = worker
+        self.worker = worker_id
 
     def remove_worker(self):
         self.worker = None
 
-    def update_tutor(self, tutor):
-        if not tutor:
+    def update_tutor(self, tutor_id):
+        if not tutor_id:
             return
-        self.tutor = tutor
+        self.tutor = tutor_id
 
     def remove_tutor(self):
         self.tutor = None
 
-    def update_company(self, company):
-        if not company:
+    def update_company(self, company_id):
+        if not company_id:
             return
-        self.company = company
+        self.company = company_id
 
     def remove_company(self):
         self.company = None
 
-    def update_institution(self, institution):
-        if not institution:
+    def update_institution(self, institution_id):
+        if not institution_id:
             return
-        self.institution = institution
+        self.institution = institution_id
 
     def remove_institution(self):
         self.institution = None

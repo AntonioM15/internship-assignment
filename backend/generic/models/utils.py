@@ -61,3 +61,57 @@ class Location(TimestampMixin):
     @classmethod
     def put_multi(cls, mongo, locations):
         mongo.db.locations.insert_many([location.to_dict() for location in locations])
+
+
+class Notification(TimestampMixin):
+    def __init__(self, title, description, read=False, sender=None, receiver=None):
+        super().__init__()
+        self.title = title
+        self.description = description
+        self.read = read
+
+        # Keys from other collections
+        self.sender = sender
+        self.receiver = receiver
+
+    def update_sender(self, sender_id):
+        if not sender_id:
+            return
+        self.sender = sender_id
+
+    def remove_sender(self):
+        self.sender = None
+
+    def update_receiver(self, receiver_id):
+        if not receiver_id:
+            return
+        self.receiver = receiver_id
+
+    def remove_receiver(self):
+        self.receiver = None
+
+
+class Observation(TimestampMixin):
+    def __init__(self, text, creator=None, receiver=None):
+        super().__init__()
+        self.text = text
+
+        # Keys from other collections
+        self.creator = creator
+        self.receiver = receiver
+
+    def update_creator(self, creator_id):
+        if not creator_id:
+            return
+        self.creator = creator_id
+
+    def remove_creator(self):
+        self.creator = None
+
+    def update_receiver(self, receiver_id):
+        if not receiver_id:
+            return
+        self.receiver = receiver_id
+
+    def remove_receiver(self):
+        self.receiver = None
