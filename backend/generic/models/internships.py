@@ -1,0 +1,83 @@
+from backend.generic.models.utils import TimestampMixin, AVAILABLE_STATUSES, DEFAULT_STATUS
+
+
+class Internship(TimestampMixin):
+    def __init__(self, kind, status, starting_day, finishing_day, title, description,
+                 location=None, student=None, worker=None, tutor=None, company=None, institution=None):
+        super().__init__()
+        self.kind = kind
+        self.status = status if status in AVAILABLE_STATUSES else DEFAULT_STATUS
+        self.starting_day = starting_day
+        self.finishing_day = finishing_day
+        self.title = title
+        self.description = description
+
+        # Keys from other collections
+        self.location = location
+        self.student = student
+        self.worker = worker
+        self.tutor = tutor
+        self.company = company
+        self.institution = institution
+
+    def update_location(self, location_id):
+        if not location_id:
+            return
+        self.location = location_id
+
+    def remove_location(self):
+        self.location = None
+
+    def update_student(self, student_id):
+        if not student_id:
+            return
+        self.student = student_id
+
+    def remove_student(self):
+        self.student = None
+
+    def update_worker(self, worker_id):
+        if not worker_id:
+            return
+        self.worker = worker_id
+
+    def remove_worker(self):
+        self.worker = None
+
+    def update_tutor(self, tutor_id):
+        if not tutor_id:
+            return
+        self.tutor = tutor_id
+
+    def remove_tutor(self):
+        self.tutor = None
+
+    def update_company(self, company_id):
+        if not company_id:
+            return
+        self.company = company_id
+
+    def remove_company(self):
+        self.company = None
+
+    def update_institution(self, institution_id):
+        if not institution_id:
+            return
+        self.institution = institution_id
+
+    def remove_institution(self):
+        self.institution = None
+
+    def save(self, mongo):
+        self.update_last_updated()
+        mongo.db.internships.insert_one(self.to_dict())
+
+    @classmethod
+    def put(cls, mongo, internship):
+        internship.update_last_updated()
+        mongo.db.internships.insert_one(internship.to_dict())
+
+    @classmethod
+    def put_multi(cls, mongo, internships):
+        cls.update_last_updated(internships)
+        mongo.db.internships.insert_many([internship.to_dict() for internship in internships])
