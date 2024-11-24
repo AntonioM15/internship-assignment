@@ -14,6 +14,8 @@ mongo = PyMongo(app)
 
 # Register all blueprints (files where endpoints are located)
 app.register_blueprint(landing_blueprint, url_prefix="/api/v1/landing")
+# Register all blueprints with deferred initialization in order to share the same mongodb
+app.register_blueprint(landing_blueprint(mongo), url_prefix="/api/v1/landing")
 
 
 @app.route('/', defaults={'path': ''})
