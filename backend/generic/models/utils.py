@@ -4,6 +4,21 @@ AVAILABLE_STATUSES = ('unassigned', 'provisional', 'assigned', 'ongoing')
 DEFAULT_STATUS = 'unassigned'
 
 
+def serialize_document(doc):
+    """ JSON friendly representation of documents"""
+    if "_id" in doc:
+        doc["_id"] = str(doc["_id"])
+    if "created_date" in doc:
+        doc["created_date"] = doc["created_date"].isoformat()
+    if "last_updated" in doc:
+        doc["last_updated"] = doc["last_updated"].isoformat()
+    if "sender" in doc:
+        doc["sender"] = str(doc["sender"])
+    if "receiver" in doc:
+        doc["receiver"] = str(doc["receiver"])
+    return doc
+
+
 class TimestampMixin(object):
     def __init__(self):
         self.created_date = datetime.utcnow()
@@ -73,10 +88,11 @@ class Location(TimestampMixin):
 
 
 class Notification(TimestampMixin):
-    def __init__(self, title, description, read=False, sender=None, receiver=None):
+    def __init__(self, title, description, role, read=False, sender=None, receiver=None):
         super().__init__()
         self.title = title
         self.description = description
+        self.role = role
         self.read = read
 
         # Keys from other collections

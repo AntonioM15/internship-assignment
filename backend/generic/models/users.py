@@ -1,7 +1,13 @@
+from bson import ObjectId
+from pymongo import DESCENDING
+
 from backend.generic.models.utils import TimestampMixin, AVAILABLE_STATUSES, DEFAULT_STATUS
 
 
 class User(TimestampMixin):
+    MAX_NOTIFICATIONS_REGULAR = 10
+    MAX_NOTIFICATIONS_SU = 40
+
     def __init__(self, email, hashed_password, official_id, full_name, avatar=None, location=None, notifications=None):
         super().__init__()
         self.email = email
@@ -69,6 +75,11 @@ class Coordinator(User):
         })
         return data
 
+    @classmethod
+    def retrieve_latest_notifications(cls, mongo, _):
+        """ Retrieve the latest notifications of all related user collections """
+        return mongo.db.notifications.find().sort("created_date", DESCENDING).limit(cls.MAX_NOTIFICATIONS_SU)
+
 
 class Worker(User):
     def __init__(self, email, hashed_password, official_id, full_name, company, interns=None, internships=None, **kwargs):
@@ -88,6 +99,15 @@ class Worker(User):
             "internships": self.internships,
         })
         return data
+
+    @classmethod
+    def retrieve_latest_notifications(cls, mongo, user_id):
+        """ Retrieve the latest notifications of only its user """
+        # Query the user first
+        user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+        # Query related notifications
+        notifications_ids = user['notifications'][:cls.MAX_NOTIFICATIONS_REGULAR]
+        return mongo.db.notifications.find({"_id": {"$in": notifications_ids}}).sort("created_date", DESCENDING)
 
 
 class Student(User):
@@ -113,6 +133,15 @@ class Student(User):
         })
         return data
 
+    @classmethod
+    def retrieve_latest_notifications(cls, mongo, user_id):
+        """ Retrieve the latest notifications of only its user """
+        # Query the user first
+        user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+        # Query related notifications
+        notifications_ids = user['notifications'][:cls.MAX_NOTIFICATIONS_REGULAR]
+        return mongo.db.notifications.find({"_id": {"$in": notifications_ids}}).sort("created_date", DESCENDING)
+
 
 class Tutor(User):
     def __init__(self, email, hashed_password, official_id, full_name, institution, degrees=None, students=None, internships=None, **kwargs):
@@ -135,6 +164,15 @@ class Tutor(User):
         })
         return data
 
+    @classmethod
+    def retrieve_latest_notifications(cls, mongo, user_id):
+        """ Retrieve the latest notifications of only its user """
+        # Query the user first
+        user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+        # Query related notifications
+        notifications_ids = user['notifications'][:cls.MAX_NOTIFICATIONS_REGULAR]
+        return mongo.db.notifications.find({"_id": {"$in": notifications_ids}}).sort("created_date", DESCENDING)
+
 
 class Admin(User):
     def __init__(self, email, hashed_password, official_id, full_name, **kwargs):
@@ -143,3 +181,18 @@ class Admin(User):
 
     def to_dict(self):
         return super().to_dict()
+
+    @classmethod
+    def retrieve_latest_notifications(cls, mongo, _):
+        """ Retrieve the latest notifications of all related user collections """
+        return mongo.db.notifications.find().sort("created_date", DESCENDING).limit(cls.MAX_NOTIFICATIONS_SU)
+
+
+USER_MAPPING = {
+    'user': User,
+    'coordinator': Coordinator,
+    'worker': Worker,
+    'student': Student,
+    'tutor': Tutor,
+    'admin': Admin
+}
