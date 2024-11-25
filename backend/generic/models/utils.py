@@ -4,7 +4,7 @@ AVAILABLE_STATUSES = ('unassigned', 'provisional', 'assigned', 'ongoing')
 DEFAULT_STATUS = 'unassigned'
 
 KEYS_WITH_OBJECT_IDS = ('_id', 'sender', 'receiver', 'degree', 'location', 'institution', 'internship')
-KEYS_WITH_LIST_OF_OBJECT_IDS = ('notifications', 'observations')
+KEYS_WITH_LIST_OF_OBJECT_IDS = ('notifications', 'observations', 'degrees')
 KEYS_WITH_DATES = ('created_at', 'last_updated')
 
 

@@ -169,19 +169,12 @@ class Student(User):
             {"$set": data_to_update}
         )
 
-    @classmethod
-    def hide_student(cls, mongo_db):
-        return
-
-    @classmethod
-    def restore_student(cls, mongo_db):
-        return
-
 
 class Tutor(User):
-    def __init__(self, email, hashed_password, official_id, full_name, institution, degrees=None, students=None, internships=None, **kwargs):
+    def __init__(self, email, hashed_password, official_id, full_name, status, institution, degrees=None, students=None, internships=None, **kwargs):
         super().__init__(email, hashed_password, official_id, full_name, **kwargs)
         self.role = 'tutor'
+        self.status = status if status in AVAILABLE_STATUSES else DEFAULT_STATUS
 
         # Keys from other collections
         self.institution = institution
@@ -207,6 +200,25 @@ class Tutor(User):
         # Query related notifications
         notifications_ids = user['notifications'][:cls.MAX_NOTIFICATIONS_REGULAR]
         return mongo_db.notifications.find({"_id": {"$in": notifications_ids}}).sort("created_date", DESCENDING)
+
+    @classmethod
+    def retrieve_tutors(cls, mongo_db, degree_id=None, full_name=None, status=None):
+        query = {"role": "tutor"}
+        if degree_id:
+            query["degree"] = {"$in": [ObjectId(degree_id)]}
+        if full_name:
+            query["full_name"] = full_name
+        if status and status in AVAILABLE_STATUSES:
+            query["status"] = status
+
+        return mongo_db.users.find(query).sort("created_date", DESCENDING)
+
+    @classmethod
+    def update_tutor(cls, mongo_db, tutor_id, data_to_update):
+        return mongo_db.users.update_one(
+            {"_id": ObjectId(tutor_id)},
+            {"$set": data_to_update}
+        )
 
 
 class Admin(User):

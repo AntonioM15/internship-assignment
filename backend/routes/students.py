@@ -1,6 +1,5 @@
 from bson import ObjectId
 from flask import Blueprint, jsonify, request
-from collections import defaultdict
 
 from backend.generic.models.users import Student
 from backend.generic.models.utils import serialize_document, Observation
@@ -44,7 +43,7 @@ def students_blueprint(mongo):
         student_doc = student.save(mongo_db)  # this save operation can be avoided with custom ids
 
         # Add new observation and assign it to the student
-        observation = Observation(observation_text, receiver=ObjectId(student_doc.inserted_id))
+        observation = Observation(text=observation_text, receiver=ObjectId(student_doc.inserted_id))
         observation_doc = observation.save(mongo_db)
 
         # Update student
