@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify
 from collections import defaultdict
 
 from backend.generic.models.users import USER_MAPPING
@@ -21,7 +21,7 @@ def dashboard_blueprint(mongo):
 
         # Retrieve notifications
         klass = USER_MAPPING.get(user.get('role'))
-        notifications = klass.retrieve_latest_notifications(mongo, user.get('id'))
+        notifications = klass.retrieve_latest_notifications(mongo_db, user.get('id'))
 
         # Arrange them by role
         response = defaultdict(list)

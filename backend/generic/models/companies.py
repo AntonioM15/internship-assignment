@@ -41,16 +41,16 @@ class Company(TimestampMixin):
             return
         self.observations.remove(observation_id)
 
-    def save(self, mongo):
+    def save(self, mongo_db):
         self.update_last_updated()
-        mongo.db.companies.insert_one(self.to_dict())
+        return mongo_db.companies.insert_one(self.to_dict())
 
     @classmethod
-    def put(cls, mongo, company):
+    def put(cls, mongo_db, company):
         company.update_last_updated()
-        mongo.db.companies.insert_one(company.to_dict())
+        return mongo_db.companies.insert_one(company.to_dict())
 
     @classmethod
-    def put_multi(cls, mongo, companies):
+    def put_multi(cls, mongo_db, companies):
         cls.update_last_updated(companies)
-        mongo.db.companies.insert_many([company.to_dict() for company in companies])
+        return mongo_db.companies.insert_many([company.to_dict() for company in companies])

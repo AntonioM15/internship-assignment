@@ -43,19 +43,19 @@ class Degree(TimestampMixin):
             return
         self.students.remove(student_id)
 
-    def save(self, mongo):
+    def save(self, mongo_db):
         self.update_last_updated()
-        mongo.db.degrees.insert_one(self.to_dict())
+        return mongo_db.degrees.insert_one(self.to_dict())
 
     @classmethod
-    def put(cls, mongo, degree):
+    def put(cls, mongo_db, degree):
         degree.update_last_updated()
-        mongo.db.degrees.insert_one(degree.to_dict())
+        return mongo_db.degrees.insert_one(degree.to_dict())
 
     @classmethod
-    def put_multi(cls, mongo, degrees):
+    def put_multi(cls, mongo_db, degrees):
         cls.update_last_updated(degrees)
-        mongo.db.degrees.insert_many([degree.to_dict() for degree in degrees])
+        return mongo_db.degrees.insert_many([degree.to_dict() for degree in degrees])
 
 
 class Institution(TimestampMixin):
@@ -131,16 +131,16 @@ class Institution(TimestampMixin):
             return
         self.internships.remove(internship_id)
 
-    def save(self, mongo):
+    def save(self, mongo_db):
         self.update_last_updated()
-        mongo.db.institutions.insert_one(self.to_dict())
+        return mongo_db.institutions.insert_one(self.to_dict())
 
     @classmethod
-    def put(cls, mongo, institution):
+    def put(cls, mongo_db, institution):
         institution.update_last_updated()
-        mongo.db.institutions.insert_one(institution.to_dict())
+        return mongo_db.institutions.insert_one(institution.to_dict())
 
     @classmethod
-    def put_multi(cls, mongo, institutions):
+    def put_multi(cls, mongo_db, institutions):
         cls.update_last_updated(institutions)
-        mongo.db.institutions.insert_many([institution.to_dict() for institution in institutions])
+        return mongo_db.institutions.insert_many([institution.to_dict() for institution in institutions])

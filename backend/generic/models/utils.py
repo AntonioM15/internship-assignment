@@ -3,16 +3,19 @@ from datetime import datetime
 AVAILABLE_STATUSES = ('unassigned', 'provisional', 'assigned', 'ongoing')
 DEFAULT_STATUS = 'unassigned'
 
-KEYS_WITH_OBJECT_IDS = ('_id', 'sender', 'receiver')
+KEYS_WITH_OBJECT_IDS = ('_id', 'sender', 'receiver', 'degree', 'location', 'institution', 'internship')
+KEYS_WITH_LIST_OF_OBJECT_IDS = ('notifications', 'observations')
 KEYS_WITH_DATES = ('created_at', 'last_updated')
 
 
 def serialize_document(doc):
     """ JSON friendly representation of documents"""
     for key in doc:
-        if key in KEYS_WITH_OBJECT_IDS:
+        if key in KEYS_WITH_OBJECT_IDS and doc[key]:
             doc[key] = str(doc[key])
-        if key in KEYS_WITH_DATES:
+        elif key in KEYS_WITH_LIST_OF_OBJECT_IDS and doc[key]:
+            doc[key] = [str(item) for item in doc[key]]
+        elif key in KEYS_WITH_DATES and doc[key]:
             doc[key] = doc[key].isoformat()
 
     return doc
@@ -71,19 +74,19 @@ class Location(TimestampMixin):
         if internship_id and internship_id in self.internships:
             self.internships.remove(internship_id)
 
-    def save(self, mongo):
+    def save(self, mongo_db):
         self.update_last_updated()
-        mongo.db.locations.insert_one(self.to_dict())
+        return mongo_db.locations.insert_one(self.to_dict())
 
     @classmethod
-    def put(cls, mongo, location):
+    def put(cls, mongo_db, location):
         location.update_last_updated()
-        mongo.db.locations.insert_one(location.to_dict())
+        return mongo_db.locations.insert_one(location.to_dict())
 
     @classmethod
-    def put_multi(cls, mongo, locations):
+    def put_multi(cls, mongo_db, locations):
         cls.update_last_updated(locations)
-        mongo.db.locations.insert_many([location.to_dict() for location in locations])
+        return mongo_db.locations.insert_many([location.to_dict() for location in locations])
 
 
 class Notification(TimestampMixin):
@@ -114,19 +117,19 @@ class Notification(TimestampMixin):
     def remove_receiver(self):
         self.receiver = None
 
-    def save(self, mongo):
+    def save(self, mongo_db):
         self.update_last_updated()
-        mongo.db.notifications.insert_one(self.to_dict())
+        return mongo_db.notifications.insert_one(self.to_dict())
 
     @classmethod
-    def put(cls, mongo, notification):
+    def put(cls, mongo_db, notification):
         notification.update_last_updated()
-        mongo.db.notifications.insert_one(notification.to_dict())
+        return mongo_db.notifications.insert_one(notification.to_dict())
 
     @classmethod
-    def put_multi(cls, mongo, notifications):
+    def put_multi(cls, mongo_db, notifications):
         cls.update_last_updated(notifications)
-        mongo.db.notifications.insert_many([notification.to_dict() for notification in notifications])
+        return mongo_db.notifications.insert_many([notification.to_dict() for notification in notifications])
 
 
 class Observation(TimestampMixin):
@@ -154,16 +157,16 @@ class Observation(TimestampMixin):
     def remove_receiver(self):
         self.receiver = None
 
-    def save(self, mongo):
+    def save(self, mongo_db):
         self.update_last_updated()
-        mongo.db.observations.insert_one(self.to_dict())
+        return mongo_db.observations.insert_one(self.to_dict())
 
     @classmethod
-    def put(cls, mongo, observation):
+    def put(cls, mongo_db, observation):
         observation.update_last_updated()
-        mongo.db.observations.insert_one(observation.to_dict())
+        return mongo_db.observations.insert_one(observation.to_dict())
 
     @classmethod
-    def put_multi(cls, mongo, observations):
+    def put_multi(cls, mongo_db, observations):
         cls.update_last_updated(observations)
-        mongo.db.observations.insert_many([observation.to_dict() for observation in observations])
+        return mongo_db.observations.insert_many([observation.to_dict() for observation in observations])
