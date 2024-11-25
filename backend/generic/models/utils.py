@@ -3,19 +3,18 @@ from datetime import datetime
 AVAILABLE_STATUSES = ('unassigned', 'provisional', 'assigned', 'ongoing')
 DEFAULT_STATUS = 'unassigned'
 
+KEYS_WITH_OBJECT_IDS = ('_id', 'sender', 'receiver')
+KEYS_WITH_DATES = ('created_at', 'last_updated')
+
 
 def serialize_document(doc):
     """ JSON friendly representation of documents"""
-    if "_id" in doc:
-        doc["_id"] = str(doc["_id"])
-    if "created_date" in doc:
-        doc["created_date"] = doc["created_date"].isoformat()
-    if "last_updated" in doc:
-        doc["last_updated"] = doc["last_updated"].isoformat()
-    if "sender" in doc:
-        doc["sender"] = str(doc["sender"])
-    if "receiver" in doc:
-        doc["receiver"] = str(doc["receiver"])
+    for key in doc:
+        if key in KEYS_WITH_OBJECT_IDS:
+            doc[key] = str(doc[key])
+        if key in KEYS_WITH_DATES:
+            doc[key] = doc[key].isoformat()
+
     return doc
 
 
