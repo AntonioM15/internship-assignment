@@ -1,7 +1,13 @@
+from bson import ObjectId
+from pymongo import DESCENDING
+
 from backend.generic.models.utils import TimestampMixin, AVAILABLE_STATUSES, DEFAULT_STATUS
 
 
 class User(TimestampMixin):
+    MAX_NOTIFICATIONS_REGULAR = 10
+    MAX_NOTIFICATIONS_SU = 40
+
     def __init__(self, email, hashed_password, official_id, full_name, avatar=None, location=None, notifications=None):
         super().__init__()
         self.email = email
@@ -9,6 +15,7 @@ class User(TimestampMixin):
         self.role = 'user'
         self.official_id = official_id
         self.full_name = full_name
+        self.hidden = False
 
         # Keys from other collections
         self.avatar = avatar
@@ -24,6 +31,7 @@ class User(TimestampMixin):
             "role": self.role,
             "official_id": self.official_id,
             "full_name": self.full_name,
+            "hidden": self.hidden,
             "avatar": self.avatar,
             "location": self.location,
             "notifications": self.notifications,
@@ -37,19 +45,19 @@ class User(TimestampMixin):
     def remove_location(self):
         self.location = None
 
-    def save(self, mongo):
+    def save(self, mongo_db):
         self.update_last_updated()
-        mongo.db.users.insert_one(self.to_dict())
+        return mongo_db.users.insert_one(self.to_dict())
 
     @classmethod
-    def put(cls, mongo, user):
+    def put(cls, mongo_db, user):
         user.update_last_updated()
-        mongo.db.users.insert_one(user.to_dict())
+        return mongo_db.users.insert_one(user.to_dict())
 
     @classmethod
-    def put_multi(cls, mongo, users):
+    def put_multi(cls, mongo_db, users):
         cls.update_last_updated(users)
-        mongo.db.users.insert_many([user.to_dict() for user in users])
+        return mongo_db.users.insert_many([user.to_dict() for user in users])
 
 
 class Coordinator(User):
@@ -68,6 +76,11 @@ class Coordinator(User):
             "observations": self.observations,
         })
         return data
+
+    @classmethod
+    def retrieve_latest_notifications(cls, mongo_db, _):
+        """ Retrieve the latest notifications of all related user collections """
+        return mongo_db.notifications.find().sort("created_date", DESCENDING).limit(cls.MAX_NOTIFICATIONS_SU)
 
 
 class Worker(User):
@@ -89,12 +102,22 @@ class Worker(User):
         })
         return data
 
+    @classmethod
+    def retrieve_latest_notifications(cls, mongo_db, user_id):
+        """ Retrieve the latest notifications of only its user """
+        # Query the user first
+        user = mongo_db.users.find_one({"_id": ObjectId(user_id)})
+        # Query related notifications
+        notifications_ids = user['notifications'][:cls.MAX_NOTIFICATIONS_REGULAR]
+        return mongo_db.notifications.find({"_id": {"$in": notifications_ids}}).sort("created_date", DESCENDING)
+
 
 class Student(User):
     def __init__(self, email, hashed_password, official_id, full_name, status, institution, degree, internship=None, observations=None, **kwargs):
         super().__init__(email, hashed_password, official_id, full_name, **kwargs)
         self.role = 'student'
         self.status = status if status in AVAILABLE_STATUSES else DEFAULT_STATUS
+        self.internship_type = None
 
         # Keys from other collections
         self.institution = institution
@@ -113,11 +136,45 @@ class Student(User):
         })
         return data
 
+    def add_observation(self, observation_id):
+        if observation_id and observation_id not in self.observations:
+            self.observations.append(ObjectId(observation_id))
+
+    @classmethod
+    def retrieve_latest_notifications(cls, mongo_db, user_id):
+        """ Retrieve the latest notifications of only its user """
+        # Query the user first
+        user = mongo_db.users.find_one({"_id": ObjectId(user_id)})
+        # Query related notifications
+        notifications_ids = user['notifications'][:cls.MAX_NOTIFICATIONS_REGULAR]
+        return mongo_db.notifications.find({"_id": {"$in": notifications_ids}}).sort("created_date", DESCENDING)
+
+    @classmethod
+    def retrieve_students(cls, mongo_db, degree_id=None, full_name=None, status=None):
+        query = {"role": "student"}
+        if degree_id:
+            query["degree"] = ObjectId(degree_id)
+        if full_name:
+            query["full_name"] = full_name
+        if status and status in AVAILABLE_STATUSES:
+            query["status"] = status
+
+        return mongo_db.users.find(query).sort("created_date", DESCENDING)
+
+    @classmethod
+    def update_student(cls, mongo_db, user_id, data_to_update):
+        # TODO process data_to_update so that non invalid values are removed
+        return mongo_db.users.update_one(
+            {"_id": ObjectId(user_id)},
+            {"$set": data_to_update}
+        )
+
 
 class Tutor(User):
-    def __init__(self, email, hashed_password, official_id, full_name, institution, degrees=None, students=None, internships=None, **kwargs):
+    def __init__(self, email, hashed_password, official_id, full_name, status, institution, degrees=None, students=None, internships=None, **kwargs):
         super().__init__(email, hashed_password, official_id, full_name, **kwargs)
         self.role = 'tutor'
+        self.status = status if status in AVAILABLE_STATUSES else DEFAULT_STATUS
 
         # Keys from other collections
         self.institution = institution
@@ -135,6 +192,34 @@ class Tutor(User):
         })
         return data
 
+    @classmethod
+    def retrieve_latest_notifications(cls, mongo_db, user_id):
+        """ Retrieve the latest notifications of only its user """
+        # Query the user first
+        user = mongo_db.users.find_one({"_id": ObjectId(user_id)})
+        # Query related notifications
+        notifications_ids = user['notifications'][:cls.MAX_NOTIFICATIONS_REGULAR]
+        return mongo_db.notifications.find({"_id": {"$in": notifications_ids}}).sort("created_date", DESCENDING)
+
+    @classmethod
+    def retrieve_tutors(cls, mongo_db, degree_id=None, full_name=None, status=None):
+        query = {"role": "tutor"}
+        if degree_id:
+            query["degree"] = {"$in": [ObjectId(degree_id)]}
+        if full_name:
+            query["full_name"] = full_name
+        if status and status in AVAILABLE_STATUSES:
+            query["status"] = status
+
+        return mongo_db.users.find(query).sort("created_date", DESCENDING)
+
+    @classmethod
+    def update_tutor(cls, mongo_db, tutor_id, data_to_update):
+        return mongo_db.users.update_one(
+            {"_id": ObjectId(tutor_id)},
+            {"$set": data_to_update}
+        )
+
 
 class Admin(User):
     def __init__(self, email, hashed_password, official_id, full_name, **kwargs):
@@ -143,3 +228,18 @@ class Admin(User):
 
     def to_dict(self):
         return super().to_dict()
+
+    @classmethod
+    def retrieve_latest_notifications(cls, mongo_db, _):
+        """ Retrieve the latest notifications of all related user collections """
+        return mongo_db.notifications.find().sort("created_date", DESCENDING).limit(cls.MAX_NOTIFICATIONS_SU)
+
+
+USER_MAPPING = {
+    'user': User,
+    'coordinator': Coordinator,
+    'worker': Worker,
+    'student': Student,
+    'tutor': Tutor,
+    'admin': Admin
+}

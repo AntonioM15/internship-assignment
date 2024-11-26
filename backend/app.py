@@ -1,8 +1,13 @@
 from flask import Flask, render_template
 from flask_pymongo import PyMongo
 
+from routes.assignments import assignments_blueprint
+from routes.companies import companies_blueprint
+from routes.dashboard import dashboard_blueprint
+from routes.students import students_blueprint
 from routes.landing import landing_blueprint
 from routes.testing_users import testing_users_blueprint
+from routes.tutors import tutors_blueprint
 
 
 app = Flask(__name__,
@@ -13,8 +18,14 @@ app.config["MONGO_URI"] = "mongodb://localhost:27017/tfm_local_db"
 mongo = PyMongo(app)
 
 # Register all blueprints with deferred initialization in order to share the same mongodb
+# TODO add a blueprint with url / that redirects to landing or dashboard
+app.register_blueprint(assignments_blueprint(mongo), url_prefix="/api/v1/assignments")
+app.register_blueprint(companies_blueprint(mongo), url_prefix="/api/v1/companies")
+app.register_blueprint(dashboard_blueprint(mongo), url_prefix="/api/v1/dashboard")
+app.register_blueprint(students_blueprint(mongo), url_prefix="/api/v1/students")
 app.register_blueprint(landing_blueprint(mongo), url_prefix="/api/v1/landing")
 app.register_blueprint(testing_users_blueprint(mongo), url_prefix="/api/v1/testing_users")
+app.register_blueprint(tutors_blueprint(mongo), url_prefix="/api/v1/tutors")
 
 
 @app.route('/', defaults={'path': ''})
