@@ -101,3 +101,10 @@ class Company(TimestampMixin):
             query["status"] = status
 
         return mongo_db.internship.find(query)
+
+    @classmethod
+    def add_internship_to_company(cls, mongo_db, company_id, internship_id):
+        mongo_db.companies.update_one(
+            {"_id": company_id},
+            {"$addToSet": {"internships": internship_id}}
+        )

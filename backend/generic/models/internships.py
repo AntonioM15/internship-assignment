@@ -1,3 +1,6 @@
+from bson import ObjectId
+from pymongo import DESCENDING
+
 from backend.generic.models.utils import TimestampMixin, AVAILABLE_STATUSES, DEFAULT_STATUS
 
 
@@ -81,3 +84,31 @@ class Internship(TimestampMixin):
     def put_multi(cls, mongo_db, internships):
         cls.update_last_updated(internships)
         return mongo_db.internships.insert_many([internship.to_dict() for internship in internships])
+
+    @classmethod
+    def retrieve_internships(cls, mongo_db, student_id=None, title=None, status=None):
+        query = {}
+        if student_id:
+            query["student"] = ObjectId(student_id)
+        if title:
+            query["title"] = title
+        if status and status in AVAILABLE_STATUSES:
+            query["status"] = status
+
+        return mongo_db.internships.find(query).sort("created_date", DESCENDING)
+
+    @classmethod
+    def update_internship(cls, mongo_db, internship_id, data_to_update):
+        return mongo_db.internships.update_one(
+            {"_id": ObjectId(internship_id)},
+            {"$set": data_to_update}
+        )
+
+    @classmethod
+    def retrieve_internship_relations(cls, mongo_db, student_id=None, tutor_id=None, company_id=None):
+        # TODO consider using embedded values instead
+        student = mongo_db.users.find_one({"_id": ObjectId(student_id)}) if student_id else None
+        tutor = mongo_db.users.find_one({"_id": ObjectId(tutor_id)}) if tutor_id else None
+        company = mongo_db.companies.find_one({"_id": ObjectId(company_id)}) if company_id else None
+
+        return student, tutor, company

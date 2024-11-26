@@ -3,13 +3,17 @@ from datetime import datetime
 AVAILABLE_STATUSES = ('unassigned', 'provisional', 'assigned', 'ongoing')
 DEFAULT_STATUS = 'unassigned'
 
-KEYS_WITH_OBJECT_IDS = ('_id', 'sender', 'receiver', 'degree', 'location', 'institution', 'internship')
-KEYS_WITH_LIST_OF_OBJECT_IDS = ('notifications', 'observations', 'degrees')
-KEYS_WITH_DATES = ('created_at', 'last_updated')
+KEYS_WITH_OBJECT_IDS = ('_id', 'sender', 'receiver', 'degree', 'location', 'institution', 'internship', 'student',
+                        'worker', 'tutor', 'company')
+KEYS_WITH_LIST_OF_OBJECT_IDS = ('notifications', 'observations', 'degrees', 'internships', 'students', 'workers',
+                                'tutors')
+KEYS_WITH_DATES = ('created_at', 'last_updated', 'starting_day', 'finishing_day')
 
 
 def serialize_document(doc):
-    """ JSON friendly representation of documents"""
+    """ JSON friendly representation of documents """
+    if not doc:
+        return {}
     for key in doc:
         if key in KEYS_WITH_OBJECT_IDS and doc[key]:
             doc[key] = str(doc[key])
@@ -19,6 +23,12 @@ def serialize_document(doc):
             doc[key] = doc[key].isoformat()
 
     return doc
+
+
+def str_date_to_datetime(date_str):
+    if not date_str:
+        return None
+    return datetime.strptime(date_str, "%Y-%m-%d")
 
 
 class TimestampMixin(object):

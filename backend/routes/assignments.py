@@ -1,0 +1,71 @@
+from bson import ObjectId
+from flask import Blueprint, jsonify, request
+
+from backend.generic.models.companies import Company
+from backend.generic.models.internships import Internship
+from backend.generic.models.utils import serialize_document, str_date_to_datetime
+
+# Blueprint definition
+assignments = Blueprint('assignments_blueprint', __name__)
+
+
+def assignments_blueprint(mongo):
+    mongo_db = mongo.db
+
+    @assignments.route('/', methods=["GET"])
+    def get_assignments():
+        student_id = request.args.get('student_id')
+        title = request.args.get('title')
+        status = request.args.get('status')
+
+        # Retrieve internships
+        response = {'internships': []}
+        internship_list = Internship.retrieve_internships(mongo_db, student_id, title, status)
+
+        # Retrieve related documents
+        for internship in internship_list:
+            student, tutor, company = Internship.retrieve_internship_relations(
+                mongo_db, internship['student'], internship['tutor'], internship['company']
+            )
+            serialized_internship = serialize_document(internship)
+            serialized_internship['student'] = serialize_document(student)
+            serialized_internship['tutor'] = serialize_document(tutor)
+            serialized_internship['company'] = serialize_document(company)
+            response['internships'].append(serialized_internship)
+
+        return jsonify({"status": "success", "message": "Internships retrieved successfully", "data": response}), 200
+
+    @assignments.route('/add', methods=["POST"])
+    def add_internship():
+        data = request.get_json()
+
+        kind = data.get('kind')
+        starting_day = str_date_to_datetime(data.get('starting_day'))
+        finishing_day = str_date_to_datetime(data.get('finishing_day'))
+        title = data.get('title')
+        description = data.get('description')
+        company_id = data.get('company_id')
+
+        # Add new internship
+        internship = Internship(kind, None, starting_day, finishing_day, title, description,
+                                company=ObjectId(company_id))
+        internship_doc = internship.save(mongo_db)
+
+        # Update company
+        Company.add_internship_to_company(mongo_db, ObjectId(company_id), ObjectId(internship_doc.inserted_id))
+
+        return jsonify({"message": "Added new internship"}), 201
+
+    @assignments.route('/update', methods=["PUT"])
+    def update_internship():
+        data = request.get_json()
+        internship_id = data.get('internship_id')
+        # Dict with the fields and values to update
+        data_to_update = data.get('data_to_update')
+
+        # Update internship
+        Internship.update_internship(mongo_db, ObjectId(internship_id), data_to_update)
+
+        return jsonify({"message": "Internship was updated"}), 200
+
+    return assignments
