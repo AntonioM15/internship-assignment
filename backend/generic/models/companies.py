@@ -1,4 +1,7 @@
-from backend.generic.models.utils import TimestampMixin
+from bson import ObjectId
+from pymongo import DESCENDING
+
+from backend.generic.models.utils import TimestampMixin, AVAILABLE_STATUSES
 
 
 class Company(TimestampMixin):
@@ -6,12 +9,14 @@ class Company(TimestampMixin):
         super().__init__()
         self.full_name = full_name
         self.field = field
+        self.hidden = False
         self.avatar = avatar
 
         # Keys from other collections
         self.location = location
         self.workers = []
         self.observations = []
+        self.internships = []
 
     def update_location(self, location_id):
         if not location_id:
@@ -41,6 +46,16 @@ class Company(TimestampMixin):
             return
         self.observations.remove(observation_id)
 
+    def add_internship(self, internship_id):
+        if not internship_id or internship_id in self.internships:
+            return
+        self.internships.append(internship_id)
+
+    def remove_internship(self, internship_id):
+        if not internship_id or internship_id not in self.internships:
+            return
+        self.internships.remove(internship_id)
+
     def save(self, mongo_db):
         self.update_last_updated()
         return mongo_db.companies.insert_one(self.to_dict())
@@ -54,3 +69,35 @@ class Company(TimestampMixin):
     def put_multi(cls, mongo_db, companies):
         cls.update_last_updated(companies)
         return mongo_db.companies.insert_many([company.to_dict() for company in companies])
+
+    @classmethod
+    def retrieve_companies(cls, mongo_db, field=None, full_name=None):
+        query = {}
+        if field:
+            query["degree"] = field
+        if full_name:
+            query["full_name"] = full_name
+
+        return mongo_db.companies.find(query).sort("created_date", DESCENDING)
+
+    @classmethod
+    def update_company(cls, mongo_db, company_id, data_to_update):
+        return mongo_db.companies.update_one(
+            {"_id": ObjectId(company_id)},
+            {"$set": data_to_update}
+        )
+
+    @classmethod
+    def retrieve_company_internships(cls, mongo_db, company_id, status):
+        # Query the company
+        company = mongo_db.companies.find_one({"_id": ObjectId(company_id)})
+        internship_ids = company["internships"]
+        if not internship_ids:
+            return []
+
+        # Query company internships
+        query = {"_id": {"$in": internship_ids}}
+        if status and status in AVAILABLE_STATUSES:
+            query["status"] = status
+
+        return mongo_db.internship.find(query)

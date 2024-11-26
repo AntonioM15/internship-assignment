@@ -15,7 +15,7 @@ def students_blueprint(mongo):
     def get_students():
         degree_id = request.args.get('degree_id')
         full_name = request.args.get('full_name')
-        status = request.args.get('full_name')
+        status = request.args.get('status')
 
         # Retrieve students
         student_list = Student.retrieve_students(mongo_db, degree_id, full_name, status)
@@ -35,20 +35,20 @@ def students_blueprint(mongo):
         full_name = data.get('full_name')
         degree_id = data.get('degree_id')
 
-        observation_text = data.get('observation')
-
         # Add new student
         student = Student(email, hashed_password, official_id, full_name, status=None, institution=None,
                           degree=ObjectId(degree_id))
-        student_doc = student.save(mongo_db)  # this save operation can be avoided with custom ids
+        student_doc = student.save(mongo_db)
 
-        # Add new observation and assign it to the student
-        observation = Observation(text=observation_text, receiver=ObjectId(student_doc.inserted_id))
-        observation_doc = observation.save(mongo_db)
+        observation_text = data.get('observation')
+        if observation_text:
+            # Add new observation and assign it to the student
+            observation = Observation(text=observation_text, receiver=ObjectId(student_doc.inserted_id))
+            observation_doc = observation.save(mongo_db)
 
-        # Update student
-        student.update_student(mongo_db, student_doc.inserted_id,
-                               {'observations': [ObjectId(observation_doc.inserted_id)]})
+            # Update student
+            student.update_student(mongo_db, student_doc.inserted_id,
+                                   {'observations': [ObjectId(observation_doc.inserted_id)]})
 
         return jsonify({"message": "Added new student"}), 201
 

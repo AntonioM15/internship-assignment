@@ -15,7 +15,7 @@ def tutors_blueprint(mongo):
     def get_tutors():
         degree_id = request.args.get('degree_id')
         full_name = request.args.get('full_name')
-        status = request.args.get('full_name')
+        status = request.args.get('status')
 
         # Retrieve tutors
         tutor_list = Tutor.retrieve_tutors(mongo_db, degree_id, full_name, status)
@@ -34,20 +34,20 @@ def tutors_blueprint(mongo):
         full_name = data.get('full_name')
         degree_id = data.get('degree_id')
 
-        observation_text = data.get('observation')
-
         # Add new tutor
         tutor = Tutor(email, hashed_password, official_id, full_name, status=None, institution=None,
                       degrees=[ObjectId(degree_id)])
         tutor_doc = tutor.save(mongo_db)
 
-        # Add new observation and assign it to the tutor
-        observation = Observation(text=observation_text, receiver=ObjectId(tutor_doc.inserted_id))
-        observation_doc = observation.save(mongo_db)
+        observation_text = data.get('observation')
+        if observation_text:
+            # Add new observation and assign it to the tutor
+            observation = Observation(text=observation_text, receiver=ObjectId(tutor_doc.inserted_id))
+            observation_doc = observation.save(mongo_db)
 
-        # Update tutor
-        tutor.update_tutor(mongo_db, tutor_doc.inserted_id,
-                           {'observations': [ObjectId(observation_doc.inserted_id)]})
+            # Update tutor
+            tutor.update_tutor(mongo_db, tutor_doc.inserted_id,
+                               {'observations': [ObjectId(observation_doc.inserted_id)]})
 
         return jsonify({"message": "Added new tutor"}), 201
 
