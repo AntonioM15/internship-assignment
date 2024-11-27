@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify
 from collections import defaultdict
 
-from backend.generic.models.users import USER_MAPPING
-from backend.generic.models.utils import serialize_document
+from generic.models.users import USER_MAPPING
+from generic.models.utils import serialize_document
 
 # Blueprint definition
 dashboard = Blueprint('dashboard_blueprint', __name__)
