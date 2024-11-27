@@ -1,7 +1,7 @@
 from bson import ObjectId
 from pymongo import DESCENDING
 
-from backend.generic.models.utils import TimestampMixin, AVAILABLE_STATUSES
+from .utils import TimestampMixin, AVAILABLE_STATUSES
 
 
 class Company(TimestampMixin):

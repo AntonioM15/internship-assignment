@@ -1,9 +1,9 @@
 from bson import ObjectId
 from flask import Blueprint, jsonify, request
 
-from backend.generic.models.companies import Company
-from backend.generic.models.internships import Internship
-from backend.generic.models.utils import serialize_document, str_date_to_datetime
+from generic.models.companies import Company
+from generic.models.internships import Internship
+from generic.models.utils import serialize_document, str_date_to_datetime
 
 # Blueprint definition
 assignments = Blueprint('assignments_blueprint', __name__)

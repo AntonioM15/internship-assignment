@@ -53,6 +53,7 @@
 </template>
 
 <script>
+import apiUrl from '../config'
 import Header from './generic/Header.vue'
 import axios from 'axios'
 
@@ -74,7 +75,7 @@ export default {
   methods: {
     async login () {
       // TODO manage urls more professionally
-      const path = 'http://127.0.0.1:5000/api/v1/landing/login'
+      const path = `${apiUrl}/api/v1/landing/login`
       const params = {
         'email': this.email,
         'password': this.password
@@ -91,7 +92,7 @@ export default {
       }
     },
     async recoverPassword () {
-      const path = 'http://127.0.0.1:5000/api/v1/landing/password-recovery'
+      const path = `${apiUrl}/api/v1/landing/password-recovery`
       const params = {
         'email': this.recoverEmail
       }

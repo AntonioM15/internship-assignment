@@ -1,8 +1,8 @@
 from bson import ObjectId
 from flask import Blueprint, jsonify, request
 
-from backend.generic.models.users import Student
-from backend.generic.models.utils import serialize_document, Observation
+from generic.models.users import Student
+from generic.models.utils import serialize_document, Observation
 
 # Blueprint definition
 students = Blueprint('students_blueprint', __name__)

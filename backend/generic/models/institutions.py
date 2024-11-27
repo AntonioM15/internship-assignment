@@ -1,4 +1,4 @@
-from backend.generic.models.utils import TimestampMixin
+from .utils import TimestampMixin
 
 
 class Degree(TimestampMixin):
