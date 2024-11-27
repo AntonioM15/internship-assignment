@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import apiUrl from '../config'
 import axios from 'axios'
 
 export default {
@@ -16,7 +17,7 @@ export default {
   },
   methods: {
     getMessage () {
-      const path = 'http://127.0.0.1:5000/api/v1/landing/message'
+      const path = `${apiUrl}/api/v1/landing/message`
       axios.get(path).then((response) => {
         this.message = response.data
       })
