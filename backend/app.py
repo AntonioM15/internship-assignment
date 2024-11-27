@@ -1,5 +1,8 @@
 from flask import Flask, render_template
 from flask_pymongo import PyMongo
+from google.cloud import secretmanager
+from dotenv import load_dotenv
+import os
 
 from routes.assignments import assignments_blueprint
 from routes.companies import companies_blueprint
@@ -10,11 +13,30 @@ from routes.testing_users import testing_users_blueprint
 from routes.tutors import tutors_blueprint
 
 
+def get_secret(secret_name):
+    client = secretmanager.SecretManagerServiceClient()
+    project_id = os.getenv('GOOGLE_CLOUD_PROJECT')
+    secret_path = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
+    response = client.access_secret_version(request={"name": secret_path})
+    return response.payload.data.decode('UTF-8')
+
+
+# Load env variables included in file .env (for local development)
+load_dotenv()
+if os.getenv('LOCAL_DEV'):
+    MONGO_URI = "mongodb://localhost:27017/tfm_local_db"
+    STATIC_FOLDER = "../frontend/dist/static"
+    TEMPLATE_FOLDER = "../frontend/dist"
+else:
+    MONGO_URI = get_secret('MONGO_URI')
+    STATIC_FOLDER = "./dist/static"
+    TEMPLATE_FOLDER = "./dist"
+
 app = Flask(__name__,
-            static_folder="../frontend/dist/static",
-            template_folder="../frontend/dist")
+            static_folder=STATIC_FOLDER,
+            template_folder=TEMPLATE_FOLDER)
 # Init mongo config
-app.config["MONGO_URI"] = "mongodb://localhost:27017/tfm_local_db"
+app.config["MONGO_URI"] = MONGO_URI
 mongo = PyMongo(app)
 
 # Register all blueprints with deferred initialization in order to share the same mongodb
