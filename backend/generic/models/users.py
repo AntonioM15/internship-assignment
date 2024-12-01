@@ -22,21 +22,6 @@ class User(TimestampMixin):
         self.location = location or {}
         self.notifications = notifications or []
 
-    def to_dict(self):
-        return {
-            "created_date": self.created_date,
-            "last_updated": self.last_updated,
-            "email": self.email,
-            "hashed_password": self.hashed_password,
-            "role": self.role,
-            "official_id": self.official_id,
-            "full_name": self.full_name,
-            "hidden": self.hidden,
-            "avatar": self.avatar,
-            "location": self.location,
-            "notifications": self.notifications,
-        }
-
     def update_location(self, location_id):
         if not location_id:
             return
@@ -56,7 +41,7 @@ class User(TimestampMixin):
 
     @classmethod
     def put_multi(cls, mongo_db, users):
-        cls.update_last_updated(users)
+        cls.update_last_updated_multi(users)
         return mongo_db.users.insert_many([user.to_dict() for user in users])
 
 

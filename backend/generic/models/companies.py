@@ -67,7 +67,7 @@ class Company(TimestampMixin):
 
     @classmethod
     def put_multi(cls, mongo_db, companies):
-        cls.update_last_updated(companies)
+        cls.update_last_updated_multi(companies)
         return mongo_db.companies.insert_many([company.to_dict() for company in companies])
 
     @classmethod
