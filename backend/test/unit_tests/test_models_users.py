@@ -219,7 +219,7 @@ class TestUserModels(BaseTestClass):
 
     company_2 = Company(
         full_name='Company 2 name',
-        field='IA'
+        field='Inteligencia Artificial'
     )
     company_2._id = ObjectId('FFFF22BBFFFF22BBFFFF22BB')
 
@@ -260,8 +260,8 @@ class TestUserModels(BaseTestClass):
     degree_1._id = ObjectId('FFFF4444FFFF4444FFFF4444')
 
     degree_2 = Degree(
-        code='PRG',
-        full_name='IA'
+        code='IA',
+        full_name='Inteligencia Artificial'
     )
     degree_2._id = ObjectId('FFFF44BBFFFF44BBFFFF44BB')
 
