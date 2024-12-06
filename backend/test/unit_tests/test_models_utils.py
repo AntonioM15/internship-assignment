@@ -230,7 +230,7 @@ class TestLocationModel(BaseTestClass):
 
     def test_db_returns_no_document_before_location_insertion(self):
         expected_result = None
-        obtained_result = self.db.locations.find_one({"_id": ObjectId('FF33FF33FF33FF33FF33FF33')})
+        obtained_result = self.db.locations.find_one({"_id": ObjectId('000000000000000000000000')})
         self.assertEqual(expected_result, obtained_result)
 
     def test_db_returns_one_document_after_location_insertion(self):
@@ -303,7 +303,7 @@ class TestNotificationModel(BaseTestClass):
 
     def test_db_returns_no_document_before_notification_insertion(self):
         expected_result = None
-        obtained_result = self.db.notifications.find_one({"_id": ObjectId('FF44FF44FF44FF44FF44FF44')})
+        obtained_result = self.db.notifications.find_one({"_id": ObjectId('000000000000000000000000')})
         self.assertEqual(expected_result, obtained_result)
 
     def test_db_returns_one_document_after_notification_insertion(self):
@@ -368,7 +368,7 @@ class TestObservationModel(BaseTestClass):
 
     def test_db_returns_no_document_before_observation_insertion(self):
         expected_result = None
-        obtained_result = self.db.observations.find_one({"_id": ObjectId('FF22FF22FF22FF22FF22FF22')})
+        obtained_result = self.db.observations.find_one({"_id": ObjectId('000000000000000000000000')})
         self.assertEqual(expected_result, obtained_result)
 
     def test_db_returns_one_document_after_observation_insertion(self):
