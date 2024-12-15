@@ -3,11 +3,11 @@ from datetime import datetime
 AVAILABLE_STATUSES = ('unassigned', 'provisional', 'assigned', 'ongoing')
 DEFAULT_STATUS = 'unassigned'
 
-KEYS_WITH_OBJECT_IDS = ('_id', 'sender', 'receiver', 'degree', 'location', 'institution', 'internship', 'student',
-                        'worker', 'tutor', 'company')
+KEYS_WITH_OBJECT_IDS = ('_id', 'sender', 'creator', 'receiver', 'degree', 'location', 'institution', 'internship',
+                        'student', 'worker', 'tutor', 'company')
 KEYS_WITH_LIST_OF_OBJECT_IDS = ('notifications', 'observations', 'degrees', 'internships', 'students', 'workers',
-                                'tutors')
-KEYS_WITH_DATES = ('created_at', 'last_updated', 'starting_day', 'finishing_day')
+                                'tutors', 'interns')
+KEYS_WITH_DATES = ('created_date', 'last_updated', 'starting_day', 'finishing_day')
 
 
 def serialize_document(doc):
@@ -52,7 +52,7 @@ class TimestampMixin(object):
 class Location(TimestampMixin):
     def __init__(self, coordinates, country, city, postal_code, address):
         super().__init__()
-        self.coordinates = coordinates
+        self.coordinates = coordinates  # List of two float values to mimic decimal representation
         self.country = country
         self.city = city
         self.postal_code = postal_code
@@ -95,7 +95,7 @@ class Location(TimestampMixin):
 
     @classmethod
     def put_multi(cls, mongo_db, locations):
-        cls.update_last_updated(locations)
+        cls.update_last_updated_multi(locations)
         return mongo_db.locations.insert_many([location.to_dict() for location in locations])
 
 
@@ -138,7 +138,7 @@ class Notification(TimestampMixin):
 
     @classmethod
     def put_multi(cls, mongo_db, notifications):
-        cls.update_last_updated(notifications)
+        cls.update_last_updated_multi(notifications)
         return mongo_db.notifications.insert_many([notification.to_dict() for notification in notifications])
 
 
@@ -178,5 +178,5 @@ class Observation(TimestampMixin):
 
     @classmethod
     def put_multi(cls, mongo_db, observations):
-        cls.update_last_updated(observations)
+        cls.update_last_updated_multi(observations)
         return mongo_db.observations.insert_many([observation.to_dict() for observation in observations])

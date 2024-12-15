@@ -54,7 +54,7 @@ class Degree(TimestampMixin):
 
     @classmethod
     def put_multi(cls, mongo_db, degrees):
-        cls.update_last_updated(degrees)
+        cls.update_last_updated_multi(degrees)
         return mongo_db.degrees.insert_many([degree.to_dict() for degree in degrees])
 
 
@@ -142,5 +142,5 @@ class Institution(TimestampMixin):
 
     @classmethod
     def put_multi(cls, mongo_db, institutions):
-        cls.update_last_updated(institutions)
+        cls.update_last_updated_multi(institutions)
         return mongo_db.institutions.insert_many([institution.to_dict() for institution in institutions])

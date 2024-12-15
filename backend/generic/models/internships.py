@@ -82,7 +82,7 @@ class Internship(TimestampMixin):
 
     @classmethod
     def put_multi(cls, mongo_db, internships):
-        cls.update_last_updated(internships)
+        cls.update_last_updated_multi(internships)
         return mongo_db.internships.insert_many([internship.to_dict() for internship in internships])
 
     @classmethod
