@@ -7,7 +7,7 @@ from backend.generic.models.institutions import Institution, Degree
 from backend.generic.models.internships import Internship
 from backend.generic.models.users import Coordinator, Worker, Student, Tutor, Admin
 from backend.generic.models.utils import Observation
-from test_utils import BaseTestClass
+from backend.test.test_utils import BaseTestClass
 
 
 class TestUserModels(BaseTestClass):

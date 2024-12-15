@@ -3,7 +3,7 @@ from datetime import datetime
 from pymongo import DESCENDING
 
 from backend.generic.models.internships import Internship
-from test_utils import BaseTestClass
+from backend.test.test_utils import BaseTestClass
 
 
 class TestInternshipModel(BaseTestClass):

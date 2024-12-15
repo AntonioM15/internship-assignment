@@ -6,7 +6,7 @@ from datetime import datetime
 from pymongo import DESCENDING
 
 from backend.generic.models.utils import str_date_to_datetime, serialize_document, Location, Notification, Observation
-from test_utils import is_dict_json_friendly, BaseTestClass
+from backend.test.test_utils import is_dict_json_friendly, BaseTestClass
 
 
 class TestStrToDatetimeMethod(unittest.TestCase):

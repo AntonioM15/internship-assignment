@@ -2,7 +2,7 @@ from bson import ObjectId
 from pymongo import DESCENDING
 
 from backend.generic.models.companies import Company
-from test_utils import BaseTestClass
+from backend.test.test_utils import BaseTestClass
 
 
 class TestCompanyModel(BaseTestClass):
