@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, request
 
 from generic.models.companies import Company
 from generic.models.utils import serialize_document, Observation, AVAILABLE_STATUSES
+from generic.session_utils import limited_access, login_required
 
 # Blueprint definition
 companies = Blueprint('companies_blueprint', __name__)
@@ -12,6 +13,8 @@ def companies_blueprint(mongo):
     mongo_db = mongo.db
 
     @companies.route('/', methods=["GET"])
+    @login_required
+    @limited_access(['admin', 'coordinator'])
     def get_companies():
         field = request.args.get('field')
         full_name = request.args.get('full_name')

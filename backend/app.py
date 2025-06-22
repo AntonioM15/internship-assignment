@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 from flask_pymongo import PyMongo
+from flask_session import Session
 from google.cloud import secretmanager
 import os
 
@@ -23,19 +24,33 @@ def get_secret(secret_name):
 # Load env variables to decide which env to use
 if os.getenv('LOCAL_DEV'):
     MONGO_URI = "mongodb://localhost:27017/tfm_local_db"
+    SESSION_KEY = "this_secret_key_is_not_real"
     STATIC_FOLDER = "../frontend/dist/static"
     TEMPLATE_FOLDER = "../frontend/dist"
 else:
     MONGO_URI = get_secret('MONGO_URI')
+    SESSION_KEY = get_secret('SESSION_KEY')
     STATIC_FOLDER = "dist/static"
     TEMPLATE_FOLDER = "dist"
 
 app = Flask(__name__,
             static_folder=STATIC_FOLDER,
             template_folder=TEMPLATE_FOLDER)
+
+# Session config
+app.secret_key = SESSION_KEY
+app.config["SESSION_PERMANENT"] = False  # session closed after closing the browser
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_COOKIE_SECURE'] = True  # only https connections
+app.config['SESSION_COOKIE_HTTPONLY'] = True  # cookies not available to JS
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # for cross-site requests
+
 # Init mongo config
 app.config["MONGO_URI"] = MONGO_URI
 mongo = PyMongo(app)
+
+# Init Flask-Session
+Session(app)
 
 # Register all blueprints with deferred initialization in order to share the same mongodb
 # TODO add a blueprint with url / that redirects to landing or dashboard

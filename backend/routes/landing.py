@@ -1,16 +1,13 @@
 from flask import Blueprint, jsonify, request
 
+from session_utils import save_session
+
 # Blueprint definition
 landing = Blueprint('landing_blueprint', __name__)
 
 
 def landing_blueprint(mongo):
     mongo_db = mongo.db
-
-    # TODO remove example endpoint
-    @landing.route('/message', methods=["GET"])
-    def create_task():
-        return jsonify('Hola mundo desde Flask')
 
     @landing.route('/login', methods=["POST"])
     def login():
@@ -23,6 +20,9 @@ def landing_blueprint(mongo):
         # TODO mocked response until DB is configured
         if email != 'aa' or password != 'bb':
             return jsonify({"status": "error", "message": "Email o contraseña incorrectos"}), 401
+
+        role = 'admin'
+        save_session(email, role)
 
         return jsonify({"status": "success"}), 200
 

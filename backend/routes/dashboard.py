@@ -3,6 +3,7 @@ from collections import defaultdict
 
 from generic.models.users import USER_MAPPING
 from generic.models.utils import serialize_document
+from generic.session_utils import login_required
 
 # Blueprint definition
 dashboard = Blueprint('dashboard_blueprint', __name__)
@@ -11,9 +12,10 @@ dashboard = Blueprint('dashboard_blueprint', __name__)
 def dashboard_blueprint(mongo):
     mongo_db = mongo.db
 
-    @dashboard.route('/', methods=["GET"])
+    @dashboard.route('/notifications', methods=["GET"])
+    @login_required
     def get_notifications():
-        # TODO save logged user in flask session
+        # TODO use logged user in flask session
         user = {
             'id': '67449aa50871c949f24692cb',
             'role': 'worker'

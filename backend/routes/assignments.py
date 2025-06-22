@@ -4,6 +4,7 @@ from flask import Blueprint, jsonify, request
 from generic.models.companies import Company
 from generic.models.internships import Internship
 from generic.models.utils import serialize_document, str_date_to_datetime
+from generic.session_utils import limited_access, login_required
 
 # Blueprint definition
 assignments = Blueprint('assignments_blueprint', __name__)
@@ -13,6 +14,8 @@ def assignments_blueprint(mongo):
     mongo_db = mongo.db
 
     @assignments.route('/', methods=["GET"])
+    @login_required
+    @limited_access(['admin', 'coordinator'])
     def get_assignments():
         student_id = request.args.get('student_id')
         title = request.args.get('title')
