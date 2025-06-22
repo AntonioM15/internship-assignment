@@ -2,6 +2,7 @@ import json
 
 import unittest
 from flask import Flask
+from flask_session import Session
 import mongomock
 
 
@@ -27,6 +28,8 @@ class BaseTestClass(unittest.TestCase):
         cls.app = Flask('__test__')
         cls.app.config["TESTING"] = True
         cls.app.config["MONGO_URI"] = "mongomock://localhost"
+        cls.app.config['SESSION_TYPE'] = 'filesystem'
+        Session(cls.app)
         cls.client = cls.app.test_client()
         cls.mongo_client = mongomock.MongoClient()
         cls.db = cls.mongo_client.test_database
@@ -43,3 +46,5 @@ class BaseTestClass(unittest.TestCase):
     def tearDown(self):
         # Pop the app context after each test
         self.app_context.pop()
+        with self.client.session_transaction() as test_session:
+            test_session.clear()
