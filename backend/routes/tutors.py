@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, request
 
 from generic.models.users import Tutor
 from generic.models.utils import serialize_document, Observation
+from generic.session_utils import limited_access, login_required
 
 # Blueprint definition
 tutors = Blueprint('tutors_blueprint', __name__)
@@ -12,6 +13,8 @@ def tutors_blueprint(mongo):
     mongo_db = mongo.db
 
     @tutors.route('/', methods=["GET"])
+    @login_required
+    @limited_access(['admin', 'coordinator'])
     def get_tutors():
         degree_id = request.args.get('degree_id')
         full_name = request.args.get('full_name')

@@ -15,7 +15,7 @@ def dashboard_blueprint(mongo):
     @dashboard.route('/notifications', methods=["GET"])
     @login_required
     def get_notifications():
-        # TODO save logged user in flask session
+        # TODO use logged user in flask session
         user = {
             'id': '67449aa50871c949f24692cb',
             'role': 'worker'

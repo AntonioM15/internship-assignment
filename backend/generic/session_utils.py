@@ -13,7 +13,6 @@ def login_required(function):
     return _decorator
 
 
-# TODO test
 def limited_access(roles):
     """ Decorator. Block users with a non-valid role from accessing the resource
 
