@@ -81,10 +81,9 @@ export default {
         'password': this.password
       }
       try {
-        const response = await axios.post(path, params)
+        await axios.post(path, params)
         this.loginMessage = ''
-        // TODO redirect to home page and remove log
-        console.log(`Login was a success, response ${response.data}`)
+        await this.$router.push('/dashboard')
       } catch (error) {
         // update loginMessage with the error
         const errorContent = error.response
