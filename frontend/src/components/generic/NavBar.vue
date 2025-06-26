@@ -3,7 +3,7 @@
   <nav class="navbar">
     <ul class="nav-list">
       <li class="nav-item" v-for="link in links" :key="link.name">
-        <router-link :to="link.path" class="nav-set">
+        <router-link class="nav-set" :to="link.path">
           <img
             class="icon"
             :src=currentIcon(link)
@@ -16,7 +16,7 @@
       </li>
       <li class="spacer"></li> <!-- Spacer to push logout to the right -->
       <li class="nav-option" v-for="option in options" :key="option.name">
-        <router-link :to="option.path" class="nav-set">
+        <div class="nav-set" @click.prevent="handleClick(option)">
           <img
             class="option"
             :src="currentIcon(option)"
@@ -24,8 +24,7 @@
             @mouseover="hoverIcon = option.hoverIcon"
             @mouseleave="hoverIcon = null"
           />
-          {{ option.name }}
-        </router-link>
+        </div>
       </li>
     </ul>
   </nav>
@@ -33,6 +32,9 @@
 </template>
 
 <script>
+import apiUrl from '../../config'
+import axios from 'axios'
+
 import IconDashboardLight from '../../assets/IconDashboardLight.svg'
 import IconDashboardDark from '../../assets/IconDashboardDark.svg'
 import IconStudentLight from '../../assets/IconStudentLight.svg'
@@ -59,7 +61,7 @@ export default {
         { name: 'Asignaciones', path: '/assignments', icon: IconAssignmentsLight, hoverIcon: IconAssignmentsDark }
       ],
       options: [
-        { name: '', path: '/logout', icon: IconLogOutLight, hoverIcon: IconLogOutDark }
+        { name: 'Cerrar sesión', action: 'logOut', icon: IconLogOutLight, hoverIcon: IconLogOutDark }
       ]
     }
   },
@@ -67,6 +69,20 @@ export default {
     currentIcon (link) {
       // Return hover icon/option if active, otherwise return default icon/option
       return this.hoverIcon === link.hoverIcon ? link.hoverIcon : link.icon
+    },
+    handleClick (option) {
+      // Handle click on options, such as logging out
+      this[option.action]()
+    },
+    async logOut () {
+      // Clears the session and redirects to landing
+      const path = `${apiUrl}/api/v1/landing/logout`
+      try {
+        await axios.post(path)
+        await this.$router.push('/landing')
+      } catch (error) {
+        console.error('Error al intentar cerrar sesión:', error)
+      }
     }
   }
 }
