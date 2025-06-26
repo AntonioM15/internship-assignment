@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 
-from session_utils import save_session
+from session_utils import save_session, clear_session
 
 # Blueprint definition
 landing = Blueprint('landing_blueprint', __name__)
@@ -23,6 +23,12 @@ def landing_blueprint(mongo):
 
         role = 'admin'
         save_session(email, role)
+
+        return jsonify({"status": "success"}), 200
+
+    @landing.route('/logout', methods=["POST"])
+    def logout():
+        clear_session()
 
         return jsonify({"status": "success"}), 200
 

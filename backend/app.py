@@ -53,14 +53,14 @@ mongo = PyMongo(app)
 Session(app)
 
 # Register all blueprints with deferred initialization in order to share the same mongodb
-# TODO add a blueprint with url / that redirects to landing or dashboard
-app.register_blueprint(assignments_blueprint(mongo), url_prefix="/api/v1/assignments")
-app.register_blueprint(companies_blueprint(mongo), url_prefix="/api/v1/companies")
+app.register_blueprint(landing_blueprint(mongo), url_prefix="/api/v1/landing")
 app.register_blueprint(dashboard_blueprint(mongo), url_prefix="/api/v1/dashboard")
 app.register_blueprint(students_blueprint(mongo), url_prefix="/api/v1/students")
-app.register_blueprint(landing_blueprint(mongo), url_prefix="/api/v1/landing")
-app.register_blueprint(testing_users_blueprint(mongo), url_prefix="/api/v1/testing_users")
 app.register_blueprint(tutors_blueprint(mongo), url_prefix="/api/v1/tutors")
+app.register_blueprint(companies_blueprint(mongo), url_prefix="/api/v1/companies")
+app.register_blueprint(assignments_blueprint(mongo), url_prefix="/api/v1/assignments")
+# TODO remove
+app.register_blueprint(testing_users_blueprint(mongo), url_prefix="/api/v1/testing_users")
 
 
 @app.route('/', defaults={'path': ''})
