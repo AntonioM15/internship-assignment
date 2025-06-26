@@ -19,6 +19,10 @@
   margin-right: 100px;
 }
 
+.nav-option {
+  margin-right: 20px;
+}
+
 .nav-set {
   text-decoration: none;
   color: var(--text-header-color);
@@ -34,8 +38,13 @@
   transform: scale(1.1);
 }
 
-.icon {
+.icon,
+.option {
   width: 30px;
   height: 30px;
   transition: transform 0.3s ease;
+}
+
+.spacer {
+  flex-grow: 1;
 }
