@@ -22,5 +22,5 @@ jobs:
       with:
         working-directory: ./frontend
         browser: chrome
-        start: npm run start
+        start: npm run test
         wait-on: "http://localhost:5000"
