@@ -1,9 +1,26 @@
 /// <reference types="cypress" />
+const landingUrl = 'http://localhost:5000/landing'
 
 describe('Home Test', () => {
+  // ASSETS
+  it('Checks if the icons are present', () => {
+    cy.visit(landingUrl)
+    cy.get('.icon').should('have.length', 3)
+  })
+
+  it('Checks the title', () => {
+    cy.visit(landingUrl)
+    cy.get('.title').should('contain', 'Una web para gobernarlos a todos')
+  })
+
+  it('Checks the subtitle', function() {
+    cy.visit(landingUrl) //
+    cy.get('.subtitle').should('contain', 'Empresas, tutores y estudiantes en la misma plataforma')
+  })
+
   // LOGIN
   it('Login form works with valid credentials', () => {
-    cy.visit('http://localhost:5000/landing')
+    cy.visit(landingUrl)
 
     // Fill login form
     cy.get('.top-right-section input[placeholder="email"]').type('test@example.com')
@@ -32,7 +49,7 @@ describe('Home Test', () => {
   })
 
   it('Login form is not actioned with incomplete credentials - no password', () => {
-    cy.visit('http://localhost:5000/landing')
+    cy.visit(landingUrl)
     cy.get('.top-right-section input[placeholder="email"]').type('incomplete@example.com')
     cy.get('.top-right-section button[type="submit"]').contains('Log in').click({ force: true })
 
@@ -41,7 +58,7 @@ describe('Home Test', () => {
   })
 
   it('Login form is not actioned with incomplete credentials - no email', () => {
-    cy.visit('http://localhost:5000/landing')
+    cy.visit(landingUrl)
     cy.get('.top-right-section input[placeholder="contraseña"]').type('password123')
     cy.get('.top-right-section button[type="submit"]').contains('Log in').click({ force: true })
 
@@ -50,7 +67,7 @@ describe('Home Test', () => {
   })
 
   it('Login form shows error with invalid credentials', () => {
-    cy.visit('http://localhost:5000/landing')
+    cy.visit(landingUrl)
     cy.get('.top-right-section input[placeholder="email"]').type('invalid@example.com')
     cy.get('.top-right-section input[placeholder="contraseña"]').type('wrongpassword')
 
@@ -68,7 +85,7 @@ describe('Home Test', () => {
 
   // PASSWORD RECOVERY
   it('Password recovery form works', () => {
-    cy.visit('http://localhost:5000/landing')
+    cy.visit(landingUrl)
     cy.get('.bottom-right-section input[placeholder="email"]').type('recover@example.com')
 
     // Intercept the password recovery request and mock an error response
@@ -84,16 +101,15 @@ describe('Home Test', () => {
   })
 
   it('Password recovery form is not actioned with imcomplete credentials', () => {
-    const url = 'http://localhost:5000/landing'
-    cy.visit(url)
+    cy.visit(landingUrl)
     cy.get('.bottom-right-section button[type="submit"]').contains('Solicitar').click({ force: true })
 
     // Credentials are not sent if missing to fill in one field - check url has not been redirected
-    cy.url().should('eq', url)
+    cy.url().should('eq', landingUrl)
   })
 
   it('Help text contains contact link', () => {
-    cy.visit('http://localhost:5000/landing')
+    cy.visit(landingUrl)
     cy.contains('¿Tienes algún problema?').should('exist')
     cy.contains('Contáctanos').should('have.attr', 'href', '#')
   })
