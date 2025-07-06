@@ -23,4 +23,4 @@ jobs:
         working-directory: ./frontend
         browser: chrome
         start: npm run start
-        wait-on: "http://localhost:8080"
+        wait-on: "http://localhost:5000"
