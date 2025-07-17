@@ -1,4 +1,5 @@
 from flask import Flask, render_template
+from flask_cors import CORS
 from flask_pymongo import PyMongo
 from flask_session import Session
 from google.cloud import secretmanager
@@ -36,6 +37,7 @@ else:
 app = Flask(__name__,
             static_folder=STATIC_FOLDER,
             template_folder=TEMPLATE_FOLDER)
+CORS(app, supports_credentials=True, origins=["http://localhost:5000"])
 
 # Session config
 app.secret_key = SESSION_KEY
