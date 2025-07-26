@@ -6,4 +6,7 @@ module.exports = defineConfig({
       // implement node event listeners here
     },
   },
+  env: {
+    ENV: process.env.CI ? 'ci' : 'local',
+  },
 });

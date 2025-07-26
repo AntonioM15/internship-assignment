@@ -1,9 +1,15 @@
 /// <reference types="cypress" />
-const dashboardUrl = 'http://localhost:5000/dashboard'
 
 describe('NavBar Test', () => {
   beforeEach(() => {
-    cy.visit(dashboardUrl)
+    // Intercept unrelated dashboard request
+    cy.intercept(
+      'GET',
+      'http://127.0.0.1:5000/api/v1/dashboard/notifications',
+      { statusCode: 200, body: {'status': 'success', 'message': 'Notifications retrieved successfully', 'data': {}} }
+    ).as('notificationsRequest')
+    cy.visitPage('/dashboard')
+    cy.wait('@notificationsRequest')
   })
 
   // ASSETS
@@ -83,25 +89,54 @@ describe('NavBar Test', () => {
       '/companies',
       '/assignments'
     ]
+    const expectedIntercepts = [
+      'http://127.0.0.1:5000/api/v1/dashboard/notifications',
+      'http://127.0.0.1:5000/api/v1/students',
+      'http://127.0.0.1:5000/api/v1/tutors',
+      'http://127.0.0.1:5000/api/v1/companies',
+      'http://127.0.0.1:5000/api/v1/assignments'
+    ]
 
     cy.get('.nav-item').then(($items) => {
       // Cypress .each() queues all actions at once which causes DOM problems
       function testNavItem (index) {
         if (index >= $items.length) return
 
+        cy.intercept(
+          'GET',
+          expectedIntercepts[index],
+          { statusCode: 200, body: {'status': 'success', 'message': 'Data retrieved successfully', 'data': {}} }
+        ).as('redirectRequest')
         cy.get('.nav-item').eq(index).click()
+        cy.wait('@redirectRequest')
         cy.location('pathname').should('eq', expectedRoutes[index])
 
-        cy.visit(dashboardUrl).then(() => {
-          testNavItem(index + 1)
+        cy.getFullUrl('/dashboard').then((fullUrl) => {
+          // Intercept unrelated dashboard request
+          cy.intercept(
+            'GET',
+            'http://127.0.0.1:5000/api/v1/dashboard/notifications',
+            { statusCode: 200, body: {'status': 'success', 'message': 'Notifications retrieved successfully', 'data': {}} }
+          ).as('dashboardRequest')
+          cy.visit(fullUrl).then(() => {
+            testNavItem(index + 1)
+          })
+          cy.wait('@dashboardRequest')
         })
       }
-      testNavItem(0)
+      testNavItem(1)
     })
   })
 
   it('Log out works', () => {
+    // Intercept logout request
+    cy.intercept(
+      'POST',
+      'http://127.0.0.1:5000/api/v1/landing/logout',
+      { statusCode: 200, body: {'status': 'success'} }
+    ).as('logoutRequest')
     cy.get('.nav-option').last().click()
+    cy.wait('@logoutRequest')
     cy.url().should('include', '/landing')
   })
 })

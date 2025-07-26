@@ -1,9 +1,8 @@
 /// <reference types="cypress" />
-const landingUrl = 'http://localhost:5000/landing'
 
 describe('Home Test', () => {
   beforeEach(() => {
-    cy.visit(landingUrl)
+    cy.visitPage('/landing')
   })
 
   // ASSETS
@@ -32,7 +31,7 @@ describe('Home Test', () => {
       { statusCode: 200, body: { 'status': 'success' } }
     ).as('loginRequest')
 
-    // Intercept unrelated call to avoid error
+    // Intercept unrelated dashboard request
     cy.intercept(
       'GET',
       'http://127.0.0.1:5000/api/v1/dashboard/notifications',
@@ -99,7 +98,9 @@ describe('Home Test', () => {
     cy.get('.bottom-right-section button[type="submit"]').contains('Solicitar').click({ force: true })
 
     // Credentials are not sent if missing to fill in one field - check url has not been redirected
-    cy.url().should('eq', landingUrl)
+    cy.getFullUrl('/landing').then((fullUrl) => {
+      cy.url().should('eq', fullUrl)
+    })
   })
 
   it('Help text contains contact link', () => {

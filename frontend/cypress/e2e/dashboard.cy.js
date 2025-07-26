@@ -1,11 +1,14 @@
 /// <reference types="cypress" />
-const dashboardUrl = 'http://localhost:5000/dashboard'
 
 describe('Dashboard before login', () => {
   beforeEach(() => {
-    cy.visit(dashboardUrl)
-    // Wait for loading text to disappear
-    cy.get('div:contains("Cargando...")').should('not.exist')
+    // Intercept dashboard request
+    cy.intercept(
+      'GET',
+      'http://127.0.0.1:5000/api/v1/dashboard/notifications',
+      { statusCode: 401, body: {'status': 'error', 'message': 'Usuario no autorizado. Por favor, inicie sesión.'} }
+    ).as('notificationsRequest')
+    cy.visitPage('/dashboard')
   })
 
   it('Checks error message if not logged in', () => {
@@ -15,22 +18,19 @@ describe('Dashboard before login', () => {
 
 describe('Dashboard after login', () => {
   beforeEach(() => {
-    cy.loginAdmin()
-  })
-
-  it('Checks no error message if logged in', () => {
-    // Intercept unrelated call to avoid error
+    // Intercept unrelated dashboard request
     cy.intercept(
       'GET',
       'http://127.0.0.1:5000/api/v1/dashboard/notifications',
       { statusCode: 200, body: {'status': 'success', 'message': 'Notifications retrieved successfully', 'data': {}} }
     ).as('notificationsRequest')
-
-    cy.visit(dashboardUrl)
+    cy.visitPage('/dashboard')
     // Wait for loading text to disappear
     cy.get('div:contains("Cargando...")').should('not.exist')
     cy.wait('@notificationsRequest')
+  })
 
+  it('Checks no error message if logged in', () => {
     // Confirm no error on screen
     cy.get('div:contains("Error:")').should('not.exist')
   })

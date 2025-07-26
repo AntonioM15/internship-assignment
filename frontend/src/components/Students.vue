@@ -31,7 +31,7 @@ export default {
     }
   },
   mounted () {
-    const path = `${apiUrl}/api/v1/students/`
+    const path = `${apiUrl}/api/v1/students`
     axios.get(path)
       .then(response => {
         this.data = response.data.data
