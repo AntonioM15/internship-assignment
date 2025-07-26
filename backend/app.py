@@ -1,9 +1,11 @@
 from flask import Flask, render_template
+from flask_cors import CORS
 from flask_pymongo import PyMongo
 from flask_session import Session
 from google.cloud import secretmanager
 import os
 
+from routes.test_routes import test_routes_blueprint
 from routes.assignments import assignments_blueprint
 from routes.companies import companies_blueprint
 from routes.dashboard import dashboard_blueprint
@@ -22,7 +24,7 @@ def get_secret(secret_name):
 
 
 # Load env variables to decide which env to use
-if os.getenv('LOCAL_DEV'):
+if os.getenv('LOCAL_DEV') or os.getenv("TEST_ENV"):
     MONGO_URI = "mongodb://localhost:27017/tfm_local_db"
     SESSION_KEY = "this_secret_key_is_not_real"
     STATIC_FOLDER = "../frontend/dist/static"
@@ -36,6 +38,7 @@ else:
 app = Flask(__name__,
             static_folder=STATIC_FOLDER,
             template_folder=TEMPLATE_FOLDER)
+CORS(app, supports_credentials=True, origins=["http://localhost:5000"])
 
 # Session config
 app.secret_key = SESSION_KEY
@@ -59,6 +62,7 @@ app.register_blueprint(students_blueprint(mongo), url_prefix="/api/v1/students")
 app.register_blueprint(tutors_blueprint(mongo), url_prefix="/api/v1/tutors")
 app.register_blueprint(companies_blueprint(mongo), url_prefix="/api/v1/companies")
 app.register_blueprint(assignments_blueprint(mongo), url_prefix="/api/v1/assignments")
+app.register_blueprint(test_routes_blueprint(mongo), url_prefix="/api/v1/test_routes")
 # TODO remove
 app.register_blueprint(testing_users_blueprint(mongo), url_prefix="/api/v1/testing_users")
 
