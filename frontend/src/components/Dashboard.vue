@@ -5,9 +5,28 @@
     <NavBar/>
     <div v-if="error" style="color: red;">Error: {{ error }}</div>
     <div v-else-if="loading">Cargando...</div>
-    <ul v-else>
-      <li v-for="(item, index) in data" :key="index">{{ item }}</li>
-    </ul>
+    <div v-else class="dashboard-layout">
+      <section class="left-panel">
+        <h2>Empresas</h2>
+        <div class="card-list">
+          <ScrollableCardList :items="notifications.worker" />
+        </div>
+      </section>
+      <section class="right-panel">
+        <div class="half-panel">
+          <h2>Estudiantes</h2>
+          <div class="card-list">
+            <ScrollableCardList :items="notifications.worker" />
+          </div>
+        </div>
+        <div class="half-panel">
+          <h2>Profesores</h2>
+          <div class="card-list">
+            <ScrollableCardList :items="notifications.worker" />
+          </div>
+        </div>
+      </section>
+    </div>
   </div>
 
 </template>
@@ -16,26 +35,28 @@
 import apiUrl from '../config'
 import Header from './generic/Header.vue'
 import NavBar from './generic/NavBar.vue'
+import ScrollableCardList from './generic/ScrollableCardList.vue'
 import axios from 'axios'
 
 export default {
   name: 'Dashboard',
   components: {
     Header,
-    NavBar
+    NavBar,
+    ScrollableCardList
   },
   data () {
     return {
       loading: true,
       error: null,
-      notifications: []
+      notifications: {}
     }
   },
   mounted () {
     const path = `${apiUrl}/api/v1/dashboard/notifications`
     axios.get(path)
       .then(response => {
-        this.data = response.data.data
+        this.notifications = response.data.data
       })
       .catch(err => {
         this.error = err.response.data.message || err.message
