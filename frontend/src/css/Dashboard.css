@@ -1,8 +1,46 @@
 @import url('colors.css');
 
+* {
+  box-sizing: border-box;
+}
+
 .container {
   display: flex;
   flex-direction: column;
-  height: 100vh; /* Make sure to use all the height of the page */
+  height: 100vh;
+  overflow: hidden;
   background-color: var(--background-primary-color);
+}
+
+.dashboard-layout {
+  height: 85vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+}
+
+.left-panel,
+.right-panel {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 20px 10px 20px;
+}
+
+.half-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.scrollable-box {
+  height: 100%;
+  overflow-y: auto;
 }

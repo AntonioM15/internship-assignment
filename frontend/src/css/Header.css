@@ -2,7 +2,7 @@
 
 .header {
   display: flex;
-  height: 10%;
+  height: 10vh;
   align-items: center;
   padding-left: 30px;
   background-color: var(--background-header-color);
