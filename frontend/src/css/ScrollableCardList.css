@@ -15,3 +15,8 @@
 .card-items:last-child {
   border-bottom: none;
 }
+
+.card-items.selected {
+  background-color: var(--background-primary-color);
+}
+

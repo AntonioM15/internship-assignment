@@ -9,7 +9,12 @@
     <div v-else class="students-layout">
       <section class="left-panel">
         <div class="card-list">
-          <ScrollableCardList :items="students" :kind="'students'" />
+          <ScrollableCardList
+            :items="students"
+            :kind="'students'"
+            v-model="selectedStudent"
+            itemKey="id"
+          />
         </div>
       </section>
       <section class="right-panel">
@@ -25,6 +30,7 @@ import Header from './generic/Header.vue'
 import NavBar from './generic/NavBar.vue'
 import ScrollableCardList from './generic/ScrollableCardList.vue'
 import ActionBar from './generic/ActionBar.vue'
+import StudentCard from './generic/cards/StudentCard.vue'
 import axios from 'axios'
 
 export default {
@@ -33,13 +39,15 @@ export default {
     Header,
     NavBar,
     ScrollableCardList,
-    ActionBar
+    ActionBar,
+    StudentCard
   },
   data () {
     return {
       loading: true,
       error: null,
-      students: []
+      students: [],
+      selectedStudent: null
     }
   },
   mounted () {
