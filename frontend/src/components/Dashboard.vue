@@ -9,20 +9,20 @@
       <section class="left-panel">
         <h2>Empresas</h2>
         <div class="card-list">
-          <ScrollableCardList :items="notifications.worker" />
+          <ScrollableCardList :items="notifications.worker" :kind="'notifications'" />
         </div>
       </section>
       <section class="right-panel">
         <div class="half-panel">
           <h2>Estudiantes</h2>
           <div class="card-list">
-            <ScrollableCardList :items="notifications.worker" />
+            <ScrollableCardList :items="notifications.worker" :kind="'notifications'" />
           </div>
         </div>
         <div class="half-panel">
           <h2>Profesores</h2>
           <div class="card-list">
-            <ScrollableCardList :items="notifications.worker" />
+            <ScrollableCardList :items="notifications.worker" :kind="'notifications'" />
           </div>
         </div>
       </section>
