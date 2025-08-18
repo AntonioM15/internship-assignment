@@ -3,7 +3,7 @@
   <div class="container">
     <Header/>
     <NavBar/>
-    <ActionBar/>
+    <ActionBar :kind="'students'"/>
     <div v-if="error" style="color: red;">Error: {{ error }}</div>
     <div v-else-if="loading">Cargando...</div>
     <div v-else class="students-layout">
