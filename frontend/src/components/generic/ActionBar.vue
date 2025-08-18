@@ -57,6 +57,10 @@ const TEXTS = {
   tutors: {
     singular: 'tutor',
     plural: 'tutores'
+  },
+  companies: {
+    singular: 'empresa',
+    plural: 'empresas'
   }
 }
 

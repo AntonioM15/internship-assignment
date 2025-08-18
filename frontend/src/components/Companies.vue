@@ -3,6 +3,7 @@
   <div class="container">
     <Header/>
     <NavBar/>
+    <ActionBar :kind="'companies'"/>
     <div v-if="error" style="color: red;">Error: {{ error }}</div>
     <div v-else-if="loading">Cargando...</div>
     <ul v-else>
@@ -16,13 +17,15 @@
 import apiUrl from '../config'
 import Header from './generic/Header.vue'
 import NavBar from './generic/NavBar.vue'
+import ActionBar from './generic/ActionBar.vue'
 import axios from 'axios'
 
 export default {
   name: 'Companies',
   components: {
     Header,
-    NavBar
+    NavBar,
+    ActionBar
   },
   data () {
     return {
