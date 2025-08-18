@@ -98,7 +98,7 @@ export default {
       }
       // Try to map common field names while keeping graceful fallbacks
       return {
-        fullName:  i.full_name || '',
+        fullName: i.full_name || '',
         field: i.field || '',
         // TODO location needs to be improved in to json methods
         city: '',

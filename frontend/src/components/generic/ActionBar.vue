@@ -33,7 +33,7 @@
       </div>
     </div>
     <div class="action-section">
-      <button class="add-student-btn" @click="addEntities">
+      <button class="add-entity-btn" @click="addEntities">
         <img src="../../assets/IconAddLight.svg" :alt="buttonText" style="width:24px;height:24px; margin: 0 8px 0 6px;"/>
         {{ buttonText }}
       </button>
@@ -74,7 +74,6 @@ export default {
   },
   data () {
     return {
-      tab: '',
       course: '',
       nameText: '',
       statusOptions: ['white', 'red', 'yellow', 'blue', 'green'], // Deterministic order for the select
