@@ -18,6 +18,14 @@
         </div>
       </section>
       <section class="right-panel">
+        <StudentBox
+          v-if="selectedStudent"
+          :item="selectedStudent"
+          @hide="onHide"
+          @cancel="onCancel"
+          @save="onSaveStudent"
+          @input="onEditedLocal"
+        />
       </section>
     </div>
   </div>
@@ -30,7 +38,7 @@ import Header from './generic/Header.vue'
 import NavBar from './generic/NavBar.vue'
 import ScrollableCardList from './generic/ScrollableCardList.vue'
 import ActionBar from './generic/ActionBar.vue'
-import StudentCard from './generic/cards/StudentCard.vue'
+import StudentBox from './generic/boxes/StudentBox.vue'
 import axios from 'axios'
 
 export default {
@@ -40,7 +48,7 @@ export default {
     NavBar,
     ScrollableCardList,
     ActionBar,
-    StudentCard
+    StudentBox
   },
   data () {
     return {
@@ -64,6 +72,27 @@ export default {
       })
   },
   methods: {
+    onHide () {
+      // TODO: implement hide functionality
+    },
+    onCancel () {
+      this.selectedStudent = null
+    },
+    onEditedLocal (updated) {
+      // Optionally keep a live mirror of edits in the selected object (in-memory only)
+      this.selectedStudent = { ...this.selectedStudent, ...updated }
+    },
+    onSaveStudent (payload) {
+      // TODO
+      // Persist changes when API is available
+      // axios.put(`${apiUrl}/api/v1/students/${payload.id}`, payload)
+      //   .then(() => { /* refresh or notify */ })
+      //   .catch(e => { this.error = e.response?.data?.message || e.message })
+      // For now, merge into local list
+      const idx = this.students.findIndex(s => s.id === payload.id)
+      if (idx !== -1) this.$set(this.students, idx, { ...this.students[idx], ...payload })
+      this.selectedStudent = { ...this.selectedStudent, ...payload }
+    }
   }
 }
 

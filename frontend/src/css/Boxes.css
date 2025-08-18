@@ -1,0 +1,140 @@
+@import url('colors.css');
+
+.student-box {
+  display: flex;
+  flex-direction: column;
+  height: 78vh;
+  overflow-y: auto;
+}
+
+.box-body {
+  display: flex;
+  flex-direction: column;
+  height: 68vh;
+  padding: 15px 20px 15px 20px;
+  background-color: var(--background-white);
+  border: 2px solid var(--text-secondary-color);
+  border-radius: 6px;
+}
+
+.top-row {
+  height: 15vh;
+  display: grid;
+  grid-template-columns: 1fr 5fr;
+  align-items: start;
+  gap: 10px;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  background-color: var(--background-primary-color);
+  border: 2px solid var(--text-secondary-color);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar img {
+  width: 12vh;
+  height: 12vh;
+}
+
+.description {
+  width: 100%;
+  height: 100%;
+}
+
+.description textarea {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: var(--background-primary-color);
+  border: 2px solid var(--text-secondary-color);
+  border-radius: 6px;
+  color: var(--text-primary-color);
+  font-size: 18px;
+}
+
+.identity-row,
+.internship-row {
+  height: 7vh;
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  margin: 10px 0;
+  gap: 10px;
+}
+
+.location-row {
+  height: 7vh;
+  display: grid;
+  grid-template-columns: 2fr 1fr 4fr;
+  margin: 10px 0;
+  gap: 10px;
+}
+
+.observations {
+  height: 17vh;
+}
+.observations textarea {
+  height: 100%;
+}
+
+.observations textarea,
+.identity-row input,
+.location-row input,
+.identity-row select,
+.internship-row select {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 2px solid var(--text-secondary-color);
+  border-radius: 6px;
+  color: var(--text-primary-color);
+  font-size: 16px;
+}
+
+.description textarea::placeholder,
+.observations textarea::placeholder,
+.identity-row input::placeholder,
+.location-row input::placeholder,
+.identity-row select.is-placeholder,
+.internship-row select.is-placeholder {
+  color: var(--text-secondary-color);
+}
+
+.secondary .section-title {
+  margin: 10px 0;
+  color: var(--text-primary-color);
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.box-footer {
+  display: flex;
+  height: 10vh;
+  padding: 15px 0;
+  gap: 10px;
+  align-items: center;
+}
+
+.box-footer .spacer {
+  flex: 1;
+}
+
+.box-footer .btn {
+  height: 45px;
+  width: 110px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  background: var(--background-secondary-color);
+  color: var(--text-header-color);
+  font-size: 18px;
+}
+
+.box-footer .btn:hover {
+  background: var(--background-header-color);
+}
