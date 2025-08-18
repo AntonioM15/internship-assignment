@@ -6,9 +6,17 @@
     <ActionBar :kind="'tutors'"/>
     <div v-if="error" style="color: red;">Error: {{ error }}</div>
     <div v-else-if="loading">Cargando...</div>
-    <ul v-else>
-      <li v-for="(item, index) in data" :key="index">{{ item }}</li>
-    </ul>
+    <div v-else class="tutors-layout">
+      <section class="left-panel">
+        <div class="card-list">
+          <ScrollableCardList
+            :items="tutors"
+            :kind="'tutors'"
+            itemKey="id"
+          />
+        </div>
+      </section>
+    </div>
   </div>
 
 </template>
@@ -16,28 +24,32 @@
 <script>
 import apiUrl from '../config'
 import Header from './generic/Header.vue'
-import NavBar from './generic/NavBar.vue'
 import ActionBar from './generic/ActionBar.vue'
+import NavBar from './generic/NavBar.vue'
+import ScrollableCardList from './generic/ScrollableCardList.vue'
 import axios from 'axios'
 
 export default {
   name: 'Tutors',
   components: {
-    ActionBar,
     Header,
-    NavBar
+    NavBar,
+    ActionBar,
+    ScrollableCardList
   },
   data () {
     return {
       loading: true,
-      error: null
+      error: null,
+      tutors: [],
+      selectedTutor: null // TODO nothing yet
     }
   },
   mounted () {
     const path = `${apiUrl}/api/v1/tutors`
     axios.get(path)
       .then(response => {
-        this.data = response.data.data
+        this.tutors = response.data.data.tutors
       })
       .catch(err => {
         this.error = err.response.data.message || err.message
