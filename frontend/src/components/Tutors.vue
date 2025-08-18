@@ -24,8 +24,8 @@
 <script>
 import apiUrl from '../config'
 import Header from './generic/Header.vue'
-import ActionBar from './generic/ActionBar.vue'
 import NavBar from './generic/NavBar.vue'
+import ActionBar from './generic/ActionBar.vue'
 import ScrollableCardList from './generic/ScrollableCardList.vue'
 import axios from 'axios'
 
