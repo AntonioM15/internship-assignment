@@ -39,8 +39,3 @@
   flex: 1;
   overflow-y: auto;
 }
-
-.scrollable-box {
-  height: 100%;
-  overflow-y: auto;
-}

@@ -8,34 +8,15 @@
   overflow-y: auto;
 }
 
-.card-item {
-  display: flex;
-  align-items: center;
-  padding: 10px;
+.card-items {
   border-bottom: 1px solid var(--text-secondary-color);
 }
 
-.card-item:last-child {
+.card-items:last-child {
   border-bottom: none;
 }
 
-.icon-box {
-  width: 50px;
-  height: 50px;
-  margin-right: 10px;
+.card-items.selected {
   background-color: var(--background-primary-color);
-  border: 2px solid var(--text-secondary-color);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.icon-box img {
-  width: 30px;
-  height: 30px;
-}
-
-.item-text {
-  font-size: 15px;
-}
