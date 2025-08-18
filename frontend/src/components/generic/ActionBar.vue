@@ -13,13 +13,13 @@
         <input
           type="text"
           class="filter-element"
-          style="width: 60%; min-width: 225px;"
-          placeholder="Nombre estudiante"
+          style="width: 60%; min-width: 225px; padding-left: 5px;"
+          :placeholder="filterPlaceholder"
           v-model="nameText"
         />
       </div>
       <div class="filter-group" style="margin-left: 4px;">
-        <img :src="statusIcons[selectedStatus]" alt="statusTexts[selectedStatus]" style="width:24px;height:24px; margin: 0 8px 0 6px;"/>
+        <img :src="statusIcons[selectedStatus]" :alt="statusTexts[selectedStatus]" style="width:24px;height:24px; margin: 0 8px 0 6px;"/>
         <select
           class="filter-element"
           style="width: 100%; min-width: 225px;"
@@ -34,8 +34,8 @@
     </div>
     <div class="action-section">
       <button class="add-student-btn" @click="addEntities">
-        <img src="../../assets/IconAddLight.svg" alt="Añadir estudiantes" style="width:24px;height:24px; margin: 0 8px 0 6px;"/>
-        Añadir estudiantes
+        <img src="../../assets/IconAddLight.svg" :alt="buttonText" style="width:24px;height:24px; margin: 0 8px 0 6px;"/>
+        {{ buttonText }}
       </button>
     </div>
   </div>
@@ -49,8 +49,25 @@ import IconStatusGreen from '../../assets/IconStatusGreen.svg'
 import IconStatusRed from '../../assets/IconStatusRed.svg'
 import IconStatusYellow from '../../assets/IconStatusYellow.svg'
 
+const TEXTS = {
+  students: {
+    singular: 'estudiante',
+    plural: 'estudiantes'
+  },
+  tutors: {
+    singular: 'tutor',
+    plural: 'tutores'
+  }
+}
+
 export default {
   name: 'ActionBar',
+  props: {
+    kind: {
+      type: String,
+      default: 'students'
+    }
+  },
   data () {
     return {
       tab: '',
@@ -72,6 +89,14 @@ export default {
         green: 'Asignado - En curso'
       },
       selectedStatus: 'white'
+    }
+  },
+  computed: {
+    filterPlaceholder () {
+      return `Nombre ${TEXTS[this.kind].singular}`
+    },
+    buttonText () {
+      return `Añadir ${TEXTS[this.kind].plural}`
     }
   },
   methods: {

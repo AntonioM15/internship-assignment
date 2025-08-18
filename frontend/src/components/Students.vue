@@ -3,7 +3,7 @@
   <div class="container">
     <Header/>
     <NavBar/>
-    <ActionBar/>
+    <ActionBar :kind="'students'"/>
     <div v-if="error" style="color: red;">Error: {{ error }}</div>
     <div v-else-if="loading">Cargando...</div>
     <div v-else class="students-layout">
@@ -36,8 +36,8 @@
 import apiUrl from '../config'
 import Header from './generic/Header.vue'
 import NavBar from './generic/NavBar.vue'
-import ScrollableCardList from './generic/ScrollableCardList.vue'
 import ActionBar from './generic/ActionBar.vue'
+import ScrollableCardList from './generic/ScrollableCardList.vue'
 import StudentBox from './generic/boxes/StudentBox.vue'
 import axios from 'axios'
 
@@ -46,8 +46,8 @@ export default {
   components: {
     Header,
     NavBar,
-    ScrollableCardList,
     ActionBar,
+    ScrollableCardList,
     StudentBox
   },
   data () {
