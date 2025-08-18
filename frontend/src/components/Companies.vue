@@ -17,6 +17,16 @@
           />
         </div>
       </section>
+      <section class="right-panel">
+        <CompanyBox
+          v-if="selectedCompany"
+          :item="selectedCompany"
+          @hide="onHide"
+          @cancel="onCancel"
+          @save="onSaveCompany"
+          @input="onEditedLocal"
+        />
+      </section>
     </div>
   </div>
 
@@ -29,6 +39,7 @@ import NavBar from './generic/NavBar.vue'
 import ActionBar from './generic/ActionBar.vue'
 import ScrollableCardList from './generic/ScrollableCardList.vue'
 import axios from 'axios'
+import CompanyBox from './generic/boxes/CompanyBox.vue'
 
 export default {
   name: 'Companies',
@@ -36,7 +47,8 @@ export default {
     Header,
     NavBar,
     ActionBar,
-    ScrollableCardList
+    ScrollableCardList,
+    CompanyBox
   },
   data () {
     return {
@@ -60,6 +72,27 @@ export default {
       })
   },
   methods: {
+    onHide () {
+      // TODO: implement hide functionality
+    },
+    onCancel () {
+      this.selectedCompany = null
+    },
+    onEditedLocal (updated) {
+      // Optionally keep a live mirror of edits in the selected object (in-memory only)
+      this.selectedCompany = { ...this.selectedCompany, ...updated }
+    },
+    onSaveCompany (payload) {
+      // TODO
+      // Persist changes when API is available
+      // axios.put(`${apiUrl}/api/v1/companies/${payload.id}`, payload)
+      //   .then(() => { /* refresh or notify */ })
+      //   .catch(e => { this.error = e.response?.data?.message || e.message })
+      // For now, merge into local list
+      const idx = this.companies.findIndex(s => s.id === payload.id)
+      if (idx !== -1) this.$set(this.companies, idx, { ...this.companies[idx], ...payload })
+      this.selectedCompany = { ...this.selectedCompany, ...payload }
+    }
   }
 }
 

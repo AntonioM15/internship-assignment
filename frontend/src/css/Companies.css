@@ -14,7 +14,8 @@
   overflow: hidden;
 }
 
-.left-panel {
+.left-panel,
+.right-panel {
   height: 100%;
   overflow: hidden;
   display: flex;

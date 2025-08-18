@@ -1,5 +1,5 @@
 <template>
-  <div class="student-box">
+  <div class="company-box">
     <div class="box-body">
       <div class="top-row">
         <div class="avatar">
@@ -11,7 +11,7 @@
             id="desc"
             v-model="form.description"
             rows="5"
-            placeholder="Descripción alumno: preferencias, tecnologías, etc."
+            placeholder="Descripción empresa"
           />
         </div>
       </div>
@@ -20,11 +20,11 @@
         <input
           type="text"
           v-model="form.fullName"
-          placeholder="Nombre Apellido Apellido"
+          placeholder="Nombre Empresa"
         />
-        <select v-model="form.degree" :class="{ 'is-placeholder': form.degree === '' }" aria-label="Titulación">
-          <option value="">Titulación</option> <!-- Used as a placeholder -->
-          <option v-for="deg in degrees" :key="deg" :value="deg">{{ deg }}</option>
+        <select v-model="form.field" :class="{ 'is-placeholder': form.field === '' }" aria-label="Campo">
+          <option value="">Campo</option> <!-- Used as a placeholder -->
+          <option v-for="field in fields" :key="field" :value="field">{{ field }}</option>
         </select>
       </div>
 
@@ -36,13 +36,7 @@
 
       <div class="secondary">
         <div class="section-title">Información secundaria</div>
-        <div class="internship-row">
-          <select v-model="form.internshipType" :class="{ 'is-placeholder': form.internshipType === '' }" aria-label="Tipo de práctica">
-            <option value="">Tipo de práctica</option> <!-- Used as a placeholder -->
-            <option v-for="opt in internshipTypes" :key="opt" :value="opt">{{ opt }}</option>
-          </select>
-        </div>
-        <div class="observations">
+        <div class="observations" style="height: 25vh">
           <textarea
             id="obs"
             v-model="form.notes"
@@ -76,8 +70,7 @@ export default {
     return {
       form: this.mapItemToForm(this.item),
       // TODO - Fetch from backend
-      degrees: ['DAW', 'DAM', 'ASIR', 'SMR'],
-      internshipTypes: ['FCT', 'Dual', 'Extraordinaria'],
+      fields: ['Programación', 'Electrónica', 'Mecánica'],
       defaultIcon: IconUserDefault
     }
   },
@@ -95,27 +88,24 @@ export default {
       if (!i) {
         return {
           fullName: '',
-          degree: '',
+          field: '',
           city: '',
           cp: '',
           address: '',
           description: '',
-          internshipType: '',
           notes: ''
         }
       }
       // Try to map common field names while keeping graceful fallbacks
       return {
-        fullName: i.full_name || '',
-        degree: i.degree || '',
+        fullName:  i.full_name || '',
+        field: i.field || '',
         // TODO location needs to be improved in to json methods
         city: '',
         cp: '',
         address: '',
         // TODO descriptions
         description: '',
-        // TODO internship needs to be improved in to json methods
-        internshipType: '',
         // TODO notes (observations) needs to be improved in to json methods
         notes: ''
       }

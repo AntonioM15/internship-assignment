@@ -12,8 +12,8 @@
         </slot>
       </div>
       <div class="item-text">
-        <slot name="degrees" :item="item">
-          <!-- TODO - Update to json methods to show the actual degrees names -->
+        <slot name="field" :item="item">
+          {{ item.field }}
         </slot>
       </div>
     </div>

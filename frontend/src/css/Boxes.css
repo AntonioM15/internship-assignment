@@ -1,6 +1,7 @@
 @import url('colors.css');
 
-.student-box {
+.student-box,
+.company-box {
   display: flex;
   flex-direction: column;
   height: 78vh;
