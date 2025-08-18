@@ -54,10 +54,16 @@ export default {
   },
   methods: {
     onSelect (item) {
-      // v-model
-      this.$emit('input', item)
-      // Also emit explicit event if the parent prefers listening
-      this.$emit('select', item)
+      // Toggle selection: click again to unselect
+      if (this.isSelected(item)) {
+        this.$emit('input', null)
+        this.$emit('unselect', item)
+      } else {
+        // v-model
+        this.$emit('input', item)
+        // Also emit explicit event if the parent prefers listening
+        this.$emit('select', item)
+      }
     },
     isSelected (item) {
       if (!this.value) return false
