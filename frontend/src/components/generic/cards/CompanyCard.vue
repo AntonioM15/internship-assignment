@@ -2,7 +2,7 @@
   <div class="card-item">
     <div class="icon-box">
       <slot name="icon" :item="item">
-        <img :src="defaultIcon" alt="Avatar" />
+        <img :src="defaultCompanyIcon" alt="Avatar" />
       </slot>
     </div>
     <div class="item-text">
@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import IconUserDefault from '../../../assets/IconUserDefault.svg'
+import IconCompanyDark from '../../../assets/IconCompanyDark.svg'
 
 export default {
   name: 'CompanyCard',
@@ -33,7 +33,7 @@ export default {
   },
   data () {
     return {
-      defaultIcon: IconUserDefault
+      defaultCompanyIcon: IconCompanyDark
     }
   }
 }

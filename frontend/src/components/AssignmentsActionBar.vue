@@ -3,18 +3,17 @@
   <div class="action-bar">
     <div class="filters-section">
       <div class="filter-group" style="min-width: 400px;">
-        <select class="filter-element"  style="width: 40%; min-width: 150px;" v-model="course" :class="{ 'is-placeholder': course === '' }">
-          <!-- TODO - values are mocked -->
-          <option value="">Titulación</option> <!-- Used as a placeholder -->
-          <option value="informatica">Informática</option>
-          <option value="electronica">Electrónica</option>
-          <option value="mecanica">Mecánica</option>
+        <select class="filter-element"  style="width: 40%; min-width: 150px;" v-model="entityKind" :class="{ 'is-placeholder': entityKind === '' }">
+          <option value="">Entidad</option> <!-- Used as a placeholder -->
+          <option value="student">Estudiante</option>
+          <option value="tutor">Profesor</option>
+          <option value="company">Empresa</option>
         </select>
         <input
           type="text"
           class="filter-element"
           style="width: 60%; min-width: 225px; padding-left: 5px;"
-          :placeholder="filterPlaceholder"
+          placeholder="Nombre"
           v-model="nameText"
         />
       </div>
@@ -33,9 +32,15 @@
       </div>
     </div>
     <div class="action-section">
-      <button class="add-entity-btn" @click="addEntities">
-        <img src="../../assets/IconAddLight.svg" :alt="buttonText" style="width:24px;height:24px; margin: 0 8px 0 6px;"/>
-        {{ buttonText }}
+      <div class="action-group" style="min-width: 225px;">
+        <select class="action-element"  style="width: 100%;" v-model="assignmentKind">
+          <option v-for="assignmentOptions in assignmentOptions" :key="assignmentOptions" :value="assignmentOptions">
+            {{ assignmentsTexts[assignmentOptions] }}
+          </option>
+        </select>
+      </div>
+      <button class="assign-btn" @click="assignEntities">
+        Asignar
       </button>
     </div>
   </div>
@@ -43,38 +48,24 @@
 
 <script>
 
-import IconStatusWhite from '../../assets/IconStatusWhite.svg'
-import IconStatusBlue from '../../assets/IconStatusBlue.svg'
-import IconStatusGreen from '../../assets/IconStatusGreen.svg'
-import IconStatusRed from '../../assets/IconStatusRed.svg'
-import IconStatusYellow from '../../assets/IconStatusYellow.svg'
-
-const TEXTS = {
-  students: {
-    singular: 'estudiante',
-    plural: 'estudiantes'
-  },
-  tutors: {
-    singular: 'tutor',
-    plural: 'tutores'
-  },
-  companies: {
-    singular: 'empresa',
-    plural: 'empresas'
-  }
-}
+import IconStatusWhite from '../assets/IconStatusWhite.svg'
+import IconStatusBlue from '../assets/IconStatusBlue.svg'
+import IconStatusGreen from '../assets/IconStatusGreen.svg'
+import IconStatusRed from '../assets/IconStatusRed.svg'
+import IconStatusYellow from '../assets/IconStatusYellow.svg'
 
 export default {
-  name: 'ActionBar',
+  name: 'AssignmentsActionBar',
   props: {
+    // Not used, kept for consistency with other components
     kind: {
       type: String,
-      default: 'students'
+      default: 'assignments'
     }
   },
   data () {
     return {
-      course: '',
+      entityKind: '',
       nameText: '',
       statusOptions: ['white', 'red', 'yellow', 'blue', 'green'], // Deterministic order for the select
       statusIcons: {
@@ -91,22 +82,22 @@ export default {
         blue: 'Asignado - Aprobado',
         green: 'Asignado - En curso'
       },
-      selectedStatus: 'white'
-    }
-  },
-  computed: {
-    filterPlaceholder () {
-      return `Nombre ${TEXTS[this.kind].singular}`
-    },
-    buttonText () {
-      return `Añadir ${TEXTS[this.kind].plural}`
+      selectedStatus: 'white',
+      assignmentKind: 'distanceStudents', // Distance for students used as default value
+      assignmentOptions: ['distanceStudents', 'distanceTutors', 'preferenceStudents', 'preferenceCompanies'],
+      assignmentsTexts: {
+        distanceStudents: 'Distancia estudiantes',
+        distanceTutors: 'Distancia profesores',
+        preferenceStudents: 'Preferencia estudiantes',
+        preferenceCompanies: 'Preferencia empresas'
+      }
     }
   },
   methods: {
     emitStatus () {
       this.$emit('status-changed', this.selectedStatus)
     },
-    addEntities () {
+    assignEntities () {
       // TODO: Implement popup
       console.log('Adding a new entity')
     }
@@ -115,5 +106,5 @@ export default {
 </script>
 
 <style scoped>
-@import url('../../css/ActionBar.css');
+@import url('../css/AssignmentsActionBar.css');
 </style>
