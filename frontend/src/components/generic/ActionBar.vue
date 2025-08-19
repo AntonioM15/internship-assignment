@@ -76,22 +76,22 @@ export default {
     return {
       course: '',
       nameText: '',
-      statusOptions: ['white', 'red', 'yellow', 'blue', 'green'], // Deterministic order for the select
+      statusOptions: ['unknown', 'unassigned', 'provisional', 'assigned', 'ongoing'], // Deterministic order for the select
       statusIcons: {
-        white: IconStatusWhite,
-        red: IconStatusRed,
-        yellow: IconStatusYellow,
-        blue: IconStatusBlue,
-        green: IconStatusGreen
+        unknown: IconStatusWhite,
+        unassigned: IconStatusRed,
+        provisional: IconStatusYellow,
+        assigned: IconStatusBlue,
+        ongoing: IconStatusGreen
       },
       statusTexts: {
-        white: 'Todos los estados',
-        red: 'Por asignar',
-        yellow: 'Asignado - Por aprobar',
-        blue: 'Asignado - Aprobado',
-        green: 'Asignado - En curso'
+        unknown: 'Todos los estados',
+        unassigned: 'Por asignar',
+        provisional: 'Asignado - Por aprobar',
+        assigned: 'Asignado - Aprobado',
+        ongoing: 'Asignado - En curso'
       },
-      selectedStatus: 'white'
+      selectedStatus: 'unknown' // When unknown include all the statuses - used as default value
     }
   },
   computed: {
