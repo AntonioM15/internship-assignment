@@ -48,7 +48,7 @@
     <div class="card-item">
       <div class="icon-box" style="width: 70px; height: 70px;">
         <slot name="icon" :item="item" >
-          <img :src="defaultIcon" alt="Avatar" style="width: 50px; height: 50px;"/>
+          <img :src="defaultCompanyIcon" alt="Avatar" style="width: 50px; height: 50px;"/>
         </slot>
       </div>
       <div class="item-text">
@@ -70,6 +70,7 @@
 
 <script>
 import IconUserDefault from '../../../assets/IconUserDefault.svg'
+import IconCompanyDark from '../../../assets/IconCompanyDark.svg'
 
 export default {
   name: 'AssignmentCard',
@@ -81,7 +82,8 @@ export default {
   },
   data () {
     return {
-      defaultIcon: IconUserDefault
+      defaultIcon: IconUserDefault,
+      defaultCompanyIcon: IconCompanyDark
     }
   },
   computed: {
