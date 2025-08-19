@@ -24,7 +24,7 @@
 import apiUrl from '../config'
 import Header from './generic/Header.vue'
 import NavBar from './generic/NavBar.vue'
-import AssignmentsActionBar from './AssignmentsActionBar.vue'
+import AssignmentsActionBar from './generic/AssignmentsActionBar.vue'
 import axios from 'axios'
 import ScrollableCardList from './generic/ScrollableCardList.vue'
 
