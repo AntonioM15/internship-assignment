@@ -39,7 +39,7 @@
           <slot name="degrees" :item="item">
             <!-- TODO - Update to json methods to show the actual degrees names -->
             <!-- {{ item.tutor.degrees.join(', ') }} -->
-            {{ item.tutor.degrees }}
+            {{ tutorDegreesText }}
           </slot>
         </div>
       </div>
@@ -82,6 +82,12 @@ export default {
   data () {
     return {
       defaultIcon: IconUserDefault
+    }
+  },
+  computed: {
+    tutorDegreesText () {
+      const d = this.item && this.item.degrees
+      return Array.isArray(d) ? d.join(', ') : ''
     }
   }
 }
