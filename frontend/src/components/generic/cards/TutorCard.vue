@@ -18,14 +18,20 @@
         </slot>
       </div>
     </div>
+    <!-- TODO - Update to json methods -->
+    <CardStatus :item="item" />
   </div>
 </template>
 
 <script>
 import IconUserDefault from '../../../assets/IconUserDefault.svg'
+import CardStatus from './CardStatus.vue'
 
 export default {
   name: 'TutorCard',
+  components: {
+    CardStatus
+  },
   props: {
     item: {
       type: Object,

@@ -48,11 +48,11 @@
 
 <script>
 
-import IconStatusWhite from '../assets/IconStatusWhite.svg'
-import IconStatusBlue from '../assets/IconStatusBlue.svg'
-import IconStatusGreen from '../assets/IconStatusGreen.svg'
-import IconStatusRed from '../assets/IconStatusRed.svg'
-import IconStatusYellow from '../assets/IconStatusYellow.svg'
+import IconStatusWhite from '../../assets/IconStatusWhite.svg'
+import IconStatusBlue from '../../assets/IconStatusBlue.svg'
+import IconStatusGreen from '../../assets/IconStatusGreen.svg'
+import IconStatusRed from '../../assets/IconStatusRed.svg'
+import IconStatusYellow from '../../assets/IconStatusYellow.svg'
 
 export default {
   name: 'AssignmentsActionBar',
@@ -106,5 +106,5 @@ export default {
 </script>
 
 <style scoped>
-@import url('../css/AssignmentsActionBar.css');
+@import url('../../css/AssignmentsActionBar.css');
 </style>

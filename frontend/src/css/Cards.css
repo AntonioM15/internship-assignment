@@ -56,3 +56,15 @@
 .item-text {
   font-size: 15px;
 }
+
+.item-status {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.item-status img {
+  width: 24px;
+  height: 24px;
+}
+

@@ -63,6 +63,7 @@
           </slot>
         </div>
       </div>
+      <CardStatus :item="item" />
     </div>
   </div>
 
@@ -71,9 +72,13 @@
 <script>
 import IconUserDefault from '../../../assets/IconUserDefault.svg'
 import IconCompanyDark from '../../../assets/IconCompanyDark.svg'
+import CardStatus from './CardStatus.vue'
 
 export default {
   name: 'AssignmentCard',
+  components: {
+    CardStatus
+  },
   props: {
     item: {
       type: Object,
