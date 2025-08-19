@@ -1,5 +1,25 @@
 @import url('colors.css');
 
+.card-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.card-row .card-item {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Vertical dividers between columns */
+.card-row .card-item + .card-item {
+  border-left: 2px solid var(--background-secondary-color);
+  /* Room after the divider */
+  padding-left: 20px;
+}
+
 .card-item {
   display: flex;
   align-items: center;

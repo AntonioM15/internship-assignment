@@ -20,13 +20,15 @@ import NotificationCard from './cards/NotificationCard.vue'
 import StudentCard from './cards/StudentCard.vue'
 import TutorCard from './cards/TutorCard.vue'
 import CompanyCard from './cards/CompanyCard.vue'
+import AssignmentCard from './cards/AssignmentCard.vue'
 
 // Local registry
 const ELEMENTS = {
   notifications: NotificationCard,
   students: StudentCard,
   tutors: TutorCard,
-  companies: CompanyCard
+  companies: CompanyCard,
+  assignments: AssignmentCard
 }
 
 export default {
