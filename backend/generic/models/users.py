@@ -39,8 +39,8 @@ class User(TimestampMixin):
             "full_name": doc['full_name'],
             "hidden": doc['hidden'],
             "avatar": doc['avatar'],
-            "notifications": [serialize_document(doc) for doc in notifications],
-            "location": serialize_document(location),
+            "notifications": [serialize_document(doc) if doc else None for doc in notifications],
+            "location": serialize_document(location) if location else None,
         }
 
     def update_location(self, location_id):
@@ -103,8 +103,8 @@ class Coordinator(User):
         institution = Institution.get_by_id(mongo_db, doc['institution'])
         observations = Observation.get_multi_by_ids(mongo_db, doc['observations'])
         data.update({
-            "institution": serialize_document(institution),
-            "observations": [serialize_document(doc) for doc in observations],
+            "institution": serialize_document(institution) if institution else None,
+            "observations": [serialize_document(doc) if doc else None for doc in observations],
         })
         return data
 
@@ -141,9 +141,9 @@ class Worker(User):
         interns = User.get_multi_by_ids(mongo_db, doc['interns'])
         internships = Internship.get_multi_by_ids(mongo_db, doc['internships'])
         data.update({
-            "company": serialize_document(company),
-            "interns": [serialize_document(doc) for doc in interns],
-            "internships": [serialize_document(doc) for doc in internships],
+            "company": serialize_document(company) if company else None,
+            "interns": [serialize_document(doc) if doc else None for doc in interns],
+            "internships": [serialize_document(doc) if doc else None for doc in internships],
         })
         return data
 
@@ -191,10 +191,10 @@ class Student(User):
         observations = Observation.get_multi_by_ids(mongo_db, doc['observations'])
         data.update({
             "status": doc['status'],
-            "institution": serialize_document(institution),
-            "degree": serialize_document(degree),
-            "internship": serialize_document(internship),
-            "observations": [serialize_document(doc) for doc in observations],
+            "institution": serialize_document(institution) if institution else None,
+            "degree": serialize_document(degree) if degree else None,
+            "internship": serialize_document(internship) if internship else None,
+            "observations": [serialize_document(doc) if doc else None for doc in observations],
         })
         return data
 
@@ -264,10 +264,10 @@ class Tutor(User):
         internships = Internship.get_multi_by_ids(mongo_db, doc['internships'])
         data.update({
             "status": doc['status'],
-            "institution": serialize_document(institution),
-            "degrees": [serialize_document(doc) for doc in degrees],
-            "students": [serialize_document(doc) for doc in students],
-            "internships": [serialize_document(doc) for doc in internships],
+            "institution": serialize_document(institution) if institution else None,
+            "degrees": [serialize_document(doc) if doc else None for doc in degrees],
+            "students": [serialize_document(doc) if doc else None for doc in students],
+            "internships": [serialize_document(doc) if doc else None for doc in internships],
         })
         return data
 

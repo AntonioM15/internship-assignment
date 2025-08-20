@@ -45,12 +45,12 @@ class Internship(TimestampMixin):
             "finishing_day": doc['finishing_day'].isoformat(),
             "title": doc['title'],
             "description": doc['description'],
-            "location": serialize_document(location),
-            "student": serialize_document(student),
-            "worker": serialize_document(worker),
-            "tutor": serialize_document(tutor),
-            "company": serialize_document(company),
-            "institution": serialize_document(institution),
+            "location": serialize_document(location) if location else None,
+            "student": serialize_document(student) if student else None,
+            "worker": serialize_document(worker) if worker else None,
+            "tutor": serialize_document(tutor) if tutor else None,
+            "company": serialize_document(company) if company else None,
+            "institution": serialize_document(institution) if institution else None,
         }
 
     def update_location(self, location_id):

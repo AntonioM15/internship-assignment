@@ -11,13 +11,13 @@
         <div class="item-title">
           <slot name="title" :item="item">
             <!-- TODO - Update to json methods -->
-            {{ item.student.full_name }}
+            {{ item && item.student ? item.student.full_name : null }}
           </slot>
         </div>
         <div class="item-text">
           <slot name="degree" :item="item">
             <!-- TODO - Update to json methods to show the actual degree name -->
-            {{ item.student.degree }}
+            {{ item && item.student ? item.student.degree : null }}
           </slot>
         </div>
       </div>
@@ -32,7 +32,7 @@
       <div class="item-text">
         <div class="item-title">
           <slot name="title" :item="item">
-            {{ item.tutor.full_name }}
+            {{ item && item.tutor ? item.tutor.full_name : null }}
           </slot>
         </div>
         <div class="item-text">
@@ -54,12 +54,12 @@
       <div class="item-text">
         <div class="item-title">
           <slot name="title" :item="item">
-            {{ item.company.full_name }}
+            {{ item && item.company ? item.company.full_name : null }}
           </slot>
         </div>
         <div class="item-text">
           <slot name="field" :item="item">
-            {{ item.company.field }}
+            {{ item && item.company ? item.company.field : null }}
           </slot>
         </div>
       </div>
