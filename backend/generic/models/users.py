@@ -1,7 +1,11 @@
 from bson import ObjectId
 from pymongo import DESCENDING
 
-from .utils import TimestampMixin, AVAILABLE_STATUSES, DEFAULT_STATUS
+from .internships import Internship
+from .companies import Company
+from .institutions import Institution, Degree
+from .utils import Notification, Observation, Location, AVAILABLE_STATUSES, DEFAULT_STATUS, serialize_document, \
+                   TimestampMixin
 
 
 class User(TimestampMixin):
@@ -43,6 +47,19 @@ class User(TimestampMixin):
     def put_multi(cls, mongo_db, users):
         cls.update_last_updated_multi(users)
         return mongo_db.users.insert_many([user.to_dict() for user in users])
+
+    @classmethod
+    def get_by_id(cls, mongo_db, user_id):
+        return mongo_db.users.find_one({"_id": user_id})
+
+    @classmethod
+    def get_multi_by_ids(cls, mongo_db, user_ids):
+        return mongo_db.users.find({"_id": {"$in": user_ids}}).sort("created_date", DESCENDING)
+
+    @classmethod
+    def retrieve_latest_notifications(cls, mongo_db, _):
+        """ Retrieve the latest notifications of all related user collections """
+        return []  # Implement me in subclasses!
 
 
 class Coordinator(User):

@@ -86,6 +86,14 @@ class Internship(TimestampMixin):
         return mongo_db.internships.insert_many([internship.to_dict() for internship in internships])
 
     @classmethod
+    def get_by_id(cls, mongo_db, internship_id):
+        return mongo_db.internships.find_one({"_id": internship_id})
+
+    @classmethod
+    def get_multi_by_ids(cls, mongo_db, internship_ids):
+        return mongo_db.internships.find({"_id": {"$in": internship_ids}}).sort("created_date", DESCENDING)
+
+    @classmethod
     def retrieve_internships(cls, mongo_db, student_id=None, title=None, status=None):
         query = {}
         if student_id:
