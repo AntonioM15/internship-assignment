@@ -14,7 +14,7 @@
       <div class="item-text">
         <slot name="degree" :item="item">
           <!-- TODO - Update to json methods to show the actual degree name -->
-          {{ item.degree }}
+          {{ item.degree.code }}
         </slot>
       </div>
     </div>
