@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify, request
 
 from generic.models.companies import Company
 from generic.models.internships import Internship
-from generic.models.utils import serialize_document, str_date_to_datetime
+from generic.models.utils import str_date_to_datetime
 from generic.session_utils import limited_access, login_required
 
 # Blueprint definition
