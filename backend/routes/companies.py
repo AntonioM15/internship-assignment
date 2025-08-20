@@ -27,16 +27,17 @@ def companies_blueprint(mongo):
         response = {'companies': []}
         company_list = Company.retrieve_companies(mongo_db, field, full_name)
 
-        # Retrieve internships
+        # Filter internships
         for company in company_list:
-            internships = Company.retrieve_company_internships(mongo_db, company['_id'], status)
+            company_json = Company.doc_to_dict(mongo_db, company)
+            internships = company_json.get('internships', [])
             if not internships and status:
                 # We are filtering by status and the company doesn't have a matching internship
                 continue
-            serialized_internships = [serialize_document(internship) for internship in internships]
-            serialized_company = serialize_document(company)
-            serialized_company['internships'] = serialized_internships
-            response['companies'].append(serialized_company)
+            # Only include internships with matching status
+            internships_to_display = [internship for internship in internships if internship.get('status') == status]
+            company_json['internships'] = internships_to_display
+            response['companies'].append(company_json)
 
         return jsonify({"status": "success", "message": "Companies retrieved successfully", "data": response}), 200
 

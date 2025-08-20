@@ -1,15 +1,17 @@
 from bson import ObjectId
 from pymongo import DESCENDING
 
-from .utils import TimestampMixin, AVAILABLE_STATUSES
+from .internships import Internship
+from .utils import Location, Observation, TimestampMixin, AVAILABLE_STATUSES, serialize_document
 
 
 class Company(TimestampMixin):
-    def __init__(self, full_name, field, avatar=None, location=None):
+    def __init__(self, full_name, field, description=None, avatar=None, location=None):
         super().__init__()
         self.full_name = full_name
         self.field = field
         self.hidden = False
+        self.description = description
         self.avatar = avatar
 
         # Keys from other collections
@@ -17,6 +19,28 @@ class Company(TimestampMixin):
         self.workers = []
         self.observations = []
         self.internships = []
+
+    @classmethod
+    def doc_to_dict(cls, mongo_db, doc):
+        # Avoid circular imports
+        from .users import Worker
+
+        # Retrieve related entities and add them to the dict
+        location = Location.get_by_id(mongo_db, doc['location'])
+        workers = Worker.get_multi_by_ids(mongo_db, doc['workers'])
+        observations = Observation.get_multi_by_ids(mongo_db, doc['observations'])
+        internships = Internship.get_multi_by_ids(mongo_db, doc['internships'])
+        return {
+            "full_name": doc['full_name'],
+            "field": doc['field'],
+            "hidden": doc['hidden'],
+            "description": doc['description'],
+            "avatar": doc['avatar'],
+            "location": serialize_document(location) if location else None,
+            "workers": [serialize_document(doc) if doc else None for doc in workers],
+            "observations": [serialize_document(doc) if doc else None for doc in observations],
+            "internships": [Internship.doc_to_dict(mongo_db, doc) if doc else None for doc in internships],
+        }
 
     def update_location(self, location_id):
         if not location_id:

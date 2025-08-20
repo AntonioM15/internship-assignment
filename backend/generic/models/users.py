@@ -158,11 +158,12 @@ class Worker(User):
 
 
 class Student(User):
-    def __init__(self, email, hashed_password, official_id, full_name, status, institution, degree, internship=None, observations=None, **kwargs):
+    def __init__(self, email, hashed_password, official_id, full_name, status, institution, degree, description=None, internship=None, observations=None, **kwargs):
         super().__init__(email, hashed_password, official_id, full_name, **kwargs)
         self.role = 'student'
         self.status = status if status in AVAILABLE_STATUSES else DEFAULT_STATUS
         self.internship_type = None
+        self.description = description
 
         # Keys from other collections
         self.institution = institution
@@ -174,6 +175,8 @@ class Student(User):
         data = super().to_dict()
         data.update({
             "status": self.status,
+            "internship_type": self.internship_type,
+            "description": self.description,
             "institution": self.institution,
             "degree": self.degree,
             "internship": self.internship,
@@ -191,6 +194,8 @@ class Student(User):
         observations = Observation.get_multi_by_ids(mongo_db, doc['observations'])
         data.update({
             "status": doc['status'],
+            "internship_type": doc['internship_type'],
+            "description": doc['description'],
             "institution": serialize_document(institution) if institution else None,
             "degree": serialize_document(degree) if degree else None,
             "internship": serialize_document(internship) if internship else None,
