@@ -1,7 +1,7 @@
 from bson import ObjectId
 from pymongo import DESCENDING
 
-from .utils import TimestampMixin, AVAILABLE_STATUSES, DEFAULT_STATUS
+from .utils import TimestampMixin, Location, AVAILABLE_STATUSES, DEFAULT_STATUS, serialize_document
 
 
 class Internship(TimestampMixin):
@@ -22,6 +22,36 @@ class Internship(TimestampMixin):
         self.tutor = tutor
         self.company = company
         self.institution = institution
+
+    @classmethod
+    def doc_to_dict(cls, mongo_db, doc):
+        # Avoid circular imports
+        from .users import Student, Worker, Tutor
+        from .companies import Company
+        from .institutions import Institution
+
+        # Retrieve related entities and add them to the dict
+        location = Location.get_by_id(mongo_db, doc['location'])
+        student = Student.get_by_id(mongo_db, doc['student'])
+        worker = Worker.get_by_id(mongo_db, doc['worker'])
+        tutor = Tutor.get_by_id(mongo_db, doc['tutor'])
+        company = Company.get_by_id(mongo_db, doc['company'])
+        institution = Institution.get_by_id(mongo_db, doc['institution'])
+
+        return {
+            "kind": doc['kind'],
+            "status": doc['status'],
+            "starting_day": doc['starting_day'].isoformat(),
+            "finishing_day": doc['finishing_day'].isoformat(),
+            "title": doc['title'],
+            "description": doc['description'],
+            "location": serialize_document(location),
+            "student": serialize_document(student),
+            "worker": serialize_document(worker),
+            "tutor": serialize_document(tutor),
+            "company": serialize_document(company),
+            "institution": serialize_document(institution),
+        }
 
     def update_location(self, location_id):
         if not location_id:
