@@ -30,7 +30,7 @@
 
       <div class="location-row">
         <input type="text" v-model="form.city" placeholder="Ciudad" aria-label="Ciudad" />
-        <input type="text" v-model="form.cp" placeholder="CP" aria-label="Código Postal" />
+        <input type="text" v-model="form.pc" placeholder="CP" aria-label="Código Postal" />
         <input type="text" v-model="form.address" placeholder="Dirección" aria-label="Dirección" />
       </div>
 
@@ -90,7 +90,7 @@ export default {
           fullName: '',
           field: '',
           city: '',
-          cp: '',
+          pc: '',
           address: '',
           description: '',
           notes: ''
@@ -100,14 +100,11 @@ export default {
       return {
         fullName: i.full_name || '',
         field: i.field || '',
-        // TODO location needs to be improved in to json methods
-        city: '',
-        cp: '',
-        address: '',
-        // TODO descriptions
-        description: '',
-        // TODO notes (observations) needs to be improved in to json methods
-        notes: ''
+        city: i.location ? i.location.city : '',
+        pc: i.location ? i.location.postal_code : '',
+        address: i.location ? i.location.address : '',
+        description: i.description || '',
+        notes: i.observations && i.observations.length > 0 ? i.observations[i.length - 1].text : ''
       }
     },
     onHide () {
