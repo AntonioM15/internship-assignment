@@ -1,4 +1,5 @@
 from datetime import datetime
+from pymongo import DESCENDING
 
 AVAILABLE_STATUSES = ('unassigned', 'provisional', 'assigned', 'ongoing')
 DEFAULT_STATUS = 'unassigned'
@@ -98,6 +99,14 @@ class Location(TimestampMixin):
         cls.update_last_updated_multi(locations)
         return mongo_db.locations.insert_many([location.to_dict() for location in locations])
 
+    @classmethod
+    def get_by_id(cls, mongo_db, location_id):
+        return mongo_db.locations.find_one({"_id": location_id})
+
+    @classmethod
+    def get_multi_by_ids(cls, mongo_db, location_ids):
+        return mongo_db.locations.find({"_id": {"$in": location_ids}}).sort("created_date", DESCENDING)
+
 
 class Notification(TimestampMixin):
     def __init__(self, title, description, role, read=False, sender=None, receiver=None):
@@ -141,6 +150,14 @@ class Notification(TimestampMixin):
         cls.update_last_updated_multi(notifications)
         return mongo_db.notifications.insert_many([notification.to_dict() for notification in notifications])
 
+    @classmethod
+    def get_by_id(cls, mongo_db, notification_id):
+        return mongo_db.notifications.find_one({"_id": notification_id})
+
+    @classmethod
+    def get_multi_by_ids(cls, mongo_db, notification_ids):
+        return mongo_db.notifications.find({"_id": {"$in": notification_ids}}).sort("created_date", DESCENDING)
+
 
 class Observation(TimestampMixin):
     def __init__(self, text, creator=None, receiver=None):
@@ -180,3 +197,11 @@ class Observation(TimestampMixin):
     def put_multi(cls, mongo_db, observations):
         cls.update_last_updated_multi(observations)
         return mongo_db.observations.insert_many([observation.to_dict() for observation in observations])
+
+    @classmethod
+    def get_by_id(cls, mongo_db, notification_id):
+        return mongo_db.notifications.find_one({"_id": notification_id})
+
+    @classmethod
+    def get_multi_by_ids(cls, mongo_db, notification_ids):
+        return mongo_db.notifications.find({"_id": {"$in": notification_ids}}).sort("created_date", DESCENDING)

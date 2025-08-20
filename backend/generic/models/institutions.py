@@ -1,3 +1,5 @@
+from pymongo import DESCENDING
+
 from .utils import TimestampMixin
 
 
@@ -56,6 +58,14 @@ class Degree(TimestampMixin):
     def put_multi(cls, mongo_db, degrees):
         cls.update_last_updated_multi(degrees)
         return mongo_db.degrees.insert_many([degree.to_dict() for degree in degrees])
+
+    @classmethod
+    def get_by_id(cls, mongo_db, degree_id):
+        return mongo_db.degrees.find_one({"_id": degree_id})
+
+    @classmethod
+    def get_multi_by_ids(cls, mongo_db, degree_ids):
+        return mongo_db.degrees.find({"_id": {"$in": degree_ids}}).sort("created_date", DESCENDING)
 
 
 class Institution(TimestampMixin):
@@ -144,3 +154,11 @@ class Institution(TimestampMixin):
     def put_multi(cls, mongo_db, institutions):
         cls.update_last_updated_multi(institutions)
         return mongo_db.institutions.insert_many([institution.to_dict() for institution in institutions])
+
+    @classmethod
+    def get_by_id(cls, mongo_db, institution_id):
+        return mongo_db.institutions.find_one({"_id": institution_id})
+
+    @classmethod
+    def get_multi_by_ids(cls, mongo_db, institution_ids):
+        return mongo_db.institutions.find({"_id": {"$in": institution_ids}}).sort("created_date", DESCENDING)

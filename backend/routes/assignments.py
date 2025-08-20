@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify, request
 
 from generic.models.companies import Company
 from generic.models.internships import Internship
-from generic.models.utils import serialize_document, str_date_to_datetime
+from generic.models.utils import str_date_to_datetime
 from generic.session_utils import limited_access, login_required
 
 # Blueprint definition
@@ -22,19 +22,8 @@ def assignments_blueprint(mongo):
         status = request.args.get('status')
 
         # Retrieve internships
-        response = {'internships': []}
         internship_list = Internship.retrieve_internships(mongo_db, student_id, title, status)
-
-        # Retrieve related documents
-        for internship in internship_list:
-            student, tutor, company = Internship.retrieve_internship_relations(
-                mongo_db, internship['student'], internship['tutor'], internship['company']
-            )
-            serialized_internship = serialize_document(internship)
-            serialized_internship['student'] = serialize_document(student)
-            serialized_internship['tutor'] = serialize_document(tutor)
-            serialized_internship['company'] = serialize_document(company)
-            response['internships'].append(serialized_internship)
+        response = {'internships': [Internship.doc_to_dict(mongo_db, internship) for internship in internship_list]}
 
         return jsonify({"status": "success", "message": "Internships retrieved successfully", "data": response}), 200
 

@@ -1,7 +1,7 @@
 from bson import ObjectId
 from pymongo import DESCENDING
 
-from .utils import TimestampMixin, AVAILABLE_STATUSES, DEFAULT_STATUS
+from .utils import TimestampMixin, Location, AVAILABLE_STATUSES, DEFAULT_STATUS, serialize_document
 
 
 class Internship(TimestampMixin):
@@ -22,6 +22,36 @@ class Internship(TimestampMixin):
         self.tutor = tutor
         self.company = company
         self.institution = institution
+
+    @classmethod
+    def doc_to_dict(cls, mongo_db, doc):
+        # Avoid circular imports
+        from .users import Student, Worker, Tutor
+        from .companies import Company
+        from .institutions import Institution
+
+        # Retrieve related entities and add them to the dict
+        location = Location.get_by_id(mongo_db, doc['location'])
+        student = Student.get_by_id(mongo_db, doc['student'])
+        worker = Worker.get_by_id(mongo_db, doc['worker'])
+        tutor = Tutor.get_by_id(mongo_db, doc['tutor'])
+        company = Company.get_by_id(mongo_db, doc['company'])
+        institution = Institution.get_by_id(mongo_db, doc['institution'])
+
+        return {
+            "kind": doc['kind'],
+            "status": doc['status'],
+            "starting_day": doc['starting_day'].isoformat(),
+            "finishing_day": doc['finishing_day'].isoformat(),
+            "title": doc['title'],
+            "description": doc['description'],
+            "location": serialize_document(location) if location else None,
+            "student": serialize_document(student) if student else None,
+            "worker": serialize_document(worker) if worker else None,
+            "tutor": serialize_document(tutor) if tutor else None,
+            "company": serialize_document(company) if company else None,
+            "institution": serialize_document(institution) if institution else None,
+        }
 
     def update_location(self, location_id):
         if not location_id:
@@ -84,6 +114,14 @@ class Internship(TimestampMixin):
     def put_multi(cls, mongo_db, internships):
         cls.update_last_updated_multi(internships)
         return mongo_db.internships.insert_many([internship.to_dict() for internship in internships])
+
+    @classmethod
+    def get_by_id(cls, mongo_db, internship_id):
+        return mongo_db.internships.find_one({"_id": internship_id})
+
+    @classmethod
+    def get_multi_by_ids(cls, mongo_db, internship_ids):
+        return mongo_db.internships.find({"_id": {"$in": internship_ids}}).sort("created_date", DESCENDING)
 
     @classmethod
     def retrieve_internships(cls, mongo_db, student_id=None, title=None, status=None):

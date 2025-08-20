@@ -46,7 +46,8 @@ export default {
   computed: {
     degreesText () {
       const d = this.item && this.item.degrees
-      return Array.isArray(d) ? d.join(', ') : ''
+      const codes = Array.isArray(d) ? d.map(deg => deg && deg.code).filter(Boolean) : []
+      return codes.join(', ')
     }
   }
 }

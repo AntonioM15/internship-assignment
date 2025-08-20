@@ -71,6 +71,14 @@ class Company(TimestampMixin):
         return mongo_db.companies.insert_many([company.to_dict() for company in companies])
 
     @classmethod
+    def get_by_id(cls, mongo_db, company_id):
+        return mongo_db.companies.find_one({"_id": company_id})
+
+    @classmethod
+    def get_multi_by_ids(cls, mongo_db, company_ids):
+        return mongo_db.companies.find({"_id": {"$in": company_ids}}).sort("created_date", DESCENDING)
+
+    @classmethod
     def retrieve_companies(cls, mongo_db, field=None, full_name=None):
         query = {}
         if field:
