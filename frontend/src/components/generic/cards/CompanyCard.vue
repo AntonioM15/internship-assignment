@@ -17,14 +17,19 @@
         </slot>
       </div>
     </div>
+    <CardInternships :item="item"/>
   </div>
 </template>
 
 <script>
 import IconCompanyDark from '../../../assets/IconCompanyDark.svg'
+import CardInternships from './CardInternships.vue'
 
 export default {
   name: 'CompanyCard',
+  components: {
+    CardInternships
+  },
   props: {
     item: {
       type: Object,
