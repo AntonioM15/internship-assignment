@@ -5,11 +5,12 @@ from .utils import TimestampMixin, AVAILABLE_STATUSES
 
 
 class Company(TimestampMixin):
-    def __init__(self, full_name, field, avatar=None, location=None):
+    def __init__(self, full_name, field, description=None, avatar=None, location=None):
         super().__init__()
         self.full_name = full_name
         self.field = field
         self.hidden = False
+        self.description = description
         self.avatar = avatar
 
         # Keys from other collections

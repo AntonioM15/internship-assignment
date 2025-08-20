@@ -158,11 +158,12 @@ class Worker(User):
 
 
 class Student(User):
-    def __init__(self, email, hashed_password, official_id, full_name, status, institution, degree, internship=None, observations=None, **kwargs):
+    def __init__(self, email, hashed_password, official_id, full_name, status, institution, degree, description=None, internship=None, observations=None, **kwargs):
         super().__init__(email, hashed_password, official_id, full_name, **kwargs)
         self.role = 'student'
         self.status = status if status in AVAILABLE_STATUSES else DEFAULT_STATUS
         self.internship_type = None
+        self.description = description
 
         # Keys from other collections
         self.institution = institution
