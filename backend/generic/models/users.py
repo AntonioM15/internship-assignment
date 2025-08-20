@@ -175,6 +175,8 @@ class Student(User):
         data = super().to_dict()
         data.update({
             "status": self.status,
+            "internship_type": self.internship_type,
+            "description": self.description,
             "institution": self.institution,
             "degree": self.degree,
             "internship": self.internship,
@@ -192,6 +194,8 @@ class Student(User):
         observations = Observation.get_multi_by_ids(mongo_db, doc['observations'])
         data.update({
             "status": doc['status'],
+            "internship_type": doc['internship_type'],
+            "description": doc['description'],
             "institution": serialize_document(institution) if institution else None,
             "degree": serialize_document(degree) if degree else None,
             "internship": serialize_document(internship) if internship else None,
