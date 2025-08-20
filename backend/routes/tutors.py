@@ -22,7 +22,7 @@ def tutors_blueprint(mongo):
 
         # Retrieve tutors
         tutor_list = Tutor.retrieve_tutors(mongo_db, degree_id, full_name, status)
-        response = {'tutors': [serialize_document(tutor) for tutor in tutor_list]}
+        response = {'tutors': [Tutor.doc_to_dict(mongo_db, tutor) for tutor in tutor_list]}
 
         return jsonify({"status": "success", "message": "Tutors retrieved successfully", "data": response}), 200
 
