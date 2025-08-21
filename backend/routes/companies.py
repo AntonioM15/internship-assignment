@@ -35,7 +35,8 @@ def companies_blueprint(mongo):
                 # We are filtering by status and the company doesn't have a matching internship
                 continue
             # Only include internships with matching status
-            internships_to_display = [internship for internship in internships if internship.get('status') == status]
+            internships_to_display = [internship for internship in internships
+                                      if not status or internship.get('status') == status]
             company_json['internships'] = internships_to_display
             response['companies'].append(company_json)
 
