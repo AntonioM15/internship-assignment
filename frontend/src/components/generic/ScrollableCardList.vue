@@ -59,6 +59,9 @@ export default {
     }
   },
   methods: {
+    isCompanySelected (item) {
+      return this.kind === 'companies' && this.isSelected(item)
+    },
     onSelect (item) {
       // Toggle selection: click again to unselect
       if (this.isSelected(item)) {
