@@ -36,7 +36,7 @@
   height: 50px;
   margin-right: 10px;
   background-color: var(--background-primary-color);
-  border: 2px solid var(--text-secondary-color);
+  border: 2px solid var(--background-secondary-color);
   border-radius: 6px;
   display: flex;
   align-items: center;
@@ -62,6 +62,7 @@
   font-size: 15px;
 }
 
+/* ITEM STATUS AND NUMBER OF INTERNSHIPS */
 .item-internships,
 .item-status {
   margin-left: auto;
@@ -95,4 +96,47 @@
   font-size: 14px;
   font-weight: bold;
   pointer-events: none;
+}
+
+/* INTERNSHIP ROWS */
+.internships-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.internships-list {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.internship-card {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  padding: 10px;
+}
+
+.internship-card {
+  border-bottom: 1px solid var(--text-secondary-color);
+}
+
+.internship-card:first-child {
+  border-top: 1px solid var(--text-secondary-color);
+}
+
+.internship-card:last-child {
+  border-bottom: none;
+}
+
+.spacer{
+  width: 30px;
+  height: 100%;
+}
+
+.content .title {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.content .subtitle {
+  font-size: 13px;
 }

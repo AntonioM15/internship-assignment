@@ -12,6 +12,9 @@
         :item-key="itemKey"
         v-on="$listeners"
       />
+      <div v-if="isCompanySelected(item)" class="internships-panel">
+        <InternshipCard :company="item"/>
+      </div>
     </div>
   </div>
 </template>
@@ -23,6 +26,7 @@ import StudentCard from './cards/StudentCard.vue'
 import TutorCard from './cards/TutorCard.vue'
 import CompanyCard from './cards/CompanyCard.vue'
 import AssignmentCard from './cards/AssignmentCard.vue'
+import InternshipCard from './cards/InternshipCard.vue'
 
 // Local registry
 const ELEMENTS = {
@@ -35,6 +39,9 @@ const ELEMENTS = {
 
 export default {
   name: 'ScrollableCardList',
+  components: {
+    InternshipCard
+  },
   props: {
     items: {
       type: Array,
