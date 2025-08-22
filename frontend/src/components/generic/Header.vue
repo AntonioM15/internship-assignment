@@ -1,3 +1,9 @@
+<template>
+  <header class="header">
+    <h1>{{ title }}</h1>
+  </header>
+</template>
+
 <script>
 export default {
   name: 'Header',
@@ -9,12 +15,6 @@ export default {
   }
 }
 </script>
-
-<template>
-  <header class="header">
-    <h1>{{ title }}</h1>
-  </header>
-</template>
 
 <style scoped>
 @import url('../../css/Header.css');
