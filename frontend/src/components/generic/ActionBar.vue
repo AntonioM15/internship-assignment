@@ -34,7 +34,7 @@
     </div>
     <div class="action-section">
       <button class="add-entity-btn" @click="addEntities">
-        <img src="../../assets/IconAddLight.svg" :alt="buttonText" style="width:24px;height:24px; margin: 0 8px 0 6px;"/>
+        <img :src="iconAdd" :alt="buttonText" style="width:24px;height:24px; margin: 0 8px 0 6px;"/>
         {{ buttonText }}
       </button>
     </div>
@@ -43,6 +43,7 @@
 
 <script>
 
+import IconAdd from '../../assets/IconAddLight.svg'
 import IconStatusWhite from '../../assets/IconStatusWhite.svg'
 import IconStatusBlue from '../../assets/IconStatusBlue.svg'
 import IconStatusGreen from '../../assets/IconStatusGreen.svg'
@@ -76,6 +77,7 @@ export default {
     return {
       course: '',
       nameText: '',
+      iconAdd: IconAdd,
       statusOptions: ['unknown', 'unassigned', 'provisional', 'assigned', 'ongoing'], // Deterministic order for the select
       statusIcons: {
         unknown: IconStatusWhite,

@@ -72,12 +72,12 @@
 
 .assign-btn {
   height: 100%;
+  min-width: 100px;
   background: var(--background-secondary-color);
   color: var(--text-header-color);
   border: 2px solid var(--background-secondary-color);
   border-radius: 6px;
   font-size: 18px;
-  display: flex;
   align-items: center;
   cursor: pointer;
 }
