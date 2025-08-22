@@ -5,6 +5,8 @@
         v-for="(internship, idx) in internships"
         :key="idx"
         class="internship-card"
+        :class="{ selected: isSelected(internship) }"
+        @click="toggle(internship)"
       >
         <div class="spacer"></div>
         <div class="content">
@@ -33,6 +35,14 @@ export default {
     company: {
       type: Object,
       required: true
+    },
+    value: {
+      type: Object,
+      default: null
+    },
+    itemKey: {
+      type: String,
+      default: 'id'
     }
   },
   computed: {
@@ -47,6 +57,21 @@ export default {
     },
     readSubtitle (i) {
       return i.description || ''
+    },
+    isSelected (i) {
+      const k = this.itemKey
+      if (!this.value) return false
+      if (k && i && this.value && i[k] !== undefined && this.value[k] !== undefined) {
+        return i[k] === this.value[k]
+      }
+      return this.value === i
+    },
+    toggle (i) {
+      const next = this.isSelected(i) ? null : i
+      // Emit v-model update
+      this.$emit('input', next)
+      // Also emit a semantic event if parents want to react
+      this.$emit('select-internship', next)
     }
   }
 }

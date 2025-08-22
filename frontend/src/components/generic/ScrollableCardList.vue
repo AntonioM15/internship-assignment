@@ -12,8 +12,13 @@
         :item-key="itemKey"
         v-on="$listeners"
       />
-      <div v-if="isCompanySelected(item)" class="internships-panel">
-        <InternshipCard :company="item"/>
+      <div v-if="isCompanyOpen(item)" class="internships-panel">
+        <InternshipCard
+          :company="item"
+          v-model="selectedInternship"
+          :item-key="itemKey"
+          @input="onInternshipInput"
+        />
       </div>
     </div>
   </div>
@@ -62,6 +67,12 @@ export default {
       default: 'id'
     }
   },
+  data () {
+    return {
+      lastSelectedCompany: null,
+      selectedInternship: null
+    }
+  },
   computed: {
     resolvedElement () {
       return ELEMENTS[this.kind] || DefaultCard
@@ -76,6 +87,56 @@ export default {
         return this.kind === 'companies' && item[k] === this.value[k]
       }
       return this.kind === 'companies' && this.value === item
+    },
+    // The internships panel remains open if either:
+    // - the company is selected (normal behavior), or
+    // - an internship belonging to that company is currently selected.
+    isCompanyOpen (item) {
+      if (this.kind !== 'companies') return false
+      if (this.isCompanySelected(item)) return true
+      if (!this.selectedInternship) return false
+      const k = this.itemKey
+      const hasInternships = item && Array.isArray(item.internships)
+      if (!hasInternships) return false
+      return item.internships.some(i => {
+        if (k && i && this.selectedInternship &&
+          i[k] !== undefined && this.selectedInternship[k] !== undefined) {
+          return i[k] === this.selectedInternship[k]
+        }
+        return i === this.selectedInternship
+      })
+    },
+    // Selecting an internship unselects the company; unselecting the internship restores the previous company
+    onInternshipInput (nextInternship) {
+      if (nextInternship) {
+        // If selecting an internship, remember the current company and clear it
+        if (this.kind === 'companies') {
+          this.lastSelectedCompany = this.value || this.lastSelectedCompany
+          this.selectedInternship = nextInternship
+          this.$emit('input', null)
+        } else {
+          this.selectedInternship = nextInternship
+        }
+      } else {
+        // Unselecting internship restores the previous company selection
+        const toRestore = this.kind === 'companies' ? this.lastSelectedCompany : null
+        this.selectedInternship = null
+        if (toRestore) {
+          this.$emit('input', toRestore)
+        }
+      }
+    }
+
+  },
+  watch: {
+    // Any explicit company selection clears internship selection and updates the "last selected" memory
+    value (newVal) {
+      if (this.kind === 'companies') {
+        if (newVal) {
+          this.lastSelectedCompany = newVal
+          this.selectedInternship = null
+        }
+      }
     }
   }
 }

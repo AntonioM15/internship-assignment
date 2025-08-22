@@ -122,6 +122,10 @@
   border-bottom: none;
 }
 
+.internship-card.selected {
+  background-color: var(--background-primary-color);
+}
+
 .spacer{
   width: 30px;
   height: 100%;
