@@ -1,30 +1,15 @@
 <template>
-  <div class="student-box">
+  <div class="company-box">
     <div class="box-body">
-      <div class="top-row">
-        <div class="avatar">
-          <img :src="defaultIcon" alt="Avatar" />
-        </div>
-
-        <div class="description">
-          <textarea
-            id="desc"
-            v-model="form.description"
-            rows="5"
-            placeholder="Descripción alumno: preferencias, tecnologías, etc."
-          />
-        </div>
-      </div>
-
       <div class="identity-row">
         <input
           type="text"
-          v-model="form.fullName"
-          placeholder="Nombre Apellido Apellido"
+          v-model="form.title"
+          placeholder="Título práctica"
         />
-        <select v-model="form.degree" :class="{ 'is-placeholder': form.degree === '' }" aria-label="Titulación">
-          <option value="">Titulación</option> <!-- Used as a placeholder -->
-          <option v-for="deg in degrees" :key="deg" :value="deg">{{ deg }}</option>
+        <select v-model="form.field" :class="{ 'is-placeholder': form.field === '' }" aria-label="Campo">
+          <option value="">Campo</option> <!-- Used as a placeholder -->
+          <option v-for="field in fields" :key="field" :value="field">{{ field }}</option>
         </select>
       </div>
 
@@ -42,12 +27,12 @@
             <option v-for="opt in internshipTypes" :key="opt" :value="opt">{{ opt }}</option>
           </select>
         </div>
-        <div class="observations">
+        <div class="observations" style="height: 30vh">
           <textarea
             id="obs"
-            v-model="form.notes"
+            v-model="form.description"
             rows="4"
-            placeholder="Observaciones"
+            placeholder="Descripción"
           />
         </div>
       </div>
@@ -65,7 +50,7 @@
 import IconUserDefault from '../../../assets/IconUserDefault.svg'
 
 export default {
-  name: 'StudentBox',
+  name: 'InternshipBox',
   props: {
     item: {
       type: Object,
@@ -76,7 +61,7 @@ export default {
     return {
       form: this.mapItemToForm(this.item),
       // TODO - Fetch from backend
-      degrees: ['DAW', 'DAM', 'ASIR', 'SMR'],
+      fields: ['Programación', 'Electrónica', 'Mecánica'],
       internshipTypes: ['Regular', 'Dual', 'Extraordinaria'],
       defaultIcon: IconUserDefault
     }
@@ -94,26 +79,24 @@ export default {
     mapItemToForm (i) {
       if (!i) {
         return {
-          fullName: '',
-          degree: '',
+          title: '',
+          field: '',
           city: '',
           pc: '',
           address: '',
-          description: '',
           internshipType: '',
-          notes: ''
+          description: ''
         }
       }
       // Try to map common field names while keeping graceful fallbacks
       return {
-        fullName: i.full_name || '',
-        degree: i.degree || '',
+        title: i.title || '',
+        field: i.company ? i.company.field : '',
         city: i.location ? i.location.city : '',
         pc: i.location ? i.location.postal_code : '',
         address: i.location ? i.location.address : '',
-        description: i.description || '',
-        internshipType: i.internship_type || '',
-        notes: i.observations && i.observations.length > 0 ? i.observations[i.length - 1].text : ''
+        internshipType: i.kind || '',
+        description: i.description || ''
       }
     },
     onHide () {
