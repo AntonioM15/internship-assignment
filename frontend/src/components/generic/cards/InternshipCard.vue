@@ -15,14 +15,20 @@
             {{ readSubtitle(internship) }}
           </div>
         </div>
+        <CardStatus :item="internship" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import CardStatus from './CardStatus.vue'
+
 export default {
   name: 'InternshipCard',
+  components: {
+    CardStatus
+  },
   props: {
     company: {
       type: Object,

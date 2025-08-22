@@ -104,14 +104,9 @@
   flex-direction: column;
 }
 
-.internships-list {
-  display: grid;
-  grid-template-columns: 1fr;
-}
-
 .internship-card {
   display: grid;
-  grid-template-columns: 30px 1fr;
+  grid-template-columns: 30px 1fr 24px; /* Spacer, Content, Status */
   padding: 10px;
 }
 
