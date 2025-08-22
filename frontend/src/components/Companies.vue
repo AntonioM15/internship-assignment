@@ -14,17 +14,27 @@
             :kind="'companies'"
             v-model="selectedCompany"
             itemKey="id"
+            :selected-internship.sync="selectedInternship"
+            @internship-change="selectedInternship = $event"
           />
         </div>
       </section>
       <section class="right-panel">
         <CompanyBox
-          v-if="selectedCompany"
+          v-if="selectedCompany && !selectedInternship"
           :item="selectedCompany"
-          @hide="onHide"
-          @cancel="onCancel"
+          @hide="onHideCompany"
+          @cancel="onCancelCompany"
           @save="onSaveCompany"
-          @input="onEditedLocal"
+          @input="onEditedCompany"
+        />
+        <InternshipBox
+          v-if="selectedInternship"
+          :item="selectedInternship"
+          @hide="onHideInternship"
+          @cancel="onCancelInternship"
+          @save="onSaveInternship"
+          @input="onEditedInternship"
         />
       </section>
     </div>
@@ -40,6 +50,7 @@ import ActionBar from './generic/ActionBar.vue'
 import ScrollableCardList from './generic/ScrollableCardList.vue'
 import axios from 'axios'
 import CompanyBox from './generic/boxes/CompanyBox.vue'
+import InternshipBox from './generic/boxes/InternshipBox.vue'
 
 export default {
   name: 'Companies',
@@ -48,14 +59,16 @@ export default {
     NavBar,
     ActionBar,
     ScrollableCardList,
-    CompanyBox
+    CompanyBox,
+    InternshipBox
   },
   data () {
     return {
       loading: true,
       error: null,
       companies: [],
-      selectedCompany: null
+      selectedCompany: null,
+      selectedInternship: null
     }
   },
   mounted () {
@@ -72,13 +85,14 @@ export default {
       })
   },
   methods: {
-    onHide () {
+    // COMPANY handlers
+    onHideCompany () {
       // TODO: implement hide functionality
     },
-    onCancel () {
+    onCancelCompany () {
       this.selectedCompany = null
     },
-    onEditedLocal (updated) {
+    onEditedCompany (updated) {
       // Optionally keep a live mirror of edits in the selected object (in-memory only)
       this.selectedCompany = { ...this.selectedCompany, ...updated }
     },
@@ -92,6 +106,31 @@ export default {
       const idx = this.companies.findIndex(s => s.id === payload.id)
       if (idx !== -1) this.$set(this.companies, idx, { ...this.companies[idx], ...payload })
       this.selectedCompany = { ...this.selectedCompany, ...payload }
+    },
+    // INTERNSHIP handlers
+    onHideInternship () {
+      // TODO: implement hide functionality
+    },
+    onCancelInternship () {
+      this.selectedInternship = null
+    },
+    onEditedInternship (updated) {
+      this.selectedInternship = { ...this.selectedInternship, ...updated }
+    },
+    onSaveInternship (payload) {
+      const { companyId, ...patch } = payload
+      const companyIdx = this.companies.findIndex(c => c && c.id === companyId)
+      if (companyIdx !== -1) {
+        const company = this.companies[companyIdx]
+        const internships = Array.isArray(company.internships) ? company.internships : []
+        const idx = internships.findIndex(i => i && i.id === payload.id)
+        if (idx !== -1) {
+          const updated = internships.slice()
+          updated[idx] = { ...updated[idx], ...patch }
+          this.$set(this.companies, companyIdx, { ...company, internships: updated })
+        }
+      }
+      this.selectedInternship = { ...this.selectedInternship, ...patch, id: payload.id }
     }
   }
 }

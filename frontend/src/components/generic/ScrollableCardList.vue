@@ -65,12 +65,15 @@ export default {
     itemKey: {
       type: String,
       default: 'id'
+    },
+    selectedInternship: {
+      type: Object,
+      default: null
     }
   },
   data () {
     return {
-      lastSelectedCompany: null,
-      selectedInternship: null
+      lastSelectedCompany: null
     }
   },
   computed: {
@@ -110,33 +113,26 @@ export default {
     onInternshipInput (nextInternship) {
       if (nextInternship) {
         // If selecting an internship, remember the current company and clear it
-        if (this.kind === 'companies') {
-          this.lastSelectedCompany = this.value || this.lastSelectedCompany
-          this.selectedInternship = nextInternship
-          this.$emit('input', null)
-        } else {
-          this.selectedInternship = nextInternship
-        }
+        this.lastSelectedCompany = this.value || this.lastSelectedCompany
+        this.selectedInternship = nextInternship
+        this.$emit('input', null)
       } else {
-        // Unselecting internship restores the previous company selection
+        // Unselecting an internship restores the previous company selection
         const toRestore = this.kind === 'companies' ? this.lastSelectedCompany : null
         this.selectedInternship = null
         if (toRestore) {
           this.$emit('input', toRestore)
         }
       }
+      // notify parent that internship is cleared
+      this.$emit('update:selected-internship', this.selectedInternship)
     }
 
   },
   watch: {
-    // Any explicit company selection clears internship selection and updates the "last selected" memory
-    value (newVal) {
-      if (this.kind === 'companies') {
-        if (newVal) {
-          this.lastSelectedCompany = newVal
-          this.selectedInternship = null
-        }
-      }
+    selectedInternship (val) {
+      this.selectedInternship = val
+      this.$emit('update:selected-internship', this.selectedInternship)
     }
   }
 }

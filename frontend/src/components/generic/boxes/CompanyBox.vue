@@ -36,7 +36,7 @@
 
       <div class="secondary">
         <div class="section-title">Información secundaria</div>
-        <div class="observations" style="height: 25vh">
+        <div class="observations" style="height: 22vh">
           <textarea
             id="obs"
             v-model="form.notes"
