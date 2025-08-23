@@ -16,6 +16,13 @@
           />
         </div>
     </div>
+    <AssignmentPopUp
+      v-if="selectedAssignment"
+      :assignment="selectedAssignment"
+      @cancel="onCancel"
+      @save="onSave"
+    />
+
   </div>
 
 </template>
@@ -27,6 +34,7 @@ import NavBar from './generic/NavBar.vue'
 import AssignmentsActionBar from './generic/AssignmentsActionBar.vue'
 import axios from 'axios'
 import ScrollableCardList from './generic/ScrollableCardList.vue'
+import AssignmentPopUp from './generic/popups/AssignmentPopUp.vue'
 
 export default {
   name: 'Assignments',
@@ -34,7 +42,8 @@ export default {
     Header,
     NavBar,
     AssignmentsActionBar,
-    ScrollableCardList
+    ScrollableCardList,
+    AssignmentPopUp
   },
   data () {
     return {
@@ -58,6 +67,13 @@ export default {
       })
   },
   methods: {
+    onCancel () {
+      // Close the pop-up and unselect the assignment
+      this.selectedAssignment = null
+    },
+    onSave () {
+      // TODO Placeholder for future action
+    }
   }
 }
 
