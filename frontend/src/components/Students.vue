@@ -3,7 +3,12 @@
   <div class="container">
     <Header/>
     <NavBar/>
-    <ActionBar :kind="'students'"/>
+    <ActionBar
+      :kind="'students'"
+      @course-changed="onCourseChanged"
+      @nameText-changed="onNameTextChanged"
+      @status-changed="onStatusChanged"
+    />
     <div v-if="error" style="color: red;">Error: {{ error }}</div>
     <div v-else-if="loading">Cargando...</div>
     <div v-else class="students-layout">
@@ -55,23 +60,57 @@ export default {
       loading: true,
       error: null,
       students: [],
-      selectedStudent: null
+      selectedStudent: null,
+      // ActionBar filters
+      course: '',
+      nameText: '',
+      selectedStatus: 'unknown'
     }
   },
   mounted () {
-    const path = `${apiUrl}/api/v1/students`
-    axios.get(path)
-      .then(response => {
-        this.students = response.data.data.students
-      })
-      .catch(err => {
-        this.error = err.response.data.message || err.message
-      })
-      .finally(() => {
-        this.loading = false
-      })
+    this.fetchStudents()
   },
   methods: {
+    fetchStudents () {
+      this.loading = true
+      this.error = null
+      const path = `${apiUrl}/api/v1/students`
+      const params = {
+        ...(this.course && { degree_id: this.course }),
+        ...(this.nameText && { full_name: this.nameText }),
+        ...((this.selectedStatus && this.selectedStatus !== 'unknown') && { status: this.selectedStatus })
+      }
+
+      axios.get(path, { params })
+        .then(response => {
+          this.students = response.data.data.students
+          // Restore student selection if included
+          if (this.selectedStudent) {
+            const found = this.students.find(s => s.id === this.selectedStudent.id)
+            this.selectedStudent = found || null
+          }
+        })
+        .catch(err => {
+          this.error = err.response.data.message || err.message
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
+    // Filter handlers
+    onCourseChanged (val) {
+      this.course = val
+      this.fetchStudents()
+    },
+    onNameTextChanged (val) {
+      this.nameText = val
+      this.fetchStudents()
+    },
+    onStatusChanged (val) {
+      this.selectedStatus = val
+      this.fetchStudents()
+    },
+    // Preview handlers
     onHide () {
       // TODO: implement hide functionality
     },
