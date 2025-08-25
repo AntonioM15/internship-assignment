@@ -104,6 +104,15 @@ export default {
       return `Añadir ${TEXTS[this.kind].plural}`
     }
   },
+  watch: {
+    course (val) {
+      this.$emit('course-changed', val)
+    },
+    nameText (val) {
+      this.$emit('nameText-changed', val)
+    }
+  },
+
   methods: {
     emitStatus () {
       this.$emit('status-changed', this.selectedStatus)
