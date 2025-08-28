@@ -1,6 +1,7 @@
 from bson import ObjectId
 from flask import Blueprint, jsonify, request
 
+from generic.models.institutions import Degree
 from generic.models.companies import Company
 from generic.models.utils import serialize_document, Observation, AVAILABLE_STATUSES
 from generic.session_utils import limited_access, login_required
@@ -39,6 +40,10 @@ def companies_blueprint(mongo):
                                       if not status or internship.get('status') == status]
             company_json['internships'] = internships_to_display
             response['companies'].append(company_json)
+
+        # Extend response with extra data
+        degree_list = Degree.get_latest(mongo_db)
+        response['degrees'] = [serialize_document(degree) for degree in degree_list]
 
         return jsonify({"status": "success", "message": "Companies retrieved successfully", "data": response}), 200
 
