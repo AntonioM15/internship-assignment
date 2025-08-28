@@ -22,7 +22,7 @@ def tutors_blueprint(mongo):
         status = request.args.get('status')
 
         # Retrieve tutors
-        tutor_list = Tutor.retrieve_tutors(mongo_db, degree_id, full_name, status)
+        tutor_list = Tutor.retrieve_tutors(mongo_db, degree_id, full_name, status, partial_search=True)
         response = {'tutors': [Tutor.doc_to_dict(mongo_db, tutor) for tutor in tutor_list]}
 
         # Extend response with extra data

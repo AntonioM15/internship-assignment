@@ -289,11 +289,13 @@ class Tutor(User):
         return mongo_db.notifications.find({"_id": {"$in": notifications_ids}}).sort("created_date", DESCENDING)
 
     @classmethod
-    def retrieve_tutors(cls, mongo_db, degree_id=None, full_name=None, status=None):
+    def retrieve_tutors(cls, mongo_db, degree_id=None, full_name=None, status=None, partial_search=False):
         query = {"role": "tutor"}
         if degree_id:
             query["degree"] = {"$in": [ObjectId(degree_id)]}
-        if full_name:
+        if full_name and partial_search:
+            query["full_name"] = {"$regex": full_name, "$options": "i"}
+        elif full_name:
             query["full_name"] = full_name
         if status and status in AVAILABLE_STATUSES:
             query["status"] = status
