@@ -1,8 +1,9 @@
 from bson import ObjectId
 from flask import Blueprint, jsonify, request
 
+from generic.models.institutions import Degree
 from generic.models.users import Student
-from generic.models.utils import Observation
+from generic.models.utils import Observation, serialize_document
 from generic.session_utils import limited_access, login_required
 
 # Blueprint definition
@@ -23,6 +24,10 @@ def students_blueprint(mongo):
         # Retrieve students
         student_list = Student.retrieve_students(mongo_db, degree_id, full_name, status)
         response = {'students': [Student.doc_to_dict(mongo_db, student) for student in student_list]}
+
+        # Extend response with extra data
+        degree_list = Degree.get_latest(mongo_db)
+        response['degrees'] = [serialize_document(degree) for degree in degree_list]
 
         return jsonify({"status": "success", "message": "Students retrieved successfully", "data": response}), 200
 
