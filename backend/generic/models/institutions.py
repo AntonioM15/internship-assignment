@@ -1,3 +1,4 @@
+from bson import ObjectId
 from pymongo import DESCENDING
 
 from .utils import TimestampMixin
@@ -66,6 +67,15 @@ class Degree(TimestampMixin):
     @classmethod
     def get_multi_by_ids(cls, mongo_db, degree_ids):
         return mongo_db.degrees.find({"_id": {"$in": degree_ids}}).sort("created_date", DESCENDING)
+
+    @classmethod
+    def get_latest(cls, mongo_db, institution_id=None, full_name=None):
+        query = {}
+        if institution_id:
+            query["institution"] = ObjectId(institution_id)
+        if full_name:
+            query["full_name"] = full_name
+        return mongo_db.degrees.find(query).sort("created_date", DESCENDING)
 
 
 class Institution(TimestampMixin):
