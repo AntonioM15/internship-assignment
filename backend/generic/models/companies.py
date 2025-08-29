@@ -103,11 +103,13 @@ class Company(TimestampMixin):
         return mongo_db.companies.find({"_id": {"$in": company_ids}}).sort("created_date", DESCENDING)
 
     @classmethod
-    def retrieve_companies(cls, mongo_db, field=None, full_name=None):
+    def retrieve_companies(cls, mongo_db, field=None, full_name=None, partial_search=False):
         query = {}
         if field:
             query["degree"] = field
-        if full_name:
+        if full_name and partial_search:
+            query["full_name"] = {"$regex": full_name, "$options": "i"}
+        elif full_name:
             query["full_name"] = full_name
 
         return mongo_db.companies.find(query).sort("created_date", DESCENDING)

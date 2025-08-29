@@ -124,12 +124,12 @@ class Internship(TimestampMixin):
         return mongo_db.internships.find({"_id": {"$in": internship_ids}}).sort("created_date", DESCENDING)
 
     @classmethod
-    def retrieve_internships(cls, mongo_db, student_id=None, title=None, status=None):
+    def retrieve_internships(cls, mongo_db, full_name=None, status=None, partial_search=False):
         query = {}
-        if student_id:
-            query["student"] = ObjectId(student_id)
-        if title:
-            query["title"] = title
+        if full_name and partial_search:
+            query["full_name"] = {"$regex": full_name, "$options": "i"}
+        elif full_name and full_name:
+            query["full_name"] = full_name
         if status and status in AVAILABLE_STATUSES:
             query["status"] = status
 

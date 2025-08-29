@@ -26,7 +26,7 @@ def companies_blueprint(mongo):
 
         # Retrieve companies
         response = {'companies': []}
-        company_list = Company.retrieve_companies(mongo_db, field, full_name)
+        company_list = Company.retrieve_companies(mongo_db, field, full_name, partial_search=True)
 
         # Filter internships
         for company in company_list:

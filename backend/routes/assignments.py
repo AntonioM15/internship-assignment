@@ -17,12 +17,11 @@ def assignments_blueprint(mongo):
     @login_required
     @limited_access(['admin', 'coordinator'])
     def get_assignments():
-        student_id = request.args.get('student_id')
-        title = request.args.get('title')
+        full_name = request.args.get('student_id')
         status = request.args.get('status')
 
         # Retrieve internships
-        internship_list = Internship.retrieve_internships(mongo_db, student_id, title, status)
+        internship_list = Internship.retrieve_internships(mongo_db, full_name, status, partial_search=True)
         response = {'internships': [Internship.doc_to_dict(mongo_db, internship) for internship in internship_list]}
 
         return jsonify({"status": "success", "message": "Internships retrieved successfully", "data": response}), 200

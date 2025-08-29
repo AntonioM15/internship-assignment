@@ -22,7 +22,7 @@ def students_blueprint(mongo):
         status = request.args.get('status')
 
         # Retrieve students
-        student_list = Student.retrieve_students(mongo_db, degree_id, full_name, status)
+        student_list = Student.retrieve_students(mongo_db, degree_id, full_name, status, partial_search=True)
         response = {'students': [Student.doc_to_dict(mongo_db, student) for student in student_list]}
 
         # Extend response with extra data
