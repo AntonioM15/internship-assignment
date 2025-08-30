@@ -10,8 +10,7 @@
       @nameText-changed="onNameTextChanged"
       @status-changed="onStatusChanged"
     />
-    <div v-if="error" style="color: red;">Error: {{ error }}</div>
-    <div v-else-if="loading">Cargando...</div>
+    <div v-if="error" style="padding: 22px; color: red; font-size: 15px; font-weight: bold;">Error: {{ error }}</div>
     <div v-else class="companies-layout">
       <section class="left-panel">
         <div class="card-list">
