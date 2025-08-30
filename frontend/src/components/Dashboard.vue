@@ -4,7 +4,6 @@
     <Header/>
     <NavBar/>
     <div v-if="error" style="color: red;">Error: {{ error }}</div>
-    <div v-else-if="loading">Cargando...</div>
     <div v-else class="dashboard-layout">
       <section class="left-panel">
         <h2>Empresas</h2>

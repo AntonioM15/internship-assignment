@@ -11,7 +11,6 @@
       @status-changed="onStatusChanged"
     />
     <div v-if="error" style="color: red;">Error: {{ error }}</div>
-    <div v-else-if="loading">Cargando...</div>
     <div v-else class="companies-layout">
       <section class="left-panel">
         <div class="card-list">
