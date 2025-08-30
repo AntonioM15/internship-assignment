@@ -100,10 +100,26 @@ export default {
         .then(response => {
           this.degrees = response.data.data.degrees
           this.companies = response.data.data.companies
-          // Restore company selection if included
           if (this.selectedCompany) {
+            // Restore company selection if included
             const found = this.companies.find(s => s.full_name === this.selectedCompany.full_name)
             this.selectedCompany = found || null
+          } else if (this.selectedInternship) {
+            // Restore internship selection if included
+            let foundInternship = null
+            for (const company of this.companies) {
+              const internshipList = Array.isArray(company.internships) ? company.internships : []
+              const match = internshipList.find(i =>
+                i &&
+                i.title === this.selectedInternship.title &&
+                i.company.full_name === this.selectedInternship.company.full_name
+              )
+              if (match) {
+                foundInternship = match
+                break
+              }
+            }
+            this.selectedInternship = foundInternship || null
           }
         })
         .catch(err => {
