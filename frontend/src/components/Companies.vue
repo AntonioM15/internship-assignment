@@ -28,6 +28,7 @@
         <CompanyBox
           v-if="selectedCompany && !selectedInternship"
           :item="selectedCompany"
+          :fields="degrees"
           @hide="onHideCompany"
           @cancel="onCancelCompany"
           @save="onSaveCompany"
@@ -36,6 +37,7 @@
         <InternshipBox
           v-if="selectedInternship"
           :item="selectedInternship"
+          :fields="degrees"
           @hide="onHideInternship"
           @cancel="onCancelInternship"
           @save="onSaveInternship"

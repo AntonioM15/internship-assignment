@@ -26,6 +26,7 @@
         <StudentBox
           v-if="selectedStudent"
           :item="selectedStudent"
+          :degrees="degrees"
           @hide="onHide"
           @cancel="onCancel"
           @save="onSaveStudent"

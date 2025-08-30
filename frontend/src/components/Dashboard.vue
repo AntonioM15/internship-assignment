@@ -15,13 +15,13 @@
         <div class="half-panel">
           <h2>Estudiantes</h2>
           <div class="card-list">
-            <ScrollableCardList :items="notifications.worker" :kind="'notifications'" />
+            <ScrollableCardList :items="notifications.student" :kind="'notifications'" />
           </div>
         </div>
         <div class="half-panel">
           <h2>Profesores</h2>
           <div class="card-list">
-            <ScrollableCardList :items="notifications.worker" :kind="'notifications'" />
+            <ScrollableCardList :items="notifications.tutor" :kind="'notifications'" />
           </div>
         </div>
       </section>
