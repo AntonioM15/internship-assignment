@@ -133,6 +133,23 @@ export default {
     selectedInternship (val) {
       this.selectedInternship = val
       this.$emit('update:selected-internship', this.selectedInternship)
+    },
+    value (newVal, oldVal) {
+      if (this.kind !== 'companies') return
+
+      // Only act when there is a newly selected company
+      if (!newVal) return
+
+      const k = this.itemKey
+      const hasKey = k && newVal && oldVal && newVal[k] !== undefined && oldVal[k] !== undefined
+      const isSame =
+        hasKey ? newVal[k] === oldVal[k] : newVal === oldVal
+
+      if (!isSame) {
+        this.selectedInternship = null
+        this.lastSelectedCompany = null
+        this.$emit('update:selected-internship', null)
+      }
     }
   }
 }
