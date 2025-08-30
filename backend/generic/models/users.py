@@ -9,7 +9,7 @@ from .utils import Notification, Observation, Location, AVAILABLE_STATUSES, DEFA
 
 
 class User(TimestampMixin):
-    MAX_NOTIFICATIONS_REGULAR = 10
+    MAX_NOTIFICATIONS_REGULAR = 20
     MAX_NOTIFICATIONS_SU = 40
 
     def __init__(self, email, hashed_password, official_id, full_name, avatar=None, location=None, notifications=None):
