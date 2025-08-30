@@ -17,8 +17,8 @@ def dashboard_blueprint(mongo):
     def get_notifications():
         # TODO use logged user in flask session
         user = {
-            'id': '67449aa50871c949f24692cb',
-            'role': 'worker'
+            'id': '674499230871c949f24692b3',
+            'role': 'coordinator'
         }
 
         # Retrieve notifications
