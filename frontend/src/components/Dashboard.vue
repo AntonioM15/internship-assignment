@@ -3,7 +3,7 @@
   <div class="container">
     <Header/>
     <NavBar/>
-    <div v-if="error" style="color: red;">Error: {{ error }}</div>
+    <div v-if="error" style="padding: 22px; color: red; font-size: 15px; font-weight: bold;">Error: {{ error }}</div>
     <div v-else class="dashboard-layout">
       <section class="left-panel">
         <h2>Empresas</h2>
