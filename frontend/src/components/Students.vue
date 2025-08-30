@@ -5,6 +5,7 @@
     <NavBar/>
     <ActionBar
       :kind="'students'"
+      :degrees="degrees"
       @course-changed="onCourseChanged"
       @nameText-changed="onNameTextChanged"
       @status-changed="onStatusChanged"
@@ -59,6 +60,7 @@ export default {
     return {
       loading: true,
       error: null,
+      degrees: [],
       students: [],
       selectedStudent: null,
       // ActionBar filters
@@ -83,6 +85,7 @@ export default {
 
       axios.get(path, { params })
         .then(response => {
+          this.degrees = response.data.data.degrees
           this.students = response.data.data.students
           // Restore student selection if included
           if (this.selectedStudent) {
