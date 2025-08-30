@@ -13,11 +13,16 @@
   min-width: 0;
 }
 
+.card-row .card-item:first-child {
+  margin: 10px;
+}
+
 /* Vertical dividers between columns */
 .card-row .card-item + .card-item {
   border-left: 2px solid var(--background-secondary-color);
   /* Room after the divider */
   padding-left: 20px;
+  margin: 15px 0;
 }
 
 .card-item {
