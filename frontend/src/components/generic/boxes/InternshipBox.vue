@@ -9,7 +9,7 @@
         />
         <select v-model="form.field" :class="{ 'is-placeholder': form.field === '' }" aria-label="Campo">
           <option value="">Campo</option> <!-- Used as a placeholder -->
-          <option v-for="field in fields" :key="field" :value="field">{{ field }}</option>
+          <option v-for="field in fields" :key="field.full_name" :value="field.full_name">{{ field.full_name }}</option>
         </select>
       </div>
 
@@ -24,7 +24,7 @@
         <div class="internship-row">
           <select v-model="form.internshipType" :class="{ 'is-placeholder': form.internshipType === '' }" aria-label="Tipo de práctica">
             <option value="">Tipo de práctica</option> <!-- Used as a placeholder -->
-            <option v-for="opt in internshipTypes" :key="opt" :value="opt">{{ opt }}</option>
+            <option v-for="opt in internshipTypes" :key="opt" :value="opt">{{ capitalize(opt) }}</option>
           </select>
         </div>
         <div class="observations" style="height: 30vh">
@@ -55,14 +55,16 @@ export default {
     item: {
       type: Object,
       required: true
+    },
+    fields: {
+      type: Array,
+      default: () => []
     }
   },
   data () {
     return {
       form: this.mapItemToForm(this.item),
-      // TODO - Fetch from backend
-      fields: ['Programación', 'Electrónica', 'Mecánica'],
-      internshipTypes: ['Regular', 'Dual', 'Extraordinaria'],
+      internshipTypes: ['regular', 'dual', 'extraordinaria'],
       defaultIcon: IconUserDefault
     }
   },
@@ -113,6 +115,9 @@ export default {
       this.$emit('save', { ...this.form, id: this.item.id })
       // Also support v-model like flow
       this.$emit('input', { ...this.item, ...this.form })
+    },
+    capitalize (val) {
+      return String(val).charAt(0).toUpperCase() + String(val).slice(1)
     }
   }
 }
