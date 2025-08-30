@@ -77,7 +77,7 @@ export default {
           this.tutors = response.data.data.tutors
           // Restore tutor selection if included
           if (this.selectedTutor) {
-            const found = this.tutors.find(s => s.id === this.tutors.id)
+            const found = this.tutors.find(s => s.official_id === this.tutors.official_id)
             this.selectedTutor = found || null
           }
         })

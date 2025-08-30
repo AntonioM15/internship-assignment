@@ -102,7 +102,7 @@ export default {
           this.companies = response.data.data.companies
           // Restore company selection if included
           if (this.selectedCompany) {
-            const found = this.companies.find(s => s.id === this.companies.id)
+            const found = this.companies.find(s => s.full_name === this.selectedCompany.full_name)
             this.selectedCompany = found || null
           }
         })

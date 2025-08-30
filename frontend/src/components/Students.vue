@@ -89,7 +89,7 @@ export default {
           this.students = response.data.data.students
           // Restore student selection if included
           if (this.selectedStudent) {
-            const found = this.students.find(s => s.id === this.selectedStudent.id)
+            const found = this.students.find(s => s.official_id === this.selectedStudent.official_id)
             this.selectedStudent = found || null
           }
         })
