@@ -2,18 +2,12 @@
 <template>
   <div class="action-bar">
     <div class="filters-section">
-      <div class="filter-group" style="min-width: 400px;">
-        <select class="filter-element"  style="width: 40%; min-width: 150px;" v-model="entityKind" :class="{ 'is-placeholder': entityKind === '' }">
-          <option value="">Entidad</option> <!-- Used as a placeholder -->
-          <option value="student">Estudiante</option>
-          <option value="tutor">Profesor</option>
-          <option value="company">Empresa</option>
-        </select>
+      <div class="filter-group">
         <input
           type="text"
           class="filter-element"
-          style="width: 60%; min-width: 225px; padding-left: 5px;"
-          placeholder="Nombre"
+          style="width: 60%; min-width: 300px; padding-left: 5px;"
+          placeholder="Título Práctica"
           v-model="nameText"
         />
       </div>
@@ -65,7 +59,6 @@ export default {
   },
   data () {
     return {
-      entityKind: '',
       nameText: '',
       statusOptions: ['white', 'red', 'yellow', 'blue', 'green'], // Deterministic order for the select
       statusIcons: {
