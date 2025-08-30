@@ -40,12 +40,12 @@
 }
 
 .title {
-  font-size: 60px;
+  font-size: 54px;
   font-weight: bold;
 }
 
 .subtitle {
-  font-size: 40px;
+  font-size: 36px;
 }
 
 .right-section {
@@ -65,7 +65,7 @@
 }
 
 .right-section h2 {
-  font-size: 45px;
+  font-size: 40px;
   font-weight: bold;
   margin-bottom: 30px;
 }
@@ -80,7 +80,7 @@ input[type="text"],
 input[type="password"] {
   padding: 15px;
   margin-bottom: 15px;
-  font-size: 18px;
+  font-size: 16px;
   color: var(--text-primary-color);
   border: 2px solid var(--background-secondary-color);
   border-radius: 5px;
@@ -98,7 +98,7 @@ input::placeholder {
 
 .custom-message{
   width: 300px;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .custom-button {
@@ -110,7 +110,7 @@ input::placeholder {
 button {
   width: 100px;
   padding: 15px;
-  font-size: 18px;
+  font-size: 16px;
   background-color: var(--background-secondary-color);
   color: var(--text-header-color);
   border: none;
@@ -125,7 +125,7 @@ button:hover {
 .help-text {
     height: 10%;
     margin-top: 50px;
-    font-size: 20px;
+    font-size: 18px;
 }
 
 .help-text a {

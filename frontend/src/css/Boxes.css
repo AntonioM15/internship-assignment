@@ -56,7 +56,7 @@
   border: 2px solid var(--text-secondary-color);
   border-radius: 6px;
   color: var(--text-primary-color);
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .identity-row,
@@ -94,7 +94,7 @@
   border: 2px solid var(--text-secondary-color);
   border-radius: 6px;
   color: var(--text-primary-color);
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .description textarea::placeholder,
@@ -109,7 +109,7 @@
 .secondary .section-title {
   margin: 10px 0;
   color: var(--text-primary-color);
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
 }
 
@@ -133,7 +133,7 @@
   cursor: pointer;
   background: var(--background-secondary-color);
   color: var(--text-header-color);
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .box-footer .btn:hover {
