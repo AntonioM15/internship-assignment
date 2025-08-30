@@ -102,7 +102,7 @@ export default {
     },
     // Filter handlers
     onCourseChanged (val) {
-      this.course = val
+      this.course = val._id
       this.fetchStudents()
     },
     onNameTextChanged (val) {

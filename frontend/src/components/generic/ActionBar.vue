@@ -8,8 +8,8 @@
           <option value="">Titulación</option> <!-- Used as a placeholder -->
           <option
             v-for="deg in degrees"
-            :key="deg._id"
-            :value="deg._id"
+            :key="deg"
+            :value="deg"
           >
             {{ deg.full_name }}
           </option>

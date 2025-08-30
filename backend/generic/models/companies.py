@@ -106,7 +106,7 @@ class Company(TimestampMixin):
     def retrieve_companies(cls, mongo_db, field=None, full_name=None, partial_search=False):
         query = {}
         if field:
-            query["degree"] = field
+            query["field"] = field
         if full_name and partial_search:
             query["full_name"] = {"$regex": full_name, "$options": "i"}
         elif full_name:
