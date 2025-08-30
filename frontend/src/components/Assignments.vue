@@ -3,7 +3,11 @@
   <div class="container">
     <Header/>
     <NavBar/>
-    <AssignmentsActionBar :kind="'assignments'"/>
+    <AssignmentsActionBar
+      :kind="'assignments'"
+      @nameText-changed="onNameTextChanged"
+      @status-changed="onStatusChanged"
+    />
     <div v-if="error" style="color: red;">Error: {{ error }}</div>
     <div v-else-if="loading">Cargando...</div>
     <div v-else class="assignments-layout">
@@ -50,23 +54,46 @@ export default {
       loading: true,
       error: null,
       assignments: [],
-      selectedAssignment: null
+      selectedAssignment: null,
+      // AssignmentsActionBar filters
+      nameText: '',
+      selectedStatus: 'unknown'
     }
   },
   mounted () {
-    const path = `${apiUrl}/api/v1/assignments`
-    axios.get(path)
-      .then(response => {
-        this.assignments = response.data.data.internships
-      })
-      .catch(err => {
-        this.error = err.response.data.message || err.message
-      })
-      .finally(() => {
-        this.loading = false
-      })
+    this.fetchAssignments()
   },
   methods: {
+    fetchAssignments () {
+      this.loading = true
+      this.error = null
+      const path = `${apiUrl}/api/v1/assignments`
+      const params = {
+        ...(this.nameText && { full_name: this.nameText }),
+        ...((this.selectedStatus && this.selectedStatus !== 'unknown') && { status: this.selectedStatus })
+      }
+
+      axios.get(path, { params })
+        .then(response => {
+          this.assignments = response.data.data.internships
+        })
+        .catch(err => {
+          this.error = err.response.data.message || err.message
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
+    // Filter handlers
+    onNameTextChanged (val) {
+      this.nameText = val
+      this.fetchAssignments()
+    },
+    onStatusChanged (val) {
+      this.selectedStatus = val
+      this.fetchAssignments()
+    },
+    // Preview handlers
     onCancel () {
       // Close the pop-up and unselect the assignment
       this.selectedAssignment = null

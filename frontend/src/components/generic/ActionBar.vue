@@ -120,7 +120,6 @@ export default {
       this.$emit('nameText-changed', val)
     }
   },
-
   methods: {
     emitStatus () {
       this.$emit('status-changed', this.selectedStatus)

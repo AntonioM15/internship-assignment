@@ -127,9 +127,9 @@ class Internship(TimestampMixin):
     def retrieve_internships(cls, mongo_db, full_name=None, status=None, partial_search=False):
         query = {}
         if full_name and partial_search:
-            query["full_name"] = {"$regex": full_name, "$options": "i"}
-        elif full_name and full_name:
-            query["full_name"] = full_name
+            query["title"] = {"$regex": full_name, "$options": "i"}
+        elif full_name:
+            query["title"] = full_name
         if status and status in AVAILABLE_STATUSES:
             query["status"] = status
 

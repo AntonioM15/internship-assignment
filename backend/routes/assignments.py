@@ -17,7 +17,7 @@ def assignments_blueprint(mongo):
     @login_required
     @limited_access(['admin', 'coordinator'])
     def get_assignments():
-        full_name = request.args.get('student_id')
+        full_name = request.args.get('full_name')
         status = request.args.get('status')
 
         # Retrieve internships
