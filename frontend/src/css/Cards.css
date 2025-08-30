@@ -54,12 +54,12 @@
 }
 
 .item-title {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
 }
 
 .item-text {
-  font-size: 15px;
+  font-size: 14px;
 }
 
 /* ITEM STATUS AND NUMBER OF INTERNSHIPS */
@@ -132,10 +132,10 @@
 }
 
 .content .title {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: bold;
 }
 
 .content .subtitle {
-  font-size: 13px;
+  font-size: 12px;
 }
