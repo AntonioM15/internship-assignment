@@ -292,7 +292,7 @@ class Tutor(User):
     def retrieve_tutors(cls, mongo_db, degree_id=None, full_name=None, status=None, partial_search=False):
         query = {"role": "tutor"}
         if degree_id:
-            query["degree"] = {"$in": [ObjectId(degree_id)]}
+            query["degrees"] = {"$in": [ObjectId(degree_id)]}
         if full_name and partial_search:
             query["full_name"] = {"$regex": full_name, "$options": "i"}
         elif full_name:

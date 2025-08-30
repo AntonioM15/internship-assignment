@@ -6,9 +6,13 @@
         <select class="filter-element"  style="width: 40%; min-width: 150px;" v-model="course" :class="{ 'is-placeholder': course === '' }">
           <!-- TODO - values are mocked -->
           <option value="">Titulación</option> <!-- Used as a placeholder -->
-          <option value="informatica">Informática</option>
-          <option value="electronica">Electrónica</option>
-          <option value="mecanica">Mecánica</option>
+          <option
+            v-for="deg in degrees"
+            :key="deg"
+            :value="deg"
+          >
+            {{ deg.full_name }}
+          </option>
         </select>
         <input
           type="text"
@@ -71,6 +75,10 @@ export default {
     kind: {
       type: String,
       default: 'students'
+    },
+    degrees: {
+      type: Array,
+      default: () => []
     }
   },
   data () {
@@ -102,6 +110,14 @@ export default {
     },
     buttonText () {
       return `Añadir ${TEXTS[this.kind].plural}`
+    }
+  },
+  watch: {
+    course (val) {
+      this.$emit('course-changed', val)
+    },
+    nameText (val) {
+      this.$emit('nameText-changed', val)
     }
   },
   methods: {

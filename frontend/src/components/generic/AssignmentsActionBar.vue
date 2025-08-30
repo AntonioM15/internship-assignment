@@ -2,18 +2,12 @@
 <template>
   <div class="action-bar">
     <div class="filters-section">
-      <div class="filter-group" style="min-width: 400px;">
-        <select class="filter-element"  style="width: 40%; min-width: 150px;" v-model="entityKind" :class="{ 'is-placeholder': entityKind === '' }">
-          <option value="">Entidad</option> <!-- Used as a placeholder -->
-          <option value="student">Estudiante</option>
-          <option value="tutor">Profesor</option>
-          <option value="company">Empresa</option>
-        </select>
+      <div class="filter-group">
         <input
           type="text"
           class="filter-element"
-          style="width: 60%; min-width: 225px; padding-left: 5px;"
-          placeholder="Nombre"
+          style="width: 60%; min-width: 300px; padding-left: 5px;"
+          placeholder="Título Práctica"
           v-model="nameText"
         />
       </div>
@@ -65,24 +59,23 @@ export default {
   },
   data () {
     return {
-      entityKind: '',
       nameText: '',
-      statusOptions: ['white', 'red', 'yellow', 'blue', 'green'], // Deterministic order for the select
+      statusOptions: ['unknown', 'unassigned', 'provisional', 'assigned', 'ongoing'], // Deterministic order for the select
       statusIcons: {
-        white: IconStatusWhite,
-        red: IconStatusRed,
-        yellow: IconStatusYellow,
-        blue: IconStatusBlue,
-        green: IconStatusGreen
+        unknown: IconStatusWhite,
+        unassigned: IconStatusRed,
+        provisional: IconStatusYellow,
+        assigned: IconStatusBlue,
+        ongoing: IconStatusGreen
       },
       statusTexts: {
-        white: 'Todos los estados',
-        red: 'Por asignar',
-        yellow: 'Asignado - Por aprobar',
-        blue: 'Asignado - Aprobado',
-        green: 'Asignado - En curso'
+        unknown: 'Todos los estados',
+        unassigned: 'Por asignar',
+        provisional: 'Asignado - Por aprobar',
+        assigned: 'Asignado - Aprobado',
+        ongoing: 'Asignado - En curso'
       },
-      selectedStatus: 'white',
+      selectedStatus: 'unknown', // When unknown include all the statuses - used as default value
       assignmentKind: 'distanceStudents', // Distance for students used as default value
       assignmentOptions: ['distanceStudents', 'distanceTutors', 'preferenceStudents', 'preferenceCompanies'],
       assignmentsTexts: {
@@ -91,6 +84,11 @@ export default {
         preferenceStudents: 'Preferencia estudiantes',
         preferenceCompanies: 'Preferencia empresas'
       }
+    }
+  },
+  watch: {
+    nameText (val) {
+      this.$emit('nameText-changed', val)
     }
   },
   methods: {

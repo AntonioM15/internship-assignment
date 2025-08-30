@@ -3,7 +3,13 @@
   <div class="container">
     <Header/>
     <NavBar/>
-    <ActionBar :kind="'companies'"/>
+    <ActionBar
+      :kind="'companies'"
+      :degrees="degrees"
+      @course-changed="onFieldChanged"
+      @nameText-changed="onNameTextChanged"
+      @status-changed="onStatusChanged"
+    />
     <div v-if="error" style="color: red;">Error: {{ error }}</div>
     <div v-else-if="loading">Cargando...</div>
     <div v-else class="companies-layout">
@@ -66,25 +72,77 @@ export default {
     return {
       loading: true,
       error: null,
+      degrees: [],
       companies: [],
       selectedCompany: null,
-      selectedInternship: null
+      selectedInternship: null,
+      // ActionBar filters
+      field: '',
+      nameText: '',
+      selectedStatus: 'unknown'
     }
   },
   mounted () {
-    const path = `${apiUrl}/api/v1/companies`
-    axios.get(path)
-      .then(response => {
-        this.companies = response.data.data.companies
-      })
-      .catch(err => {
-        this.error = err.response.data.message || err.message
-      })
-      .finally(() => {
-        this.loading = false
-      })
+    this.fetchCompanies()
   },
   methods: {
+    fetchCompanies () {
+      this.loading = true
+      this.error = null
+      const path = `${apiUrl}/api/v1/companies`
+      const params = {
+        ...(this.field && { field: this.field }),
+        ...(this.nameText && { full_name: this.nameText }),
+        ...((this.selectedStatus && this.selectedStatus !== 'unknown') && { status: this.selectedStatus })
+      }
+
+      axios.get(path, { params })
+        .then(response => {
+          this.degrees = response.data.data.degrees
+          this.companies = response.data.data.companies
+          if (this.selectedCompany) {
+            // Restore company selection if included
+            const found = this.companies.find(s => s.full_name === this.selectedCompany.full_name)
+            this.selectedCompany = found || null
+          } else if (this.selectedInternship) {
+            // Restore internship selection if included
+            let foundInternship = null
+            for (const company of this.companies) {
+              const internshipList = Array.isArray(company.internships) ? company.internships : []
+              const match = internshipList.find(i =>
+                i &&
+                i.title === this.selectedInternship.title &&
+                i.company.full_name === this.selectedInternship.company.full_name
+              )
+              if (match) {
+                foundInternship = match
+                break
+              }
+            }
+            this.selectedInternship = foundInternship || null
+          }
+        })
+        .catch(err => {
+          this.error = err.response.data.message || err.message
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
+    // Filter handlers
+    onFieldChanged (val) {
+      // Fields only save the name and not a full object
+      this.field = val.full_name
+      this.fetchCompanies()
+    },
+    onNameTextChanged (val) {
+      this.nameText = val
+      this.fetchCompanies()
+    },
+    onStatusChanged (val) {
+      this.selectedStatus = val
+      this.fetchCompanies()
+    },
     // COMPANY handlers
     onHideCompany () {
       // TODO: implement hide functionality
