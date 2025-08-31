@@ -1,7 +1,7 @@
-from bson import ObjectId
 from pymongo import DESCENDING
 
-from .utils import TimestampMixin, Location, AVAILABLE_STATUSES, DEFAULT_STATUS, serialize_document
+from .utils import TimestampMixin, Location, AVAILABLE_STATUSES, DEFAULT_STATUS, serialize_document, to_object_id, \
+    to_object_id_list
 
 
 class Internship(TimestampMixin):
@@ -15,13 +15,13 @@ class Internship(TimestampMixin):
         self.title = title
         self.description = description
 
-        # Keys from other collections
-        self.location = location
-        self.student = student
-        self.worker = worker
-        self.tutor = tutor
-        self.company = company
-        self.institution = institution
+        # Key ids from other collections
+        self.location = to_object_id(location)
+        self.student = to_object_id(student)
+        self.worker = to_object_id(worker)
+        self.tutor = to_object_id(tutor)
+        self.company = to_object_id(company)
+        self.institution = to_object_id(institution)
 
     @classmethod
     def doc_to_dict(cls, mongo_db, doc):
@@ -117,11 +117,12 @@ class Internship(TimestampMixin):
 
     @classmethod
     def get_by_id(cls, mongo_db, internship_id):
-        return mongo_db.internships.find_one({"_id": internship_id})
+        return mongo_db.internships.find_one({"_id": to_object_id(internship_id)})
 
     @classmethod
     def get_multi_by_ids(cls, mongo_db, internship_ids):
-        return mongo_db.internships.find({"_id": {"$in": internship_ids}}).sort("created_date", DESCENDING)
+        return (mongo_db.internships.find({"_id": {"$in": to_object_id_list(internship_ids)}})
+                .sort("created_date", DESCENDING))
 
     @classmethod
     def retrieve_internships(cls, mongo_db, full_name=None, status=None, partial_search=False):
@@ -138,15 +139,15 @@ class Internship(TimestampMixin):
     @classmethod
     def update_internship(cls, mongo_db, internship_id, data_to_update):
         return mongo_db.internships.update_one(
-            {"_id": ObjectId(internship_id)},
+            {"_id": to_object_id(internship_id)},
             {"$set": data_to_update}
         )
 
     @classmethod
     def retrieve_internship_relations(cls, mongo_db, student_id=None, tutor_id=None, company_id=None):
         # TODO consider using embedded values instead
-        student = mongo_db.users.find_one({"_id": ObjectId(student_id)}) if student_id else None
-        tutor = mongo_db.users.find_one({"_id": ObjectId(tutor_id)}) if tutor_id else None
-        company = mongo_db.companies.find_one({"_id": ObjectId(company_id)}) if company_id else None
+        student = mongo_db.users.find_one({"_id": to_object_id(student_id)}) if student_id else None
+        tutor = mongo_db.users.find_one({"_id": to_object_id(tutor_id)}) if tutor_id else None
+        company = mongo_db.companies.find_one({"_id": to_object_id(company_id)}) if company_id else None
 
         return student, tutor, company

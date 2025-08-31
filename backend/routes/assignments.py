@@ -1,4 +1,3 @@
-from bson import ObjectId
 from flask import Blueprint, jsonify, request
 
 from generic.models.companies import Company
@@ -38,12 +37,11 @@ def assignments_blueprint(mongo):
         company_id = data.get('company_id')
 
         # Add new internship
-        internship = Internship(kind, None, starting_day, finishing_day, title, description,
-                                company=ObjectId(company_id))
+        internship = Internship(kind, None, starting_day, finishing_day, title, description, company=company_id)
         internship_doc = internship.save(mongo_db)
 
         # Update company
-        Company.add_internship_to_company(mongo_db, ObjectId(company_id), ObjectId(internship_doc.inserted_id))
+        Company.add_internship_to_company(mongo_db, company_id, internship_doc.inserted_id)
 
         return jsonify({"message": "Added new internship"}), 201
 
@@ -55,7 +53,7 @@ def assignments_blueprint(mongo):
         data_to_update = data.get('data_to_update')
 
         # Update internship
-        Internship.update_internship(mongo_db, ObjectId(internship_id), data_to_update)
+        Internship.update_internship(mongo_db, internship_id, data_to_update)
 
         return jsonify({"message": "Internship was updated"}), 200
 

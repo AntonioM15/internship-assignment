@@ -1,9 +1,8 @@
-from bson import ObjectId
 from flask import Blueprint, jsonify, request
 
 from generic.models.institutions import Degree
 from generic.models.users import Student
-from generic.models.utils import Observation, serialize_document
+from generic.models.utils import Observation, serialize_document, to_object_id
 from generic.session_utils import limited_access, login_required
 
 # Blueprint definition
@@ -45,18 +44,18 @@ def students_blueprint(mongo):
 
         # Add new student
         student = Student(email, hashed_password, official_id, full_name, status=None, institution=None,
-                          degree=ObjectId(degree_id))
+                          degree=degree_id)
         student_doc = student.save(mongo_db)
 
         observation_text = data.get('observation')
         if observation_text:
             # Add new observation and assign it to the student
-            observation = Observation(text=observation_text, receiver=ObjectId(student_doc.inserted_id))
+            observation = Observation(text=observation_text, receiver=student_doc.inserted_id)
             observation_doc = observation.save(mongo_db)
 
             # Update student
             student.update_student(mongo_db, student_doc.inserted_id,
-                                   {'observations': [ObjectId(observation_doc.inserted_id)]})
+                                   {'observations': [to_object_id(observation_doc.inserted_id)]})
 
         return jsonify({"message": "Added new student"}), 201
 
@@ -68,7 +67,7 @@ def students_blueprint(mongo):
         data_to_update = data.get('data_to_update')
 
         # Update student
-        Student.update_student(mongo_db, ObjectId(user_id), data_to_update)
+        Student.update_student(mongo_db, user_id, data_to_update)
 
         return jsonify({"message": "Student was updated"}), 200
 
@@ -78,8 +77,7 @@ def students_blueprint(mongo):
         user_id = data.get('user_id')
 
         # Update student
-        Student.update_student(mongo_db, ObjectId(user_id),
-                               {'hidden': True})
+        Student.update_student(mongo_db, user_id, {'hidden': True})
 
         return jsonify({"message": "Student was hid"}), 200
 
@@ -89,8 +87,7 @@ def students_blueprint(mongo):
         user_id = data.get('user_id')
 
         # Update student
-        Student.update_student(mongo_db, ObjectId(user_id),
-                               {'hidden': False})
+        Student.update_student(mongo_db, user_id, {'hidden': False})
 
         return jsonify({"message": "Student was restored"}), 200
 
