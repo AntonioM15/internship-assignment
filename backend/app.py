@@ -18,19 +18,21 @@ from routes.tutors import tutors_blueprint
 def get_secret(secret_name):
     client = secretmanager.SecretManagerServiceClient()
     project_id = os.getenv('GOOGLE_CLOUD_PROJECT')
-    secret_path = f"projects/{project_id}/secrets/{secret_name}/versions/1"
+    secret_path = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
     response = client.access_secret_version(request={"name": secret_path})
     return response.payload.data.decode('UTF-8')
 
-
+IS_LOCAL = bool(os.getenv('LOCAL_DEV') or os.getenv("TEST_ENV"))
 # Load env variables to decide which env to use
-if os.getenv('LOCAL_DEV') or os.getenv("TEST_ENV"):
+if IS_LOCAL:
     MONGO_URI = "mongodb://localhost:27017/tfm_local_db"
+    MONGO_DBNAME = "tfm_local_db"
     SESSION_KEY = "this_secret_key_is_not_real"
     STATIC_FOLDER = "../frontend/dist/static"
     TEMPLATE_FOLDER = "../frontend/dist"
 else:
     MONGO_URI = get_secret('MONGO_URI')
+    MONGO_DBNAME = "tfm_prod_db"
     SESSION_KEY = get_secret('SESSION_KEY')
     STATIC_FOLDER = "dist/static"
     TEMPLATE_FOLDER = "dist"
@@ -47,6 +49,7 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True
 
 # Init Mongo first
 app.config["MONGO_URI"] = MONGO_URI
+app.config["MONGO_DBNAME"] = MONGO_DBNAME
 mongo = PyMongo(app)
 
 # Use MongoDB for sessions
