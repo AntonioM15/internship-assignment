@@ -1,3 +1,4 @@
+from bson import ObjectId
 from datetime import datetime
 from pymongo import DESCENDING
 
@@ -30,6 +31,21 @@ def str_date_to_datetime(date_str):
     if not date_str:
         return None
     return datetime.strptime(date_str, "%Y-%m-%d")
+
+
+def to_object_id(value):
+    if not value:
+        return None
+    if isinstance(value, ObjectId):
+        return value
+    return ObjectId(str(value))
+
+
+def to_object_id_list(values):
+    if not values:
+        return []
+    return [to_object_id(v) for v in values]
+
 
 
 class TimestampMixin(object):
