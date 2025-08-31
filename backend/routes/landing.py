@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 
-from session_utils import save_session, clear_session
+from generic.session_utils import save_session, clear_session
 
 # Blueprint definition
 landing = Blueprint('landing_blueprint', __name__)

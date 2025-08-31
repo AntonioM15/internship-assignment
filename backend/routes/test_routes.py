@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 import os
 
-from session_utils import save_session
+from generic.session_utils import save_session
 
 # Blueprint definition
 test_routes = Blueprint('test_routes_blueprint', __name__)
