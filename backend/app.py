@@ -40,17 +40,24 @@ app = Flask(__name__,
             template_folder=TEMPLATE_FOLDER)
 CORS(app, supports_credentials=True, origins=["http://localhost:5000"])
 
-# Session config
+# Session base config
 app.secret_key = SESSION_KEY
-app.config["SESSION_PERMANENT"] = False  # session closed after closing the browser
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['SESSION_COOKIE_SECURE'] = True  # only https connections
-app.config['SESSION_COOKIE_HTTPONLY'] = True  # cookies not available to JS
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # for cross-site requests
+app.config["SESSION_PERMANENT"] = False
+app.config['SESSION_COOKIE_HTTPONLY'] = True
 
-# Init mongo config
+# Init Mongo first
 app.config["MONGO_URI"] = MONGO_URI
 mongo = PyMongo(app)
+
+# Use MongoDB for sessions
+app.config['SESSION_TYPE'] = 'mongodb'
+app.config['SESSION_MONGODB'] = mongo.cx
+app.config['SESSION_MONGODB_DB'] = mongo.db.name
+app.config['SESSION_MONGODB_COLLECT'] = 'flask_sessions'
+
+# Cookie flags
+app.config['SESSION_COOKIE_SECURE'] = not IS_LOCAL  # only https connections
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # for cross-site requests
 
 # Init Flask-Session
 Session(app)
