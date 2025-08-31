@@ -1,9 +1,8 @@
-from bson import ObjectId
 from flask import Blueprint, jsonify, request
 
 from generic.models.institutions import Degree
 from generic.models.users import Tutor
-from generic.models.utils import Observation, serialize_document
+from generic.models.utils import Observation, serialize_document, to_object_id
 from generic.session_utils import limited_access, login_required
 
 # Blueprint definition
@@ -44,18 +43,18 @@ def tutors_blueprint(mongo):
 
         # Add new tutor
         tutor = Tutor(email, hashed_password, official_id, full_name, status=None, institution=None,
-                      degrees=[ObjectId(degree_id)])
+                      degrees=[degree_id])
         tutor_doc = tutor.save(mongo_db)
 
         observation_text = data.get('observation')
         if observation_text:
             # Add new observation and assign it to the tutor
-            observation = Observation(text=observation_text, receiver=ObjectId(tutor_doc.inserted_id))
+            observation = Observation(text=observation_text, receiver=tutor_doc.inserted_id)
             observation_doc = observation.save(mongo_db)
 
             # Update tutor
             tutor.update_tutor(mongo_db, tutor_doc.inserted_id,
-                               {'observations': [ObjectId(observation_doc.inserted_id)]})
+                               {'observations': [to_object_id(observation_doc.inserted_id)]})
 
         return jsonify({"message": "Added new tutor"}), 201
 
@@ -67,7 +66,7 @@ def tutors_blueprint(mongo):
         data_to_update = data.get('data_to_update')
 
         # Update tutor
-        Tutor.update_tutor(mongo_db, ObjectId(user_id), data_to_update)
+        Tutor.update_tutor(mongo_db, user_id, data_to_update)
 
         return jsonify({"message": "Tutor was updated"}), 200
 
@@ -77,8 +76,7 @@ def tutors_blueprint(mongo):
         user_id = data.get('user_id')
 
         # Update tutor
-        Tutor.update_tutor(mongo_db, ObjectId(user_id),
-                           {'hidden': True})
+        Tutor.update_tutor(mongo_db, user_id, {'hidden': True})
 
         return jsonify({"message": "Tutor was hid"}), 200
 
@@ -88,8 +86,7 @@ def tutors_blueprint(mongo):
         user_id = data.get('user_id')
 
         # Update tutor
-        Tutor.update_tutor(mongo_db, ObjectId(user_id),
-                           {'hidden': False})
+        Tutor.update_tutor(mongo_db, user_id, {'hidden': False})
 
         return jsonify({"message": "Tutor was restored"}), 200
 

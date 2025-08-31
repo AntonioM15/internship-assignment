@@ -1,8 +1,8 @@
-from bson import ObjectId
 from pymongo import DESCENDING
 
 from .internships import Internship
-from .utils import Location, Observation, TimestampMixin, AVAILABLE_STATUSES, serialize_document
+from .utils import Location, Observation, TimestampMixin, AVAILABLE_STATUSES, serialize_document, to_object_id, \
+    to_object_id_list
 
 
 class Company(TimestampMixin):
@@ -14,8 +14,8 @@ class Company(TimestampMixin):
         self.description = description
         self.avatar = avatar
 
-        # Keys from other collections
-        self.location = location
+        # Key ids from other collections
+        self.location = to_object_id(location)
         self.workers = []
         self.observations = []
         self.internships = []
@@ -51,34 +51,52 @@ class Company(TimestampMixin):
         self.location = None
 
     def add_worker(self, worker_id):
-        if not worker_id or worker_id in self.workers:
+        if not worker_id:
             return
-        self.workers.append(worker_id)
+        worker = to_object_id(worker_id)
+        if not worker or worker in self.workers:
+            return
+        self.workers.append(worker)
 
     def remove_worker(self, worker_id):
-        if not worker_id or worker_id not in self.workers:
+        if not worker_id:
             return
-        self.workers.remove(worker_id)
+        worker = to_object_id(worker_id)
+        if not worker or worker not in self.workers:
+            return
+        self.workers.remove(worker)
 
     def add_observation(self, observation_id):
-        if not observation_id or observation_id in self.observations:
+        if not observation_id:
             return
-        self.observations.append(observation_id)
+        observation = to_object_id(observation_id)
+        if not observation or observation in self.observations:
+            return
+        self.observations.append(observation)
 
     def remove_observation(self, observation_id):
-        if not observation_id or observation_id not in self.observations:
+        if not observation_id:
             return
-        self.observations.remove(observation_id)
+        observation = to_object_id(observation_id)
+        if not observation or observation not in self.observations:
+            return
+        self.observations.remove(observation)
 
     def add_internship(self, internship_id):
-        if not internship_id or internship_id in self.internships:
+        if not internship_id:
             return
-        self.internships.append(internship_id)
+        internship = to_object_id(internship_id)
+        if not internship or internship in self.internships:
+            return
+        self.internships.append(internship)
 
     def remove_internship(self, internship_id):
-        if not internship_id or internship_id not in self.internships:
+        if not internship_id:
             return
-        self.internships.remove(internship_id)
+        internship = to_object_id(internship_id)
+        if not internship or internship not in self.internships:
+            return
+        self.internships.remove(internship)
 
     def save(self, mongo_db):
         self.update_last_updated()
@@ -96,11 +114,12 @@ class Company(TimestampMixin):
 
     @classmethod
     def get_by_id(cls, mongo_db, company_id):
-        return mongo_db.companies.find_one({"_id": company_id})
+        return mongo_db.companies.find_one({"_id": to_object_id(company_id)})
 
     @classmethod
     def get_multi_by_ids(cls, mongo_db, company_ids):
-        return mongo_db.companies.find({"_id": {"$in": company_ids}}).sort("created_date", DESCENDING)
+        return (mongo_db.companies.find({"_id": {"$in": to_object_id_list(company_ids)}})
+                .sort("created_date", DESCENDING))
 
     @classmethod
     def retrieve_companies(cls, mongo_db, field=None, full_name=None, partial_search=False):
@@ -117,20 +136,20 @@ class Company(TimestampMixin):
     @classmethod
     def update_company(cls, mongo_db, company_id, data_to_update):
         return mongo_db.companies.update_one(
-            {"_id": ObjectId(company_id)},
+            {"_id": to_object_id(company_id)},
             {"$set": data_to_update}
         )
 
     @classmethod
     def retrieve_company_internships(cls, mongo_db, company_id, status):
         # Query the company
-        company = mongo_db.companies.find_one({"_id": ObjectId(company_id)})
+        company = mongo_db.companies.find_one({"_id": to_object_id(company_id)})
         internship_ids = company["internships"]
         if not internship_ids:
             return []
 
         # Query company internships
-        query = {"_id": {"$in": internship_ids}}
+        query = {"_id": {"$in": to_object_id_list(internship_ids)}}
         if status and status in AVAILABLE_STATUSES:
             query["status"] = status
 
@@ -139,6 +158,6 @@ class Company(TimestampMixin):
     @classmethod
     def add_internship_to_company(cls, mongo_db, company_id, internship_id):
         mongo_db.companies.update_one(
-            {"_id": company_id},
-            {"$addToSet": {"internships": internship_id}}
+            {"_id": to_object_id(company_id)},
+            {"$addToSet": {"internships": to_object_id(internship_id)}}
         )

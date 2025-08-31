@@ -1,11 +1,10 @@
-from bson import ObjectId
 from pymongo import DESCENDING
 
 from .internships import Internship
 from .companies import Company
 from .institutions import Institution, Degree
 from .utils import Notification, Observation, Location, AVAILABLE_STATUSES, DEFAULT_STATUS, serialize_document, \
-                   TimestampMixin
+                   TimestampMixin, to_object_id, to_object_id_list
 
 
 class User(TimestampMixin):
@@ -20,10 +19,10 @@ class User(TimestampMixin):
         self.official_id = official_id
         self.full_name = full_name
         self.hidden = False
-
-        # Keys from other collections
         self.avatar = avatar
-        self.location = location or {}
+
+        # Key ids from other collections
+        self.location = to_object_id(location) or {}
         self.notifications = notifications or []
 
     @classmethod
@@ -46,7 +45,7 @@ class User(TimestampMixin):
     def update_location(self, location_id):
         if not location_id:
             return
-        self.location = location_id
+        self.location = to_object_id(location_id)
 
     def remove_location(self):
         self.location = None
@@ -67,11 +66,11 @@ class User(TimestampMixin):
 
     @classmethod
     def get_by_id(cls, mongo_db, user_id):
-        return mongo_db.users.find_one({"_id": user_id})
+        return mongo_db.users.find_one({"_id": to_object_id(user_id)})
 
     @classmethod
     def get_multi_by_ids(cls, mongo_db, user_ids):
-        return mongo_db.users.find({"_id": {"$in": user_ids}}).sort("created_date", DESCENDING)
+        return mongo_db.users.find({"_id": {"$in": to_object_id_list(user_ids)}}).sort("created_date", DESCENDING)
 
     @classmethod
     def retrieve_latest_notifications(cls, mongo_db, _):
@@ -84,9 +83,9 @@ class Coordinator(User):
         super().__init__(email, hashed_password, official_id, full_name, **kwargs)
         self.role = 'coordinator'
 
-        # Keys from other collections
-        self.institution = institution
-        self.observations = observations or []
+        # Key ids from other collections
+        self.institution = to_object_id(institution)
+        self.observations = to_object_id_list(observations) or []
 
     def to_dict(self):
         data = super().to_dict()
@@ -119,10 +118,10 @@ class Worker(User):
         super().__init__(email, hashed_password, official_id, full_name, **kwargs)
         self.role = 'worker'
 
-        # Keys from other collections
-        self.company = company
-        self.interns = interns or []
-        self.internships = internships or []
+        # Key ids from other collections
+        self.company = to_object_id(company)
+        self.interns = to_object_id_list(interns) or []
+        self.internships = to_object_id_list(internships) or []
 
     def to_dict(self):
         data = super().to_dict()
@@ -151,10 +150,11 @@ class Worker(User):
     def retrieve_latest_notifications(cls, mongo_db, user_id):
         """ Retrieve the latest notifications of only its user """
         # Query the user first
-        user = mongo_db.users.find_one({"_id": ObjectId(user_id)})
+        user = mongo_db.users.find_one({"_id": to_object_id(user_id)})
         # Query related notifications
         notifications_ids = user['notifications'][:cls.MAX_NOTIFICATIONS_REGULAR]
-        return mongo_db.notifications.find({"_id": {"$in": notifications_ids}}).sort("created_date", DESCENDING)
+        return (mongo_db.notifications.find({"_id": {"$in": to_object_id_list(notifications_ids)}})
+                .sort("created_date", DESCENDING))
 
 
 class Student(User):
@@ -165,11 +165,11 @@ class Student(User):
         self.internship_type = None
         self.description = description
 
-        # Keys from other collections
-        self.institution = institution
-        self.degree = degree
-        self.internship = internship
-        self.observations = observations or []
+        # Key ids from other collections
+        self.institution = to_object_id(institution)
+        self.degree = to_object_id(degree)
+        self.internship = to_object_id(internship)
+        self.observations = to_object_id_list(observations) or []
 
     def to_dict(self):
         data = super().to_dict()
@@ -205,22 +205,23 @@ class Student(User):
 
     def add_observation(self, observation_id):
         if observation_id and observation_id not in self.observations:
-            self.observations.append(ObjectId(observation_id))
+            self.observations.append(to_object_id(observation_id))
 
     @classmethod
     def retrieve_latest_notifications(cls, mongo_db, user_id):
         """ Retrieve the latest notifications of only its user """
         # Query the user first
-        user = mongo_db.users.find_one({"_id": ObjectId(user_id)})
+        user = mongo_db.users.find_one({"_id": to_object_id(user_id)})
         # Query related notifications
         notifications_ids = user['notifications'][:cls.MAX_NOTIFICATIONS_REGULAR]
-        return mongo_db.notifications.find({"_id": {"$in": notifications_ids}}).sort("created_date", DESCENDING)
+        return (mongo_db.notifications.find({"_id": {"$in": to_object_id_list(notifications_ids)}})
+                .sort("created_date", DESCENDING))
 
     @classmethod
     def retrieve_students(cls, mongo_db, degree_id=None, full_name=None, status=None, partial_search=False):
         query = {"role": "student"}
         if degree_id:
-            query["degree"] = ObjectId(degree_id)
+            query["degree"] = to_object_id(degree_id)
         if full_name and partial_search:
             # Regular expressions for partial matching
             query["full_name"] = {"$regex": full_name, "$options": "i"}
@@ -235,7 +236,7 @@ class Student(User):
     def update_student(cls, mongo_db, user_id, data_to_update):
         # TODO process data_to_update so that non invalid values are removed
         return mongo_db.users.update_one(
-            {"_id": ObjectId(user_id)},
+            {"_id": to_object_id(user_id)},
             {"$set": data_to_update}
         )
 
@@ -246,11 +247,11 @@ class Tutor(User):
         self.role = 'tutor'
         self.status = status if status in AVAILABLE_STATUSES else DEFAULT_STATUS
 
-        # Keys from other collections
-        self.institution = institution
-        self.degrees = degrees or []
-        self.students = students or []
-        self.internships = internships or []
+        # Key ids from other collections
+        self.institution = to_object_id(institution)
+        self.degrees = to_object_id_list(degrees) or []
+        self.students = to_object_id_list(students) or []
+        self.internships = to_object_id_list(internships) or []
 
     def to_dict(self):
         data = super().to_dict()
@@ -283,16 +284,16 @@ class Tutor(User):
     def retrieve_latest_notifications(cls, mongo_db, user_id):
         """ Retrieve the latest notifications of only its user """
         # Query the user first
-        user = mongo_db.users.find_one({"_id": ObjectId(user_id)})
+        user = mongo_db.users.find_one({"_id": to_object_id(user_id)})
         # Query related notifications
         notifications_ids = user['notifications'][:cls.MAX_NOTIFICATIONS_REGULAR]
-        return mongo_db.notifications.find({"_id": {"$in": notifications_ids}}).sort("created_date", DESCENDING)
+        return mongo_db.notifications.find({"_id": {"$in": to_object_id_list(notifications_ids)}}).sort("created_date", DESCENDING)
 
     @classmethod
     def retrieve_tutors(cls, mongo_db, degree_id=None, full_name=None, status=None, partial_search=False):
         query = {"role": "tutor"}
         if degree_id:
-            query["degrees"] = {"$in": [ObjectId(degree_id)]}
+            query["degrees"] = {"$in": [to_object_id(degree_id)]}
         if full_name and partial_search:
             query["full_name"] = {"$regex": full_name, "$options": "i"}
         elif full_name:
@@ -305,7 +306,7 @@ class Tutor(User):
     @classmethod
     def update_tutor(cls, mongo_db, tutor_id, data_to_update):
         return mongo_db.users.update_one(
-            {"_id": ObjectId(tutor_id)},
+            {"_id": to_object_id(tutor_id)},
             {"$set": data_to_update}
         )
 

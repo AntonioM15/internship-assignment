@@ -1,9 +1,8 @@
-from bson import ObjectId
 from flask import Blueprint, jsonify, request
 
 from generic.models.institutions import Degree
 from generic.models.companies import Company
-from generic.models.utils import serialize_document, Observation, AVAILABLE_STATUSES
+from generic.models.utils import serialize_document, Observation, AVAILABLE_STATUSES, to_object_id
 from generic.session_utils import limited_access, login_required
 
 # Blueprint definition
@@ -61,12 +60,12 @@ def companies_blueprint(mongo):
         observation_text = data.get('observation')
         if observation_text:
             # Add new observation and assign it to the company
-            observation = Observation(text=observation_text, receiver=ObjectId(company_doc.inserted_id))
+            observation = Observation(text=observation_text, receiver=company_doc.inserted_id)
             observation_doc = observation.save(mongo_db)
 
             # Update company
             company.update_company(mongo_db, company_doc.inserted_id,
-                                   {'observations': [ObjectId(observation_doc.inserted_id)]})
+                                   {'observations': [to_object_id(observation_doc.inserted_id)]})
 
         return jsonify({"message": "Added new company"}), 201
 
@@ -78,7 +77,7 @@ def companies_blueprint(mongo):
         data_to_update = data.get('data_to_update')
 
         # Update company
-        Company.update_company(mongo_db, ObjectId(company_id), data_to_update)
+        Company.update_company(mongo_db, company_id, data_to_update)
 
         return jsonify({"message": "Company was updated"}), 200
 
@@ -88,8 +87,7 @@ def companies_blueprint(mongo):
         company_id = data.get('company_id')
 
         # Update company
-        Company.update_company(mongo_db, ObjectId(company_id),
-                               {'hidden': True})
+        Company.update_company(mongo_db, company_id, {'hidden': True})
 
         return jsonify({"message": "Company was hid"}), 200
 
@@ -99,8 +97,7 @@ def companies_blueprint(mongo):
         company_id = data.get('company_id')
 
         # Update company
-        Company.update_company(mongo_db, ObjectId(company_id),
-                               {'hidden': False})
+        Company.update_company(mongo_db, company_id, {'hidden': False})
 
         return jsonify({"message": "Company was restored"}), 200
 

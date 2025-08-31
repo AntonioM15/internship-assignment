@@ -1,7 +1,6 @@
-from bson import ObjectId
 from pymongo import DESCENDING
 
-from .utils import TimestampMixin
+from .utils import TimestampMixin, to_object_id, to_object_id_list
 
 
 class Degree(TimestampMixin):
@@ -11,40 +10,58 @@ class Degree(TimestampMixin):
         self.full_name = full_name
         self.avatar = avatar
 
-        # Keys from other collections
+        # Key ids from other collections
         self.institutions = []
         self.tutors = []
         self.students = []
 
     def add_institution(self, institution_id):
-        if not institution_id or institution_id in self.institutions:
+        if not institution_id:
             return
-        self.institutions.append(institution_id)
+        institution = to_object_id(institution_id)
+        if not institution or institution in self.institutions:
+            return
+        self.institutions.append(institution)
 
     def remove_institution(self, institution_id):
-        if not institution_id or institution_id not in self.institutions:
+        if not institution_id:
             return
-        self.institutions.remove(institution_id)
+        institution = to_object_id(institution_id)
+        if not institution or institution not in self.institutions:
+            return
+        self.institutions.remove(institution)
 
     def add_tutor(self, tutor_id):
-        if not tutor_id or tutor_id in self.tutors:
+        if not tutor_id:
             return
-        self.tutors.append(tutor_id)
+        tutor = to_object_id(tutor_id)
+        if not tutor or tutor in self.tutors:
+            return
+        self.tutors.append(tutor)
 
     def remove_tutor(self, tutor_id):
-        if not tutor_id or tutor_id not in self.tutors:
+        if not tutor_id:
             return
-        self.tutors.remove(tutor_id)
+        tutor = to_object_id(tutor_id)
+        if not tutor or tutor not in self.tutors:
+            return
+        self.tutors.remove(tutor)
 
     def add_student(self, student_id):
-        if not student_id or student_id in self.students:
+        if not student_id:
             return
-        self.students.append(student_id)
+        student = to_object_id(student_id)
+        if not student or student in self.students:
+            return
+        self.students.append(student)
 
     def remove_student(self, student_id):
-        if not student_id or student_id not in self.students:
+        if not student_id:
             return
-        self.students.remove(student_id)
+        student = to_object_id(student_id)
+        if not student or student not in self.students:
+            return
+        self.students.remove(student)
 
     def save(self, mongo_db):
         self.update_last_updated()
@@ -62,17 +79,18 @@ class Degree(TimestampMixin):
 
     @classmethod
     def get_by_id(cls, mongo_db, degree_id):
-        return mongo_db.degrees.find_one({"_id": degree_id})
+        return mongo_db.degrees.find_one({"_id": to_object_id(degree_id)})
 
     @classmethod
     def get_multi_by_ids(cls, mongo_db, degree_ids):
-        return mongo_db.degrees.find({"_id": {"$in": degree_ids}}).sort("created_date", DESCENDING)
+        return (mongo_db.degrees.find({"_id": {"$in": to_object_id_list(degree_ids)}})
+                .sort("created_date", DESCENDING))
 
     @classmethod
     def get_latest(cls, mongo_db, institution_id=None, full_name=None):
         query = {}
         if institution_id:
-            query["institution"] = ObjectId(institution_id)
+            query["institution"] = to_object_id(institution_id)
         if full_name:
             query["full_name"] = full_name
         return mongo_db.degrees.find(query).sort("created_date", DESCENDING)
@@ -85,71 +103,101 @@ class Institution(TimestampMixin):
         self.full_name = full_name
         self.avatar = avatar
 
-        # Keys from other collections
-        self.location = location
+        # Key ids from other collections
+        self.location = to_object_id(location)
         self.coordinators = []
         self.degrees = []
         self.tutors = []
         self.students = []
         self.internships = []
 
-    def update_location(self, location):
-        if not location:
+    def update_location(self, location_id):
+        if not location_id:
             return
-        self.location = location
+        self.location = to_object_id(location_id)
 
     def remove_location(self):
         self.location = None
 
     def add_coordinator(self, coordinator_id):
-        if not coordinator_id or coordinator_id in self.coordinators:
+        if not coordinator_id:
             return
-        self.coordinators.append(coordinator_id)
+        coordinator = to_object_id(coordinator_id)
+        if not coordinator or coordinator in self.coordinators:
+            return
+        self.coordinators.append(coordinator)
 
     def remove_coordinator(self, coordinator_id):
-        if not coordinator_id or coordinator_id not in self.coordinators:
+        if not coordinator_id:
             return
-        self.coordinators.remove(coordinator_id)
+        coordinator = to_object_id(coordinator_id)
+        if not coordinator or coordinator not in self.coordinators:
+            return
+        self.coordinators.remove(coordinator)
 
     def add_degree(self, degree_id):
-        if not degree_id or degree_id in self.degrees:
+        if not degree_id:
             return
-        self.degrees.append(degree_id)
+        degree = to_object_id(degree_id)
+        if not degree or degree in self.degrees:
+            return
+        self.degrees.append(degree)
 
     def remove_degree(self, degree_id):
-        if not degree_id or degree_id not in self.degrees:
+        if not degree_id:
             return
-        self.degrees.remove(degree_id)
+        degree = to_object_id(degree_id)
+        if not degree or degree not in self.degrees:
+            return
+        self.degrees.remove(degree)
 
     def add_tutor(self, tutor_id):
-        if not tutor_id or tutor_id in self.tutors:
+        if not tutor_id:
             return
-        self.tutors.append(tutor_id)
+        tutor = to_object_id(tutor_id)
+        if not tutor or tutor in self.tutors:
+            return
+        self.tutors.append(tutor)
 
     def remove_tutor(self, tutor_id):
-        if not tutor_id or tutor_id not in self.tutors:
+        if not tutor_id:
             return
-        self.tutors.remove(tutor_id)
+        tutor = to_object_id(tutor_id)
+        if not tutor or tutor not in self.tutors:
+            return
+        self.tutors.remove(tutor)
 
     def add_student(self, student_id):
-        if not student_id or student_id in self.students:
+        if not student_id:
             return
-        self.students.append(student_id)
+        student = to_object_id(student_id)
+        if not student or student in self.students:
+            return
+        self.students.append(student)
 
     def remove_student(self, student_id):
-        if not student_id or student_id not in self.students:
+        if not student_id:
             return
-        self.students.remove(student_id)
+        student = to_object_id(student_id)
+        if not student or student not in self.students:
+            return
+        self.students.remove(student)
 
     def add_internship(self, internship_id):
-        if not internship_id or internship_id in self.internships:
+        if not internship_id:
             return
-        self.internships.append(internship_id)
+        internship = to_object_id(internship_id)
+        if not internship or internship in self.internships:
+            return
+        self.internships.append(internship)
 
     def remove_internship(self, internship_id):
-        if not internship_id or internship_id not in self.internships:
+        if not internship_id:
             return
-        self.internships.remove(internship_id)
+        internship = to_object_id(internship_id)
+        if not internship or internship not in self.internships:
+            return
+        self.internships.remove(internship)
 
     def save(self, mongo_db):
         self.update_last_updated()
@@ -167,8 +215,8 @@ class Institution(TimestampMixin):
 
     @classmethod
     def get_by_id(cls, mongo_db, institution_id):
-        return mongo_db.institutions.find_one({"_id": institution_id})
+        return mongo_db.institutions.find_one({"_id": to_object_id(institution_id)})
 
     @classmethod
     def get_multi_by_ids(cls, mongo_db, institution_ids):
-        return mongo_db.institutions.find({"_id": {"$in": institution_ids}}).sort("created_date", DESCENDING)
+        return mongo_db.institutions.find({"_id": {"$in": to_object_id_list(institution_ids)}}).sort("created_date", DESCENDING)

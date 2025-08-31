@@ -1,3 +1,4 @@
+from bson import ObjectId
 from datetime import datetime
 from pymongo import DESCENDING
 
@@ -30,6 +31,21 @@ def str_date_to_datetime(date_str):
     if not date_str:
         return None
     return datetime.strptime(date_str, "%Y-%m-%d")
+
+
+def to_object_id(value):
+    if not value:
+        return None
+    if isinstance(value, ObjectId):
+        return value
+    return ObjectId(str(value))
+
+
+def to_object_id_list(values):
+    if not values:
+        return []
+    return [to_object_id(v) for v in values]
+
 
 
 class TimestampMixin(object):
@@ -66,24 +82,24 @@ class Location(TimestampMixin):
         self.internships = []
 
     def add_data(self, user_id=None, institution_id=None, company_id=None, internship_id=None):
-        if user_id and user_id not in self.users:
-            self.users.append(user_id)
-        if institution_id and institution_id not in self.institutions:
-            self.institutions.append(institution_id)
-        if company_id and company_id not in self.companies:
-            self.companies.append(company_id)
-        if internship_id and internship_id not in self.internships:
-            self.internships.append(internship_id)
+        if user_id and to_object_id(user_id) not in self.users:
+            self.users.append(to_object_id(user_id))
+        if institution_id and to_object_id(institution_id) not in self.institutions:
+            self.institutions.append(to_object_id(institution_id))
+        if company_id and to_object_id(company_id) not in self.companies:
+            self.companies.append(to_object_id(company_id))
+        if internship_id and to_object_id(internship_id) not in self.internships:
+            self.internships.append(to_object_id(internship_id))
 
     def remove_data(self, user_id=None, institution_id=None, company_id=None, internship_id=None):
-        if user_id and user_id in self.users:
-            self.users.remove(user_id)
-        if institution_id and institution_id in self.institutions:
-            self.institutions.remove(institution_id)
-        if company_id and company_id in self.companies:
-            self.companies.remove(company_id)
-        if internship_id and internship_id in self.internships:
-            self.internships.remove(internship_id)
+        if user_id and to_object_id(user_id) in self.users:
+            self.users.remove(to_object_id(user_id))
+        if institution_id and to_object_id(institution_id) in self.institutions:
+            self.institutions.remove(to_object_id(institution_id))
+        if company_id and to_object_id(company_id) in self.companies:
+            self.companies.remove(to_object_id(company_id))
+        if internship_id and to_object_id(internship_id) in self.internships:
+            self.internships.remove(to_object_id(internship_id))
 
     def save(self, mongo_db):
         self.update_last_updated()
@@ -101,11 +117,12 @@ class Location(TimestampMixin):
 
     @classmethod
     def get_by_id(cls, mongo_db, location_id):
-        return mongo_db.locations.find_one({"_id": location_id})
+        return mongo_db.locations.find_one({"_id": to_object_id(location_id)})
 
     @classmethod
     def get_multi_by_ids(cls, mongo_db, location_ids):
-        return mongo_db.locations.find({"_id": {"$in": location_ids}}).sort("created_date", DESCENDING)
+        return (mongo_db.locations.find({"_id": {"$in": to_object_id_list(location_ids)}})
+                .sort("created_date", DESCENDING))
 
 
 class Notification(TimestampMixin):
@@ -116,14 +133,14 @@ class Notification(TimestampMixin):
         self.role = role
         self.read = read
 
-        # Keys from other collections
-        self.sender = sender
-        self.receiver = receiver
+        # Key ids from other collections
+        self.sender = to_object_id(sender)
+        self.receiver = to_object_id(receiver)
 
     def update_sender(self, sender_id):
         if not sender_id:
             return
-        self.sender = sender_id
+        self.sender = to_object_id(sender_id)
 
     def remove_sender(self):
         self.sender = None
@@ -131,7 +148,7 @@ class Notification(TimestampMixin):
     def update_receiver(self, receiver_id):
         if not receiver_id:
             return
-        self.receiver = receiver_id
+        self.receiver = to_object_id(receiver_id)
 
     def remove_receiver(self):
         self.receiver = None
@@ -152,11 +169,12 @@ class Notification(TimestampMixin):
 
     @classmethod
     def get_by_id(cls, mongo_db, notification_id):
-        return mongo_db.notifications.find_one({"_id": notification_id})
+        return mongo_db.notifications.find_one({"_id": to_object_id(notification_id)})
 
     @classmethod
     def get_multi_by_ids(cls, mongo_db, notification_ids):
-        return mongo_db.notifications.find({"_id": {"$in": notification_ids}}).sort("created_date", DESCENDING)
+        return (mongo_db.notifications.find({"_id": {"$in": to_object_id_list(notification_ids)}})
+                .sort("created_date", DESCENDING))
 
 
 class Observation(TimestampMixin):
@@ -164,14 +182,14 @@ class Observation(TimestampMixin):
         super().__init__()
         self.text = text
 
-        # Keys from other collections
-        self.creator = creator
-        self.receiver = receiver
+        # Key ids from other collections
+        self.creator = to_object_id(creator)
+        self.receiver = to_object_id(receiver)
 
     def update_creator(self, creator_id):
         if not creator_id:
             return
-        self.creator = creator_id
+        self.creator = to_object_id(creator_id)
 
     def remove_creator(self):
         self.creator = None
@@ -179,7 +197,7 @@ class Observation(TimestampMixin):
     def update_receiver(self, receiver_id):
         if not receiver_id:
             return
-        self.receiver = receiver_id
+        self.receiver = to_object_id(receiver_id)
 
     def remove_receiver(self):
         self.receiver = None
@@ -199,9 +217,10 @@ class Observation(TimestampMixin):
         return mongo_db.observations.insert_many([observation.to_dict() for observation in observations])
 
     @classmethod
-    def get_by_id(cls, mongo_db, notification_id):
-        return mongo_db.notifications.find_one({"_id": notification_id})
+    def get_by_id(cls, mongo_db, observation_id):
+        return mongo_db.notifications.find_one({"_id": to_object_id(observation_id)})
 
     @classmethod
-    def get_multi_by_ids(cls, mongo_db, notification_ids):
-        return mongo_db.notifications.find({"_id": {"$in": notification_ids}}).sort("created_date", DESCENDING)
+    def get_multi_by_ids(cls, mongo_db, observation_ids):
+        return (mongo_db.notifications.find({"_id": {"$in": to_object_id_list(observation_ids)}})
+                .sort("created_date", DESCENDING))
