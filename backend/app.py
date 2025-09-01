@@ -1,9 +1,13 @@
+from colorlog import ColoredFormatter
 from flask import Flask, render_template
 from flask_cors import CORS
 from flask_pymongo import PyMongo
 from flask_session import Session
 from google.cloud import secretmanager
+import json
+import logging
 import os
+import sys
 
 from routes.test_routes import test_routes_blueprint
 from routes.assignments import assignments_blueprint
@@ -15,12 +19,95 @@ from routes.testing_users import testing_users_blueprint
 from routes.tutors import tutors_blueprint
 
 
+def configure_local_logging():
+    """ Include fancy colors for the terminal """
+    handler = logging.StreamHandler(stream=sys.stdout)
+
+    # Set a nicer format
+    fmt = "%(asctime)s %(log_color)s%(levelname)s%(reset)s %(name)s: %(message)s"
+    datefmt = "%Y-%m-%d %H:%M:%S"
+    formatter = ColoredFormatter(
+        fmt=fmt,
+        datefmt=datefmt,
+        log_colors={
+            "INFO": "white",
+            "WARNING": "yellow",
+            "ERROR": "red",
+            "CRITICAL": "red",
+        },
+        secondary_log_colors={},
+        reset=True,
+        style="%",
+    )
+    handler.setFormatter(formatter)
+
+    # Set minimum logging level
+    root = logging.getLogger()
+    root.setLevel(logging.INFO)
+
+    # Prevents adding duplicate StreamHandler instances
+    if not any(isinstance(h, logging.StreamHandler) for h in root.handlers):
+        root.addHandler(handler)
+
+    # Align Werkzeug’s level (HTTP access log)
+    logging.getLogger("werkzeug").setLevel(logging.INFO)
+
+
+SEVERITY_MAP = {
+    logging.DEBUG: "DEBUG",
+    logging.INFO: "INFO",
+    logging.WARNING: "WARNING",
+    logging.ERROR: "ERROR",
+    logging.CRITICAL: "CRITICAL",
+}
+
+class GcpJsonFormatter(logging.Formatter):
+    def format(self, record: logging.LogRecord):
+        message = record.getMessage()
+        # Map Python level to Cloud Logging severity string
+        severity = SEVERITY_MAP.get(record.levelno, "DEFAULT")
+
+        payload = {
+            "severity": severity,
+            "message": message,
+            "logger": record.name,
+            # Optional
+            "module": record.module,
+            "func": record.funcName,
+            "lineno": record.lineno,
+        }
+
+        # If there is exception info, include it as 'stack'
+        if record.exc_info:
+            payload["stack"] = self.formatException(record.exc_info)
+
+        return json.dumps(payload, ensure_ascii=False)
+
+
+def configure_prod_logging():
+    """ Structured JSON logs so Cloud Logging sets severities correctly """
+    root = logging.getLogger()
+    root.setLevel(logging.INFO)
+
+    # Remove existing StreamHandlers to avoid duplicate plain-text logs
+    root.handlers = [h for h in root.handlers if not isinstance(h, logging.StreamHandler)]
+
+    handler = logging.StreamHandler(stream=sys.stdout)
+    handler.setFormatter(GcpJsonFormatter())
+    root.addHandler(handler)
+    logging.captureWarnings(True)
+
+    # Align Werkzeug’s level (HTTP access log)
+    logging.getLogger("werkzeug").setLevel(logging.INFO)
+
+
 def get_secret(secret_name):
     client = secretmanager.SecretManagerServiceClient()
     project_id = os.getenv('GOOGLE_CLOUD_PROJECT')
     secret_path = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
     response = client.access_secret_version(request={"name": secret_path})
     return response.payload.data.decode('UTF-8')
+
 
 IS_LOCAL = bool(os.getenv('LOCAL_DEV') or os.getenv("TEST_ENV"))
 # Load env variables to decide which env to use
@@ -30,12 +117,14 @@ if IS_LOCAL:
     SESSION_KEY = "this_secret_key_is_not_real"
     STATIC_FOLDER = "../frontend/dist/static"
     TEMPLATE_FOLDER = "../frontend/dist"
+    configure_local_logging()
 else:
     MONGO_URI = get_secret('MONGO_URI')
     MONGO_DBNAME = "tfm_prod_db"
     SESSION_KEY = get_secret('SESSION_KEY')
     STATIC_FOLDER = "dist/static"
     TEMPLATE_FOLDER = "dist"
+    configure_prod_logging()
 
 app = Flask(__name__,
             static_folder=STATIC_FOLDER,
