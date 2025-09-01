@@ -3,7 +3,9 @@ from flask_cors import CORS
 from flask_pymongo import PyMongo
 from flask_session import Session
 from google.cloud import secretmanager
+import logging
 import os
+import sys
 
 from routes.test_routes import test_routes_blueprint
 from routes.assignments import assignments_blueprint
@@ -15,12 +17,34 @@ from routes.testing_users import testing_users_blueprint
 from routes.tutors import tutors_blueprint
 
 
+def configure_logging():
+    root = logging.getLogger()
+    root.setLevel(logging.INFO)
+
+    # Prevents adding duplicate StreamHandler instances
+    if not any(isinstance(h, logging.StreamHandler) for h in root.handlers):
+        handler = logging.StreamHandler(stream=sys.stdout)
+
+        # Set a nicer format
+        formatter = logging.Formatter(
+            "%(asctime)s %(levelname)s %(name)s: %(message)s"
+        )
+        handler.setFormatter(formatter)
+        root.addHandler(handler)
+
+    # Align Werkzeug’s level (HTTP access log)
+    logging.getLogger("werkzeug").setLevel(logging.INFO)
+
+
 def get_secret(secret_name):
     client = secretmanager.SecretManagerServiceClient()
     project_id = os.getenv('GOOGLE_CLOUD_PROJECT')
     secret_path = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
     response = client.access_secret_version(request={"name": secret_path})
     return response.payload.data.decode('UTF-8')
+
+# Set logging level and format
+configure_logging()
 
 IS_LOCAL = bool(os.getenv('LOCAL_DEV') or os.getenv("TEST_ENV"))
 # Load env variables to decide which env to use
