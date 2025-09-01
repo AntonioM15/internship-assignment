@@ -1,3 +1,4 @@
+from colorlog import ColoredFormatter
 from flask import Flask, render_template
 from flask_cors import CORS
 from flask_pymongo import PyMongo
@@ -18,18 +19,32 @@ from routes.tutors import tutors_blueprint
 
 
 def configure_logging():
+    handler = logging.StreamHandler(stream=sys.stdout)
+
+    # Set a nicer format
+    fmt = "%(asctime)s %(log_color)s%(levelname)s%(reset)s %(name)s: %(message)s"
+    datefmt = "%Y-%m-%d %H:%M:%S"
+    formatter = ColoredFormatter(
+        fmt=fmt,
+        datefmt=datefmt,
+        log_colors={
+            "INFO": "white",
+            "WARNING": "yellow",
+            "ERROR": "red",
+            "CRITICAL": "red",
+        },
+        secondary_log_colors={},
+        reset=True,
+        style="%",
+    )
+    handler.setFormatter(formatter)
+
+    # Set minimum logging level
     root = logging.getLogger()
     root.setLevel(logging.INFO)
 
     # Prevents adding duplicate StreamHandler instances
     if not any(isinstance(h, logging.StreamHandler) for h in root.handlers):
-        handler = logging.StreamHandler(stream=sys.stdout)
-
-        # Set a nicer format
-        formatter = logging.Formatter(
-            "%(asctime)s %(levelname)s %(name)s: %(message)s"
-        )
-        handler.setFormatter(formatter)
         root.addHandler(handler)
 
     # Align Werkzeug’s level (HTTP access log)
