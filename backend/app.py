@@ -4,6 +4,7 @@ from flask_cors import CORS
 from flask_pymongo import PyMongo
 from flask_session import Session
 from google.cloud import secretmanager
+import json
 import logging
 import os
 import sys
@@ -52,21 +53,49 @@ def configure_local_logging():
     logging.getLogger("werkzeug").setLevel(logging.INFO)
 
 
+SEVERITY_MAP = {
+    logging.DEBUG: "DEBUG",
+    logging.INFO: "INFO",
+    logging.WARNING: "WARNING",
+    logging.ERROR: "ERROR",
+    logging.CRITICAL: "CRITICAL",
+}
+
+class GcpJsonFormatter(logging.Formatter):
+    def format(self, record: logging.LogRecord):
+        message = record.getMessage()
+        # Map Python level to Cloud Logging severity string
+        severity = SEVERITY_MAP.get(record.levelno, "DEFAULT")
+
+        payload = {
+            "severity": severity,
+            "message": message,
+            "logger": record.name,
+            # Optional
+            "module": record.module,
+            "func": record.funcName,
+            "lineno": record.lineno,
+        }
+
+        # If there is exception info, include it as 'stack'
+        if record.exc_info:
+            payload["stack"] = self.formatException(record.exc_info)
+
+        return json.dumps(payload, ensure_ascii=False)
+
+
 def configure_prod_logging():
-    """ Basic configuration for production logging, no colors used to have working log explorer filters """
+    """ Structured JSON logs so Cloud Logging sets severities correctly """
     root = logging.getLogger()
     root.setLevel(logging.INFO)
 
-    # Prevents adding duplicate StreamHandler instances
-    if not any(isinstance(h, logging.StreamHandler) for h in root.handlers):
-        handler = logging.StreamHandler(stream=sys.stdout)
+    # Remove existing StreamHandlers to avoid duplicate plain-text logs
+    root.handlers = [h for h in root.handlers if not isinstance(h, logging.StreamHandler)]
 
-        # Set a nicer format
-        formatter = logging.Formatter(
-            "%(asctime)s %(levelname)s %(name)s: %(message)s"
-        )
-        handler.setFormatter(formatter)
-        root.addHandler(handler)
+    handler = logging.StreamHandler(stream=sys.stdout)
+    handler.setFormatter(GcpJsonFormatter())
+    root.addHandler(handler)
+    logging.captureWarnings(True)
 
     # Align Werkzeug’s level (HTTP access log)
     logging.getLogger("werkzeug").setLevel(logging.INFO)
