@@ -18,7 +18,8 @@ from routes.testing_users import testing_users_blueprint
 from routes.tutors import tutors_blueprint
 
 
-def configure_logging():
+def configure_local_logging():
+    """ Include fancy colors for the terminal """
     handler = logging.StreamHandler(stream=sys.stdout)
 
     # Set a nicer format
@@ -51,6 +52,26 @@ def configure_logging():
     logging.getLogger("werkzeug").setLevel(logging.INFO)
 
 
+def configure_prod_logging():
+    """ Basic configuration for production logging, no colors used to have working log explorer filters """
+    root = logging.getLogger()
+    root.setLevel(logging.INFO)
+
+    # Prevents adding duplicate StreamHandler instances
+    if not any(isinstance(h, logging.StreamHandler) for h in root.handlers):
+        handler = logging.StreamHandler(stream=sys.stdout)
+
+        # Set a nicer format
+        formatter = logging.Formatter(
+            "%(asctime)s %(levelname)s %(name)s: %(message)s"
+        )
+        handler.setFormatter(formatter)
+        root.addHandler(handler)
+
+    # Align Werkzeug’s level (HTTP access log)
+    logging.getLogger("werkzeug").setLevel(logging.INFO)
+
+
 def get_secret(secret_name):
     client = secretmanager.SecretManagerServiceClient()
     project_id = os.getenv('GOOGLE_CLOUD_PROJECT')
@@ -58,8 +79,6 @@ def get_secret(secret_name):
     response = client.access_secret_version(request={"name": secret_path})
     return response.payload.data.decode('UTF-8')
 
-# Set logging level and format
-configure_logging()
 
 IS_LOCAL = bool(os.getenv('LOCAL_DEV') or os.getenv("TEST_ENV"))
 # Load env variables to decide which env to use
@@ -69,12 +88,14 @@ if IS_LOCAL:
     SESSION_KEY = "this_secret_key_is_not_real"
     STATIC_FOLDER = "../frontend/dist/static"
     TEMPLATE_FOLDER = "../frontend/dist"
+    configure_local_logging()
 else:
     MONGO_URI = get_secret('MONGO_URI')
     MONGO_DBNAME = "tfm_prod_db"
     SESSION_KEY = get_secret('SESSION_KEY')
     STATIC_FOLDER = "dist/static"
     TEMPLATE_FOLDER = "dist"
+    configure_prod_logging()
 
 app = Flask(__name__,
             static_folder=STATIC_FOLDER,
