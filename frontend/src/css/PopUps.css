@@ -65,6 +65,23 @@
   font-size: 16px;
 }
 
+.example-text {
+  text-align:left;
+  background: var(--background-primary-color);
+  border:1px solid var(--background-secondary-color);
+  border-radius:6px;
+  padding:12px;
+  overflow:auto;
+  font-size:14px;
+  margin-top:10px;
+}
+
+.error-text {
+  color:#b00020;
+  margin-top:10px;
+  font-size:12px;
+}
+
 .modal-actions {
   height: 15vh;
   display: flex;
@@ -89,4 +106,9 @@
 
 .btn:hover {
   background: var(--background-header-color);
+}
+
+.btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
