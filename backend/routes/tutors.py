@@ -1,4 +1,6 @@
 from flask import Blueprint, jsonify, request
+import csv
+import io
 
 from generic.models.institutions import Degree
 from generic.models.users import Tutor
@@ -7,6 +9,9 @@ from generic.session_utils import limited_access, login_required
 
 # Blueprint definition
 tutors = Blueprint('tutors_blueprint', __name__)
+
+# TMP - Default password - to be changed by the final user
+DEFAULT_PASSWORD = '1234'
 
 
 def tutors_blueprint(mongo):
@@ -57,6 +62,58 @@ def tutors_blueprint(mongo):
                                {'observations': [to_object_id(observation_doc.inserted_id)]})
 
         return jsonify({"message": "Added new tutor"}), 201
+
+    @tutors.route('/add-tutors-csv', methods=["POST"])
+    def add_tutors_csv():
+        """ Given a CSV file included in the request, add new tutors to the database. """
+        file = request.files.get('file')
+        if not file:
+            return jsonify({"message": "Archivo no recibido, abortando creación de profesores"}), 400
+
+        try:
+            data_bytes = file.read()
+            if not data_bytes:
+                return jsonify({"message": "El archivo está vacío"}), 400
+
+            text = data_bytes.decode('utf-8-sig', errors='replace')
+            reader = csv.DictReader(io.StringIO(text))
+
+            new_tutors = 0
+            errors = []
+            for idx, row in enumerate(reader, start=2):  # skip header row
+                try:
+                    official_id = (row.get('official_id') or '').strip() or None
+                    full_name = (row.get('full_name') or '').strip() or None
+                    email = (row.get('email') or '').strip() or None
+                    degree_codes = (row.get('degrees') or '').strip().replace(' ', '').split(';') or []
+                    description = (row.get('description') or '').strip() or None
+
+                    # Retrieve the degree id based on the degree code
+                    degrees = Degree.get_multi_by_codes(mongo_db, degree_codes)
+                    degree_ids = [degree.get("_id") for degree in degrees if degree]
+
+                    # Minimum checks
+                    if not email or not full_name or not official_id:
+                        raise ValueError("Faltan campos obligatorios: email, full_name u official_id")
+
+                    # Add the new tutor
+                    tutor = Tutor(email, DEFAULT_PASSWORD, official_id, full_name, status=None, institution=None,
+                                      degrees=degree_ids, description=description)
+                    tutor.save(mongo_db)
+                    new_tutors += 1
+
+                except Exception as e:
+                    errors.append(f"Fila {idx}: {str(e)}")
+
+            message = f"Added new students: {new_tutors}"
+            resp = {"message": message, "created": new_tutors}
+            if errors:
+                resp["errors"] = errors
+                return jsonify(resp), 200
+
+            return jsonify(resp), 201
+        except Exception as e:
+            return jsonify({"message": f"Error procesando el CSV: {str(e)}"}), 400
 
     @tutors.route('/update', methods=["PUT"])
     def update_tutor():

@@ -1,4 +1,6 @@
 from flask import Blueprint, jsonify, request
+import csv
+import io
 
 from generic.models.institutions import Degree
 from generic.models.users import Student
@@ -7,6 +9,9 @@ from generic.session_utils import limited_access, login_required
 
 # Blueprint definition
 students = Blueprint('students_blueprint', __name__)
+
+# TMP - Default password - to be changed by the final user
+DEFAULT_PASSWORD = '1234'
 
 
 def students_blueprint(mongo):
@@ -33,11 +38,8 @@ def students_blueprint(mongo):
     @students.route('/add', methods=["POST"])
     def add_student():
         data = request.get_json()
-
-        # TODO not included in final version, added them here to make things easier
         email = data.get('email')
         hashed_password = data.get('hashed_password')
-
         official_id = data.get('official_id')
         full_name = data.get('full_name')
         degree_id = data.get('degree_id')
@@ -58,6 +60,59 @@ def students_blueprint(mongo):
                                    {'observations': [to_object_id(observation_doc.inserted_id)]})
 
         return jsonify({"message": "Added new student"}), 201
+
+    @students.route('/add-students-csv', methods=["POST"])
+    def add_students_csv():
+        """ Given a CSV file included in the request, add new students to the database. """
+        file = request.files.get('file')
+        if not file:
+            return jsonify({"message": "Archivo no recibido, abortando creación de estudiantes"}), 400
+
+        try:
+            data_bytes = file.read()
+            if not data_bytes:
+                return jsonify({"message": "El archivo está vacío"}), 400
+
+            text = data_bytes.decode('utf-8-sig', errors='replace')
+            reader = csv.DictReader(io.StringIO(text))
+
+            new_students = 0
+            errors = []
+            for idx, row in enumerate(reader, start=2):  # skip header row
+                try:
+                    official_id = (row.get('official_id') or '').strip() or None
+                    full_name = (row.get('full_name') or '').strip() or None
+                    email = (row.get('email') or '').strip() or None
+                    degree_code = (row.get('degree') or '').strip() or None
+                    internship_type = (row.get('internship_type') or '').strip() or None
+                    description = (row.get('description') or '').strip() or None
+
+                    # Retrieve the degree id based on the degree code
+                    degree = Degree.get_by_code(mongo_db, degree_code)
+                    degree_id = degree.get("_id") if degree else None
+
+                    # Minimum checks
+                    if not email or not full_name or not official_id:
+                        raise ValueError("Faltan campos obligatorios: email, full_name u official_id")
+
+                    # Add the new student
+                    student = Student(email, DEFAULT_PASSWORD, official_id, full_name, status=None, institution=None,
+                                      degree=degree_id, description=description, internship_type=internship_type)
+                    student.save(mongo_db)
+                    new_students += 1
+
+                except Exception as e:
+                    errors.append(f"Fila {idx}: {str(e)}")
+
+            message = f"Added new students: {new_students}"
+            resp = {"message": message, "created": new_students}
+            if errors:
+                resp["errors"] = errors
+                return jsonify(resp), 200
+
+            return jsonify(resp), 201
+        except Exception as e:
+            return jsonify({"message": f"Error procesando el CSV: {str(e)}"}), 400
 
     @students.route('/update', methods=["PUT"])
     def update_student():

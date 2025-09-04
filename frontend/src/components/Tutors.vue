@@ -9,6 +9,7 @@
       @course-changed="onCourseChanged"
       @nameText-changed="onNameTextChanged"
       @status-changed="onStatusChanged"
+      @upload-csv="onAddTutors"
     />
     <div v-if="error" style="padding: 22px; color: red; font-size: 15px; font-weight: bold;">Error: {{ error }}</div>
     <div v-else class="tutors-layout">
@@ -99,6 +100,43 @@ export default {
     onStatusChanged (val) {
       this.selectedStatus = val
       this.fetchTutors()
+    },
+    // Action bar handlers
+    onAddTutors (payload) {
+      try {
+        this.loading = true
+        this.error = null
+
+        const formData = new FormData()
+        const file = payload.file
+
+        if (file instanceof File) {
+          formData.append('file', file)
+        } else {
+          this.error = 'Formato del archivo no reconocido'
+          this.loading = false
+          return
+        }
+
+        // Send the file to the backend
+        const url = `${apiUrl}/api/v1/tutors/add-tutors-csv`
+        axios.post(url, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
+          .then(() => {
+            // Reload the tutors list after successful upload
+            this.fetchTutors()
+          })
+          .catch(err => {
+            this.error = err.response.data.message || err.message
+          })
+          .finally(() => {
+            this.loading = false
+          })
+      } catch (e) {
+        this.error = e.message
+        this.loading = false
+      }
     }
   }
 }

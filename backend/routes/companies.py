@@ -1,4 +1,6 @@
 from flask import Blueprint, jsonify, request
+import csv
+import io
 
 from generic.models.institutions import Degree
 from generic.models.companies import Company
@@ -68,6 +70,57 @@ def companies_blueprint(mongo):
                                    {'observations': [to_object_id(observation_doc.inserted_id)]})
 
         return jsonify({"message": "Added new company"}), 201
+
+    @companies.route('/add-companies-csv', methods=["POST"])
+    def add_tutors_csv():
+        """ Given a CSV file included in the request, add new companies to the database. """
+        file = request.files.get('file')
+        if not file:
+            return jsonify({"message": "Archivo no recibido, abortando creación de empresas"}), 400
+
+        try:
+            data_bytes = file.read()
+            if not data_bytes:
+                return jsonify({"message": "El archivo está vacío"}), 400
+
+            text = data_bytes.decode('utf-8-sig', errors='replace')
+            reader = csv.DictReader(io.StringIO(text))
+
+            new_companies = 0
+            errors = []
+            for idx, row in enumerate(reader, start=2):  # skip header row
+                try:
+                    full_name = (row.get('full_name') or '').strip() or None
+                    field = (row.get('field') or '').strip() or None
+                    description = (row.get('description') or '').strip() or None
+
+                    # Retrieve the degree id based on the field name
+                    degree = Degree.get_by_name(mongo_db, field)
+                    degree_id = degree.get("_id") if degree else None
+
+                    # Minimum checks
+                    if not full_name:
+                        raise ValueError("Faltan campos obligatorios: full_name")
+                    if not degree_id:
+                        raise ValueError(f"No se han grados asociados al campo {field}")
+
+                    # Add the new tutor
+                    company = Company(full_name, field, description=description)
+                    company.save(mongo_db)
+                    new_companies += 1
+
+                except Exception as e:
+                    errors.append(f"Fila {idx}: {str(e)}")
+
+            message = f"Added new students: {new_companies}"
+            resp = {"message": message, "created": new_companies}
+            if errors:
+                resp["errors"] = errors
+                return jsonify(resp), 200
+
+            return jsonify(resp), 201
+        except Exception as e:
+            return jsonify({"message": f"Error procesando el CSV: {str(e)}"}), 400
 
     @companies.route('/update', methods=["PUT"])
     def update_company():

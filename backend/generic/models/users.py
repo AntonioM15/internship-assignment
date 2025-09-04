@@ -4,7 +4,7 @@ from .internships import Internship
 from .companies import Company
 from .institutions import Institution, Degree
 from .utils import Notification, Observation, Location, AVAILABLE_STATUSES, DEFAULT_STATUS, serialize_document, \
-                   TimestampMixin, to_object_id, to_object_id_list
+                   TimestampMixin, to_object_id, to_object_id_list, DEFAULT_INTERNSHIP_TYPE
 
 
 class User(TimestampMixin):
@@ -158,11 +158,12 @@ class Worker(User):
 
 
 class Student(User):
-    def __init__(self, email, hashed_password, official_id, full_name, status, institution, degree, description=None, internship=None, observations=None, **kwargs):
+    def __init__(self, email, hashed_password, official_id, full_name, status, institution, degree, description=None,
+                 internship_type=None, internship=None, observations=None, **kwargs):
         super().__init__(email, hashed_password, official_id, full_name, **kwargs)
         self.role = 'student'
         self.status = status if status in AVAILABLE_STATUSES else DEFAULT_STATUS
-        self.internship_type = None
+        self.internship_type = internship_type if internship_type else DEFAULT_INTERNSHIP_TYPE
         self.description = description
 
         # Key ids from other collections
@@ -242,10 +243,12 @@ class Student(User):
 
 
 class Tutor(User):
-    def __init__(self, email, hashed_password, official_id, full_name, status, institution, degrees=None, students=None, internships=None, **kwargs):
+    def __init__(self, email, hashed_password, official_id, full_name, status, institution, degrees=None,
+                 description=None, students=None, internships=None, **kwargs):
         super().__init__(email, hashed_password, official_id, full_name, **kwargs)
         self.role = 'tutor'
         self.status = status if status in AVAILABLE_STATUSES else DEFAULT_STATUS
+        self.description = description
 
         # Key ids from other collections
         self.institution = to_object_id(institution)
@@ -256,6 +259,7 @@ class Tutor(User):
     def to_dict(self):
         data = super().to_dict()
         data.update({
+            "description": self.description,
             "institution": self.institution,
             "degrees": self.degrees,
             "students": self.students,
@@ -273,6 +277,7 @@ class Tutor(User):
         internships = Internship.get_multi_by_ids(mongo_db, doc['internships'])
         data.update({
             "status": doc['status'],
+            "description": doc['description'],
             "institution": serialize_document(institution) if institution else None,
             "degrees": [serialize_document(doc) if doc else None for doc in degrees],
             "students": [serialize_document(doc) if doc else None for doc in students],

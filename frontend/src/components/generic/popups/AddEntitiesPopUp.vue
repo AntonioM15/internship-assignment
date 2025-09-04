@@ -18,22 +18,20 @@
             @change="onFileChange"
             style="display:none"
           />
-          <div
+          <div class="icon-box"
             @click="triggerBrowse"
             style="cursor:pointer; user-select:none; margin-top:10px;"
           >
-            <div class="icon-box">
-              <img
-                :alt="selectedFile ? 'Archivo seleccionado' : 'Subir CSV'"
-                :src="selectedFile ? fileAddedIcon : placeholderIcon"
-              />
-            </div>
-            <div v-if="!selectedFile" class="subtitle">
-              {{ 'Haz clic para elegir un archivo .csv' }}
-            </div>
-            <div v-if="selectedFile" class="subtitle" style="color: var(--text-primary-color);">
-              {{ selectedFile.name }}
-            </div>
+            <img
+              :alt="selectedFile ? 'Archivo seleccionado' : 'Subir CSV'"
+              :src="selectedFile ? fileAddedIcon : placeholderIcon"
+            />
+          </div>
+          <div v-if="!selectedFile" class="subtitle">
+            {{ 'Haz clic para elegir un archivo .csv' }}
+          </div>
+          <div v-if="selectedFile" class="subtitle" style="color: var(--text-primary-color);">
+            {{ selectedFile.name }}
           </div>
 
           <div v-if="fileError" class="error-text">
@@ -85,10 +83,10 @@ export default {
           ]
         },
         companies: {
-          headers: ['full_name', 'email', 'field', 'description'],
+          headers: ['full_name', 'field', 'description'],
           rows: [
-            ['Tech Corp', 'contact@techcorp.example', 'PRG', 'Prácticas anteriores satisfactorias'],
-            ['DataSoft', 'hr@datasoft.example', 'RED', 'Posibilidad de oferta tras práctica']
+            ['Tech Corp', 'PRG', 'Prácticas anteriores satisfactorias'],
+            ['DataSoft', 'RED', 'Posibilidad de oferta tras práctica']
           ]
         }
       }
