@@ -99,6 +99,10 @@ class Degree(TimestampMixin):
     def get_by_code(cls, mongo_db, code):
         return mongo_db.degrees.find_one({"code": code})
 
+    @classmethod
+    def get_multi_by_codes(cls, mongo_db, codes):
+        return mongo_db.degrees.find({"code": {"$in": codes}})
+
 
 class Institution(TimestampMixin):
     def __init__(self, email, full_name, avatar=None, location=None):

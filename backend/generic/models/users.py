@@ -243,10 +243,12 @@ class Student(User):
 
 
 class Tutor(User):
-    def __init__(self, email, hashed_password, official_id, full_name, status, institution, degrees=None, students=None, internships=None, **kwargs):
+    def __init__(self, email, hashed_password, official_id, full_name, status, institution, degrees=None,
+                 description=None, students=None, internships=None, **kwargs):
         super().__init__(email, hashed_password, official_id, full_name, **kwargs)
         self.role = 'tutor'
         self.status = status if status in AVAILABLE_STATUSES else DEFAULT_STATUS
+        self.description = description
 
         # Key ids from other collections
         self.institution = to_object_id(institution)
@@ -257,6 +259,7 @@ class Tutor(User):
     def to_dict(self):
         data = super().to_dict()
         data.update({
+            "description": self.description,
             "institution": self.institution,
             "degrees": self.degrees,
             "students": self.students,
@@ -274,6 +277,7 @@ class Tutor(User):
         internships = Internship.get_multi_by_ids(mongo_db, doc['internships'])
         data.update({
             "status": doc['status'],
+            "description": doc['description'],
             "institution": serialize_document(institution) if institution else None,
             "degrees": [serialize_document(doc) if doc else None for doc in degrees],
             "students": [serialize_document(doc) if doc else None for doc in students],

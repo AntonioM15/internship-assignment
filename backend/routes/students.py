@@ -63,9 +63,7 @@ def students_blueprint(mongo):
 
     @students.route('/add-students-csv', methods=["POST"])
     def add_students_csv():
-        """
-        Given a CSV file included in the request, add new students to the database.
-        """
+        """ Given a CSV file included in the request, add new students to the database. """
         file = request.files.get('file')
         if not file:
             return jsonify({"message": "Archivo no recibido, abortando creación de estudiantes"}), 400
@@ -80,7 +78,7 @@ def students_blueprint(mongo):
 
             new_students = 0
             errors = []
-            for idx, row in enumerate(reader, start=2):  # start=2 teniendo en cuenta cabecera en fila 1
+            for idx, row in enumerate(reader, start=2):  # skip header row
                 try:
                     official_id = (row.get('official_id') or '').strip() or None
                     full_name = (row.get('full_name') or '').strip() or None
