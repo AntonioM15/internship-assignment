@@ -83,10 +83,10 @@ export default {
           ]
         },
         companies: {
-          headers: ['full_name', 'email', 'field', 'description'],
+          headers: ['full_name', 'field', 'description'],
           rows: [
-            ['Tech Corp', 'contact@techcorp.example', 'PRG', 'Prácticas anteriores satisfactorias'],
-            ['DataSoft', 'hr@datasoft.example', 'RED', 'Posibilidad de oferta tras práctica']
+            ['Tech Corp', 'PRG', 'Prácticas anteriores satisfactorias'],
+            ['DataSoft', 'RED', 'Posibilidad de oferta tras práctica']
           ]
         }
       }
