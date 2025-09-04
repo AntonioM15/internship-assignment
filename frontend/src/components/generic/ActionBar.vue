@@ -4,7 +4,6 @@
     <div class="filters-section">
       <div class="filter-group" style="min-width: 400px;">
         <select class="filter-element"  style="width: 40%; min-width: 150px;" v-model="course" :class="{ 'is-placeholder': course === '' }">
-          <!-- TODO - values are mocked -->
           <option value="">Titulación</option> <!-- Used as a placeholder -->
           <option
             v-for="deg in degrees"
@@ -42,6 +41,13 @@
         {{ buttonText }}
       </button>
     </div>
+    <!-- Popup mount -->
+    <AddEntitiesPopUp
+      v-if="showAddPopUp"
+      :kind="kind"
+      @cancel="showAddPopUp = false"
+      @upload="onUploadCsv"
+    />
   </div>
 </template>
 
@@ -53,6 +59,7 @@ import IconStatusBlue from '../../assets/IconStatusBlue.svg'
 import IconStatusGreen from '../../assets/IconStatusGreen.svg'
 import IconStatusRed from '../../assets/IconStatusRed.svg'
 import IconStatusYellow from '../../assets/IconStatusYellow.svg'
+import AddEntitiesPopUp from './popups/AddEntitiesPopUp.vue'
 
 const TEXTS = {
   students: {
@@ -71,6 +78,9 @@ const TEXTS = {
 
 export default {
   name: 'ActionBar',
+  components: {
+    AddEntitiesPopUp
+  },
   props: {
     kind: {
       type: String,
@@ -101,7 +111,8 @@ export default {
         assigned: 'Asignado - Aprobado',
         ongoing: 'Asignado - En curso'
       },
-      selectedStatus: 'unknown' // When unknown include all the statuses - used as default value
+      selectedStatus: 'unknown', // When unknown include all the statuses - used as default value
+      showAddPopUp: false
     }
   },
   computed: {
@@ -125,8 +136,12 @@ export default {
       this.$emit('status-changed', this.selectedStatus)
     },
     addEntities () {
-      // TODO: Implement popup
-      console.log('Adding a new entity')
+      this.showAddPopUp = true
+    },
+    onUploadCsv (payload) {
+      // Bubble the payload up so the page can handle parsing/uploading
+      this.$emit('upload-csv', payload)
+      this.showAddPopUp = false
     }
   }
 }
