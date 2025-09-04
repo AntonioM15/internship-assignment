@@ -9,6 +9,7 @@
       @course-changed="onFieldChanged"
       @nameText-changed="onNameTextChanged"
       @status-changed="onStatusChanged"
+      @upload-csv="onAddCompanies"
     />
     <div v-if="error" style="padding: 22px; color: red; font-size: 15px; font-weight: bold;">Error: {{ error }}</div>
     <div v-else class="companies-layout">
@@ -143,6 +144,43 @@ export default {
     onStatusChanged (val) {
       this.selectedStatus = val
       this.fetchCompanies()
+    },
+    // Action bar handlers
+    onAddCompanies (payload) {
+      try {
+        this.loading = true
+        this.error = null
+
+        const formData = new FormData()
+        const file = payload.file
+
+        if (file instanceof File) {
+          formData.append('file', file)
+        } else {
+          this.error = 'Formato del archivo no reconocido'
+          this.loading = false
+          return
+        }
+
+        // Send the file to the backend
+        const url = `${apiUrl}/api/v1/companies/add-companies-csv`
+        axios.post(url, formData, {
+          headers: {'Content-Type': 'multipart/form-data'}
+        })
+          .then(() => {
+            // Reload the companies list after successful upload
+            this.fetchCompanies()
+          })
+          .catch(err => {
+            this.error = err.response.data.message || err.message
+          })
+          .finally(() => {
+            this.loading = false
+          })
+      } catch (e) {
+        this.error = e.message
+        this.loading = false
+      }
     },
     // COMPANY handlers
     onHideCompany () {
