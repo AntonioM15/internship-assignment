@@ -95,6 +95,10 @@ class Degree(TimestampMixin):
             query["full_name"] = full_name
         return mongo_db.degrees.find(query).sort("created_date", DESCENDING)
 
+    @classmethod
+    def get_by_code(cls, mongo_db, code):
+        return mongo_db.degrees.find_one({"code": code})
+
 
 class Institution(TimestampMixin):
     def __init__(self, email, full_name, avatar=None, location=None):

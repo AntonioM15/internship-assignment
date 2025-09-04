@@ -5,6 +5,8 @@ from pymongo import DESCENDING
 AVAILABLE_STATUSES = ('unassigned', 'provisional', 'assigned', 'ongoing')
 DEFAULT_STATUS = 'unassigned'
 
+DEFAULT_INTERNSHIP_TYPE = 'regular'
+
 KEYS_WITH_OBJECT_IDS = ('_id', 'sender', 'creator', 'receiver', 'degree', 'location', 'institution', 'internship',
                         'student', 'worker', 'tutor', 'company')
 KEYS_WITH_LIST_OF_OBJECT_IDS = ('notifications', 'observations', 'degrees', 'internships', 'students', 'workers',
