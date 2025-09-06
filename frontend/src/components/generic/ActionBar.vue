@@ -26,7 +26,7 @@
         <select
           class="filter-element"
           style="width: 100%; min-width: 225px;"
-          v-model="selectedStatus" :class="{ 'is-placeholder': selectedStatus === 'white' }"
+          v-model="selectedStatus" :class="{ 'is-placeholder': selectedStatus === 'unknown' }"
           @change="emitStatus"
         >
           <option v-for="statusOption in statusOptions" :key="statusOption" :value="statusOption">
