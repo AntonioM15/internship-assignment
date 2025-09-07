@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 
+from generic.models.users import User
 from generic.session_utils import save_session, clear_session
 
 # Blueprint definition
@@ -17,11 +18,11 @@ def landing_blueprint(mongo):
         if not email or not password:
             return jsonify({"status": "error", "message": "Email o contraseña no proporcionado"}), 400
 
-        # TODO mocked response until DB is configured
-        if email != 'aa' or password != 'bb':
+        user = User.get_by_email(mongo_db, email)
+        if not user or user.get('hashed_password') != password:
             return jsonify({"status": "error", "message": "Email o contraseña incorrectos"}), 401
 
-        role = 'admin'
+        role = user.get('role')
         save_session(email, role)
 
         return jsonify({"status": "success"}), 200
@@ -39,8 +40,8 @@ def landing_blueprint(mongo):
         if not email:
             return jsonify({"status": "error", "message": "Email no proporcionado"}), 400
 
-        # TODO mocked response until DB is configured
-        if email != 'aa':
+        user = User.get_by_email(mongo_db, email)
+        if not user:
             return jsonify({"status": "error", "message": "Email incorrecto"}), 401
 
         # TODO send email to reset credentials

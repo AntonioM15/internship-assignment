@@ -73,6 +73,10 @@ class User(TimestampMixin):
         return mongo_db.users.find({"_id": {"$in": to_object_id_list(user_ids)}}).sort("created_date", DESCENDING)
 
     @classmethod
+    def get_by_email(cls, mongo_db, email):
+        return mongo_db.users.find_one({"email": email})
+
+    @classmethod
     def retrieve_latest_notifications(cls, mongo_db, _):
         """ Retrieve the latest notifications of all related user collections """
         return []  # Implement me in subclasses!

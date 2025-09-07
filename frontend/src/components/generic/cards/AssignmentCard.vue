@@ -16,13 +16,11 @@
       <div class="item-text">
         <div class="item-title">
           <slot name="title" :item="item">
-            <!-- TODO - Update to json methods -->
             {{ item && item.student ? item.student.full_name : null }}
           </slot>
         </div>
         <div class="item-text">
           <slot name="degree" :item="item">
-            <!-- TODO - Update to json methods to show the actual degree name -->
             {{ item && item.student ? item.student.degree : null }}
           </slot>
         </div>
@@ -43,7 +41,6 @@
         </div>
         <div class="item-text">
           <slot name="degrees" :item="item">
-            <!-- TODO - Update to json methods to show the actual degrees names -->
             <!-- {{ item.tutor.degrees.join(', ') }} -->
             {{ tutorDegreesText }}
           </slot>

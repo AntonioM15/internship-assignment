@@ -96,8 +96,7 @@ export default {
       this.$emit('status-changed', this.selectedStatus)
     },
     assignEntities () {
-      // TODO: Implement popup
-      console.log('Adding a new entity')
+      console.log('Assigning entities')
     }
   }
 }

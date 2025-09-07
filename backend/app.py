@@ -15,7 +15,6 @@ from routes.companies import companies_blueprint
 from routes.dashboard import dashboard_blueprint
 from routes.students import students_blueprint
 from routes.landing import landing_blueprint
-from routes.testing_users import testing_users_blueprint
 from routes.tutors import tutors_blueprint
 
 
@@ -162,8 +161,6 @@ app.register_blueprint(tutors_blueprint(mongo), url_prefix="/api/v1/tutors")
 app.register_blueprint(companies_blueprint(mongo), url_prefix="/api/v1/companies")
 app.register_blueprint(assignments_blueprint(mongo), url_prefix="/api/v1/assignments")
 app.register_blueprint(test_routes_blueprint(mongo), url_prefix="/api/v1/test_routes")
-# TODO remove
-app.register_blueprint(testing_users_blueprint(mongo), url_prefix="/api/v1/testing_users")
 
 
 @app.route('/', defaults={'path': ''})

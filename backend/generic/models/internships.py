@@ -145,7 +145,6 @@ class Internship(TimestampMixin):
 
     @classmethod
     def retrieve_internship_relations(cls, mongo_db, student_id=None, tutor_id=None, company_id=None):
-        # TODO consider using embedded values instead
         student = mongo_db.users.find_one({"_id": to_object_id(student_id)}) if student_id else None
         tutor = mongo_db.users.find_one({"_id": to_object_id(tutor_id)}) if tutor_id else None
         company = mongo_db.companies.find_one({"_id": to_object_id(company_id)}) if company_id else None
