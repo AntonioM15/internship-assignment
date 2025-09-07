@@ -19,12 +19,10 @@
       </div>
       <div class="item-text">
         <slot name="degrees" :item="item">
-          <!-- TODO - Update to json methods to show the actual degrees names -->
           {{ degreesText }}
         </slot>
       </div>
     </div>
-    <!-- TODO - Update to json methods -->
     <CardStatus :item="item" />
   </div>
 </template>
