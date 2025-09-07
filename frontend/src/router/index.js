@@ -12,9 +12,8 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
-    { path: '/landing', name: 'home', component: Home },
-    // TODO remove Main -> Main should redirect to landing or dashboard depending if the user has logged in
     { path: '/', name: 'main', component: Main },
+    { path: '/landing', name: 'home', component: Home },
     { path: '/dashboard', name: 'main', component: Dashboard },
     { path: '/students', name: 'main', component: Students },
     { path: '/tutors', name: 'main', component: Tutors },
