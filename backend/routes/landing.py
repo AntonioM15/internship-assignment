@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from werkzeug.security import check_password_hash
 
 from generic.models.users import User
 from generic.session_utils import save_session, clear_session, session_details
@@ -19,7 +20,8 @@ def landing_blueprint(mongo):
             return jsonify({"status": "error", "message": "Email o contraseña no proporcionado"}), 400
 
         user = User.get_by_email(mongo_db, email)
-        if not user or user.get('hashed_password') != password:
+        stored_password = user.get('hashed_password') if user else None
+        if not user or not check_password_hash(stored_password, password):
             return jsonify({"status": "error", "message": "Email o contraseña incorrectos"}), 401
 
         role = user.get('role')
