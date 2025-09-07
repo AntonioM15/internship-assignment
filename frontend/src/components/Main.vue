@@ -1,33 +1,29 @@
-<template>
-  <div>
-    <p>{{ message }}</p>
-  </div>
-</template>
-
 <script>
 import apiUrl from '../config'
 import axios from 'axios'
 
 export default {
   name: 'Main',
-  data () {
-    return {
-      message: 'Sin mensaje!'
-    }
-  },
   methods: {
-    getMessage () {
-      const path = `${apiUrl}/api/v1/landing/message`
-      axios.get(path).then((response) => {
-        this.message = response.data
-      })
-        .catch((error) => {
-          console.log(error)
-        })
+    async redirectBasedOnAuth () {
+      const path = `${apiUrl}/api/v1/landing/is-user-logged-in`
+      try {
+        const response = await axios.get(path, {withCredentials: true})
+        const isLoggedIn = response.data.data.logged_in
+
+        if (isLoggedIn) {
+          await this.$router.replace({path: '/dashboard'})
+        } else {
+          await this.$router.replace({ path: '/landing' })
+        }
+      } catch (e) {
+        // On error, default to landing
+        await this.$router.replace({ path: '/landing' })
+      }
     }
   },
   created () {
-    this.getMessage()
+    this.redirectBasedOnAuth()
   }
 }
 </script>
