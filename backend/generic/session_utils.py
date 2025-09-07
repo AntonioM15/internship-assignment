@@ -52,3 +52,6 @@ def clear_session():
     """ Clear user session """
     logger.info(f"User {session.get('email')} with role {session.get('role')} logged out")
     session.clear()
+
+def session_details():
+    return session.get('email'), session.get('role')
