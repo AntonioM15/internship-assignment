@@ -3,3 +3,6 @@ entrypoint: gunicorn --bind :$PORT app:app
 
 env_variables:
   GOOGLE_CLOUD_PROJECT: "tfm-anmarlea-upv-15"
+
+automatic_scaling:
+  max_instances: 1
