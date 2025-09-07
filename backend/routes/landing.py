@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 
 from generic.models.users import User
-from generic.session_utils import save_session, clear_session
+from generic.session_utils import save_session, clear_session, session_details
 
 # Blueprint definition
 landing = Blueprint('landing_blueprint', __name__)
@@ -51,5 +51,11 @@ def landing_blueprint(mongo):
     def provide_contact():
         # TODO
         return jsonify({"status": "success"}), 200
+
+    @landing.route('/is-user-logged-in', methods=["GET"])
+    def is_user_logged_in():
+        email, role = session_details()
+        return jsonify({"status": "success", "data": {"logged_in": bool(email and role)}}), 200
+
 
     return landing
