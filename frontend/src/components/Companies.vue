@@ -194,11 +194,6 @@ export default {
       this.selectedCompany = { ...this.selectedCompany, ...updated }
     },
     onSaveCompany (payload) {
-      // TODO
-      // Persist changes when API is available
-      // axios.put(`${apiUrl}/api/v1/companies/${payload.id}`, payload)
-      //   .then(() => { /* refresh or notify */ })
-      //   .catch(e => { this.error = e.response?.data?.message || e.message })
       // For now, merge into local list
       const idx = this.companies.findIndex(s => s.id === payload.id)
       if (idx !== -1) this.$set(this.companies, idx, { ...this.companies[idx], ...payload })
