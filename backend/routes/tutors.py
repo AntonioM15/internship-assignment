@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 import csv
 import io
+from werkzeug.security import generate_password_hash
 
 from generic.models.institutions import Degree
 from generic.models.users import Tutor
@@ -11,7 +12,7 @@ from generic.session_utils import limited_access, login_required
 tutors = Blueprint('tutors_blueprint', __name__)
 
 # TMP - Default password - to be changed by the final user
-DEFAULT_PASSWORD = '1234'
+DEFAULT_PASSWORD = '12345678'
 
 
 def tutors_blueprint(mongo):
@@ -38,14 +39,17 @@ def tutors_blueprint(mongo):
     @tutors.route('/add', methods=["POST"])
     def add_tutor():
         data = request.get_json()
-
         email = data.get('email')
-        hashed_password = data.get('hashed_password')
-
+        password = data.get('password')
         official_id = data.get('official_id')
         full_name = data.get('full_name')
         degree_id = data.get('degree_id')
 
+        hashed_password = generate_password_hash(
+            password,
+            method='pbkdf2:sha256',
+            salt_length=16
+        )
         # Add new tutor
         tutor = Tutor(email, hashed_password, official_id, full_name, status=None, institution=None,
                       degrees=[degree_id])
@@ -96,8 +100,13 @@ def tutors_blueprint(mongo):
                     if not email or not full_name or not official_id:
                         raise ValueError("Faltan campos obligatorios: email, full_name u official_id")
 
+                    hashed_password = generate_password_hash(
+                        DEFAULT_PASSWORD,
+                        method='pbkdf2:sha256',
+                        salt_length=16
+                    )
                     # Add the new tutor
-                    tutor = Tutor(email, DEFAULT_PASSWORD, official_id, full_name, status=None, institution=None,
+                    tutor = Tutor(email, hashed_password, official_id, full_name, status=None, institution=None,
                                       degrees=degree_ids, description=description)
                     tutor.save(mongo_db)
                     new_tutors += 1
