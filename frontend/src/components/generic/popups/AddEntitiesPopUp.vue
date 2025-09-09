@@ -85,8 +85,8 @@ export default {
         companies: {
           headers: ['full_name', 'field', 'description'],
           rows: [
-            ['Tech Corp', 'PRG', 'Prácticas anteriores satisfactorias'],
-            ['DataSoft', 'RED', 'Posibilidad de oferta tras práctica']
+            ['Tech Corp', 'Programacion', 'Prácticas anteriores satisfactorias'],
+            ['DataSoft', 'Redes', 'Posibilidad de oferta tras práctica']
           ]
         }
       }

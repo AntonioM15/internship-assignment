@@ -23,6 +23,17 @@
           />
         </div>
       </section>
+      <section class="right-panel">
+        <TutorBox
+          v-if="selectedTutor"
+          :item="selectedTutor"
+          :degrees="degrees"
+          @hide="onHide"
+          @cancel="onCancel"
+          @save="onSaveTutor"
+          @input="onEditedLocal"
+        />
+      </section>
     </div>
   </div>
 
@@ -34,6 +45,7 @@ import Header from './generic/Header.vue'
 import NavBar from './generic/NavBar.vue'
 import ActionBar from './generic/ActionBar.vue'
 import ScrollableCardList from './generic/ScrollableCardList.vue'
+import TutorBox from './generic/boxes/TutorBox.vue'
 import axios from 'axios'
 
 export default {
@@ -42,7 +54,8 @@ export default {
     Header,
     NavBar,
     ActionBar,
-    ScrollableCardList
+    ScrollableCardList,
+    TutorBox
   },
   data () {
     return {
@@ -137,6 +150,23 @@ export default {
         this.error = e.message
         this.loading = false
       }
+    },
+    // Preview handlers
+    onHide () {
+      // TODO: implement hide functionality
+    },
+    onCancel () {
+      this.selectedTutor = null
+    },
+    onEditedLocal (updated) {
+      // Optionally keep a live mirror of edits in the selected object (in-memory only)
+      this.selectedTutor = { ...this.selectedTutor, ...updated }
+    },
+    onSaveTutor (payload) {
+      // For now, merge into local list
+      const idx = this.tutors.findIndex(s => s.id === payload.id)
+      if (idx !== -1) this.$set(this.tutors, idx, { ...this.tutors[idx], ...payload })
+      this.selectedTutor = { ...this.selectedTutor, ...payload }
     }
   }
 }
